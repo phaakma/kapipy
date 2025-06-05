@@ -181,23 +181,23 @@ class GIS:
         self._wfs_manager = None
         logger.info("KServer instance reset.")
 
-def __repr__(self) -> str:
-    """
-    Returns an unambiguous string representation of the GIS instance.
+    def __repr__(self) -> str:
+        """
+        Returns an unambiguous string representation of the GIS instance.
 
-    Returns:
-        str: String representation of the GIS instance.
-    """
-    return (
-        f"GIS(name={self.name!r}, url={self.url!r}, api_key={'***' if self._api_key else None}, "
-        f"api_version={self._api_version!r})"
-    )
+        Returns:
+            str: String representation of the GIS instance.
+        """
+        return (
+            f"GIS(name={self.name!r}, url={self.url!r}, api_key={'***' if self._api_key else None}, "
+            f"api_version={self._api_version!r})"
+        )
 
-def __str__(self) -> str:
-    """
-    Returns a user-friendly string representation of the GIS instance.
+    def __str__(self) -> str:
+        """
+        Returns a user-friendly string representation of the GIS instance.
 
-    Returns:
-        str: User-friendly string representation.
-    """
-    return f"GIS: {self.name or 'Custom'} at {self.url} (API {self._api_version})"
+        Returns:
+            str: User-friendly string representation.
+        """
+        return f"GIS: {self.name or 'Custom'} at {self.url} (API {self._api_version})"

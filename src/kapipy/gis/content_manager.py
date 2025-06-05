@@ -58,7 +58,7 @@ class ContentManager:
             id (str): The ID of the content to retrieve.
 
         Returns:
-            VectorItem or TableItem: The instantiated item, depending on its kind.
+            VectorItem or TableItem or None: The instantiated item, depending on its kind, or None if not found.
 
         Raises:
             BadRequest: If the content is not found or the request is invalid.
@@ -108,12 +108,12 @@ class ContentManager:
         it pauses polling and downloads that file, then resumes polling the remainder.
 
         Parameters:
-            jobs (list[JobResults]): The list of job result objects to download.
+            jobs (list[JobResult]): The list of job result objects to download.
             folder (str): The output folder where files will be saved.
             poll_interval (int, optional): The interval in seconds to poll the jobs. Default is 10.
 
         Returns:
-            list[JobResults]: The list of job result objects after download.
+            list[JobResult]: The list of job result objects after download.
         """
 
         pending_jobs = list(jobs)

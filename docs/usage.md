@@ -2,32 +2,47 @@
 
 This guide walks you through the main ways to use the `kapipy` package to query and download data from the LINZ Data Service via Koordinates.
 
-## Connecting to the LINZ Data Service
+## Installation Notes  
+Kapipy is designed to use either GeoPandas or the ArcGIS API for Python, returning and reading data as either a GeoDataFrame or a Spatially Enabled DataFrame respectively.  Neither package is defined as a requirement of kapipy, as users may choose to use one over the other and may not want the other automatically installed.  
+
+This means you need to manually instally one of either **geopandas** or **arcgis** into your Python environment.
+
+### ArcGIS  
+ If you are an ArcGIS user, cloning the default conda environment from ArcGIS Pro or ArcGIS Server should be sufficient, and you just need to install kapipy. If you choose to start with a blank environment and do not intend to install arcpy, you may need to install the following:  
+- pyproj
+- shapely  
+- pyshp  
+
+### Jupyter Notebooks  
+If you are starting with a clean Python environment and want to use Jupyter Notebooks (e.g. inside Visual Studio Code), then manually install these packages:  
+- ipykernel
+- ptyprocess
+- comm  
+
+## Connecting to the various open data portals  
 
 ```python
 from kapipy.gis import GIS
-linz = GIS(name="linz", api_key="your-api-key")
+
+linz = GIS(name="linz", api_key="your-linz-api-key")
+statsnz = GIS(name='statsnz', api_key="your-stats-api-key")
+lris = GIS(name='lris', api_key="your-lris-api-key")
 ```
 
 ## Get a reference to an item  
 
-For this snippet to work, create a .env file in the project root folder and include a variable called 'LINZ_API_KEY'.  
 
 ```python
-from dotenv import load_dotenv, find_dotenv
 from kapipy.gis import GIS
-dotenv_path = find_dotenv()
-load_dotenv(dotenv_path)
-api_key = os.getenv('LINZ_API_KEY')
 
 #create gis object
-linz = GIS(name="linz", api_key="your-api-key")
+linz = GIS(name="linz", api_key="your-linz-api-key")
 
 #get item object
 rail_station_layer_id = "50318" #rail station 175 points
 itm = linz.content.get(rail_station_layer_id)
-#print item title
-print(itm.title)
+
+print(itm)
 ```
 
 ## Query an item using WFS endpoint  
@@ -37,12 +52,13 @@ Get all data
 data = itm.query()
 ```
 
-Get first 5 records. Could be any records as there doesn't appear to be a sort argument, so probably only useful for data exploration.  
+Get first 5 records.  
+
 ```python
 data = itm.query(count=5)
 ```
 
-Data is returned as a geopandas GeoDataFrame, typed by the fields provided by the API.  
+Data is returned as either a geopandas GeoDataFrame or an ArcGIS Spatially Enabled DataFrame, typed by the fields provided by the API.  
 ```python
 print(data.dtypes())
 print(data.head())
@@ -50,16 +66,18 @@ print(data.head())
 
 ## Get a changeset using WFS endpoint  
 
-Also returned as a GeoDataFrame.
+Also returned as a DataFrame.
 ```python
-changeset = itm.get_changeset(from_time="2024-01-01T00:00:00Z")
+changeset = itm.get_changeset(from_time="2024-01-01T00:00:00Z", wkid=2193)
 print((f"Total records returned {itm.title}: {changeset.shape[0]}"))
 ```
 
 ## Generate an export  
 
+It is recommended to always specify the wkid.  
+
 ```python
-job = itm.export("geodatabase", crs="EPSG:2193",)
+job = itm.export("geodatabase", wkid=2193)
 print(job.status)
 ```
 Download the job data once it is ready. If this method is called before the job is complete, it will keep polling the status of the job until it is ready and then downloads it.  
@@ -69,49 +87,12 @@ job.download(folder=r"c:/temp")
 
 ## Generate an export with extent geometry  
 
-```python
-waikato_polygon = {
-        "coordinates": [
-          [
-            [
-              174.30400216373914,
-              -36.87399457472202
-            ],
-            [
-              174.30400216373914,
-              -38.83764306196984
-            ],
-            [
-              176.83017911725346,
-              -38.83764306196984
-            ],
-            [
-              176.83017911725346,
-              -36.87399457472202
-            ],
-            [
-              174.30400216373914,
-              -36.87399457472202
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      }
+The *extent* argument can be passed in as a GeoDataFrame or a Spatially Enabled DataFrame.  
 
-job = itm.export("geodatabase", crs="EPSG:2193", extent=waikato_polygon,)
+```python
+waikato_polygon = gpd.read_file('../examples/waikato.json')
+matamata_gdf = gpd.read_file("../examples/matamata_piako.shp")
+
+job = itm.export("geodatabase", wkid=2193, extent=waikato_polygon,)
 print(job.status)
 ```
-
-## Tests  
-
-To run all tests:  
-
-To run all tests with logging. Leave off the log parameter if not wanting logging.  
-```bash
-uv run -m pytest --log-cli-level=INFO
-```  
-
-To run a specific test, replace the relevant file name and test function.  
-```bash
-uv run -m pytest tests/test_simple.py::test_validate_layer_export_params --log-cli-level=INFO
-```  

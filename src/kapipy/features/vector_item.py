@@ -184,9 +184,9 @@ class VectorItem(BaseItem):
 
         Parameters:
             cql_filter (str, optional): The CQL filter to apply to the query.
-            srsName (str, optional): The spatial reference system name to use for the query.
-            bbox (str or gpd.GeoDataFrame, optional): The bounding box to apply to the query.
-                If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.
+            wkid (int, optional): The spatial reference system code to use for the query.
+            bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the query.
+                If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.
             **kwargs: Additional parameters for the WFS query.
 
         Returns:
@@ -220,22 +220,22 @@ class VectorItem(BaseItem):
         **kwargs: Any,
     ) -> "gpd.GeoDataFrame":
         """
-        Executes a WFS query on the item and returns the result as a GeoDataFrame.
-        Only works if geopandas is installed.
+        Executes a WFS query on the item and returns the result as a GeoDataFrame, SEDF, or JSON.
 
         Parameters:
             cql_filter (str, optional): The CQL filter to apply to the query.
-            srsName (str, optional): The spatial reference system name to use for the query.
-            bbox (str or gpd.GeoDataFrame, optional): The bounding box to apply to the query.
-                If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.
-            output_format (sdef or gdf or json)
+            wkid (int, optional): The spatial reference system code to use for the query.
+            bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the query.
+                If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.
+            output_format (str, optional): The output format: 'gdf', 'sdf', or 'json'. Defaults to the best available.
             **kwargs: Additional parameters for the WFS query.
 
         Returns:
-            gpd.GeoDataFrame: The result of the WFS query as a GeoDataFrame.
+            gpd.GeoDataFrame or arcgis.features.GeoAccessor or dict: The result of the WFS query as a GeoDataFrame, SEDF, or JSON.
 
         Raises:
-            ImportError if geopandas is not installed.
+            ImportError: If the requested output format requires a package that is not installed.
+            ValueError: If the output format is unknown.
         """
 
         if output_format is None:
@@ -326,18 +326,24 @@ class VectorItem(BaseItem):
         **kwargs: Any,
     ) -> "gpd.GeoDataFrame":
         """
-        Retrieves a changeset for the item and returns it as a GeoDataFrame.
+        Retrieves a changeset for the item and returns it as a GeoDataFrame, SEDF, or JSON.
 
         Parameters:
             from_time (str): The start time for the changeset query, ISO format (e.g., "2015-05-15T04:25:25.334974").
             to_time (str, optional): The end time for the changeset query, ISO format. If not provided, the current time is used.
+            wkid (int, optional): The spatial reference system code to use for the query.
             cql_filter (str, optional): The CQL filter to apply to the changeset query.
-            bbox (str or gpd.GeoDataFrame, optional): The bounding box to apply to the changeset query.
-                If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.
+            bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the changeset query.
+                If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.
+            output_format (str, optional): The output format: 'gdf', 'sdf', or 'json'. Defaults to the best available.
             **kwargs: Additional parameters for the WFS query.
 
         Returns:
-            gpd.GeoDataFrame: The changeset data as a GeoDataFrame.
+            gpd.GeoDataFrame or arcgis.features.GeoAccessor or dict: The changeset data as a GeoDataFrame, SEDF, or JSON.
+
+        Raises:
+            ImportError: If the requested output format requires a package that is not installed.
+            ValueError: If the output format is unknown.
         """
 
         wkid = wkid if wkid is not None else self.epsg
@@ -483,8 +489,8 @@ class VectorItem(BaseItem):
 
         Parameters:
             export_format (str): The format to export the item in.
-            crs (str, optional): The coordinate reference system to use for the export.
-            extent (dict or gpd.GeoDataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary or a GeoDataFrame.
+            wkid (int, optional): The coordinate reference system code to use for the export.
+            extent (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
             poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.
             timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).
             **kwargs: Additional parameters for the export request.

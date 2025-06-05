@@ -81,12 +81,14 @@ def main():
     parser = argparse.ArgumentParser(description="Build and optionally publish the package.")
     parser.add_argument("--stage", choices=["test", "prod"], default="test", help="Target registry: 'test' (default) or 'prod'")
     parser.add_argument("--docs", action="store_true", help="Also deploy documentation to GitHub Pages")
+    parser.add_argument("--publish", action="store_true", help="Build and publish the package to PyPI/TestPyPI")
     args = parser.parse_args()
 
-    sync_and_bump_version()
-    clean_dist()
-    build_package()
-    publish_package(args.stage)
+    if args.publish:
+        sync_and_bump_version()
+        clean_dist()
+        build_package()
+        publish_package(args.stage)
 
     if args.docs:
         deploy_docs()

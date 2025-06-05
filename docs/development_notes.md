@@ -73,3 +73,21 @@ I investigated using the OWSLib python package to download the WFS data, but dis
 I'm not sure if the LINZ WFS endpoint is strictly equivalent with all other Koordinates WFS endpoints. So the implementation at the moment is coded to work with LINZ and might not work in other places.  
 
 
+## Prompts  
+
+Can you review the docstrings for all classes, methods and functions. Make sure they are accurate and reflect the correct Parameters and Return values. Ensure the syntax is correct, use the word Parameters instead of Args, and ensure the formatting is consistent for use with MkDocs and the Google format. Only provide docstrings that actually need to change. Provide each docstring in a separate section so I can copy and paste it. There is no need to provide the original for comparison. Provide an update for __str__ and __repr__ if necessary. Check that the type hints are accurate.
+
+## Tests  
+Tests are written using pytest.
+
+To run all tests with logging. Leave off the log parameter if not wanting logging.  
+```bash
+uv run -m pytest --log-cli-level=INFO
+```  
+
+To run a specific test, replace the relevant file name and test function.  
+```bash
+uv run -m pytest tests/test_simple.py::test_validate_layer_export_params --log-cli-level=INFO
+```  
+
+There is currently very limited test coverage. Any live tests require a "LINZ_API_KEY" entry to exist in a .env file in the root project folder.  

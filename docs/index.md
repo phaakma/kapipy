@@ -4,15 +4,13 @@ A python client for accessing and querying datasets from geospatial open data po
 ## Overview  
 kapipy is a Python package that provides a python interface to the Koordinates geospatial content management system. It allows users to connect a data portal, retrieve metadata, and query vector layers and tables. 
 
-Documentation available at [Github Pages documentation website](https://phaakma.github.io/kapipy/)  
-
 ## Disclaimer  
 This is a hobby project and the modules are provided as-is on a best-effort basis and you assume all risk for using it.  
-The author has no affiliation with either Koordinates nor LINZ, Stats NZ or LRIS. As such, the underlying API's and services may change at any time without warning and break these modules. The author is not privvy to any inside knowledge or documentation beyond what is available online or by inspecting the payloads returned by the services.  
+The author has no affiliation with either Koordinates nor LINZ, Stats NZ or LRIS. As such, the underlying API's and services may change at any time without warning and break these modules.  
 
 This project does not cover the full spectrum of the Koordinates API and probably never will. It focuses currently on basic workflows such as connecting using an api key, getting references to datasets and downloading them.  
 
-The author is happy to take feedback and consider suggestions and code contributions as time allows. Preferred method for feedback is via the Github repository issues page.    
+Suggestions and code contributions can be made by submitting issues via the GitHub page.    
 
 ## Installation  
 
@@ -30,18 +28,9 @@ pip install kapipy
 Basic example:  
 ```python
 from kapipy.gis import GIS
-linz = GIS(name="linz", api_key="my-api-key")
+linz = GIS(name="linz", api_key="my-linz-api-key")
 rail_station_layer_id = "50318"
 itm = linz.content.get(rail_station_layer_id)
 data = itm.query()
 data.head()
 ```
-
-## Tests  
-Tests are written using pytest. To run tests using UV:  
-
-```bash
-uv run -m pytest --log-cli-level=INFO
-```
-
-There is currently very limited test coverage. Any live tests require a "LINZ_API_KEY" entry to exist in a .env file in the root project folder.  

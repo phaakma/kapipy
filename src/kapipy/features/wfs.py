@@ -48,7 +48,8 @@ def _fetch_single_page_data(url: str, headers: dict, params: dict, timeout=30) -
         dict: The JSON response from the WFS service for the page.
 
     Raises:
-        WfsDownloaderError: If a non-retryable HTTP error occurs or request times out.
+        BadRequest: If a 400 Bad Request is returned from the WFS service.
+        HTTPError: For other HTTP errors that should not be retried.
         requests.exceptions.RequestException: For other request issues that tenacity will handle.
     """
 
@@ -106,7 +107,8 @@ def download_wfs_data(
         dict: A GeoJSON FeatureCollection-like dictionary containing all fetched features.
 
     Raises:
-        WfsDownloaderError: If the API key or typeNames is missing, or if data fetching fails after all retries.
+        HTTPError: If the API key or typeNames is missing, or if data fetching fails after all retries.
+        BadRequest: If a 400 Bad Request is returned from the WFS service.
     """
 
     if not api_key:

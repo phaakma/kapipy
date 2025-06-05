@@ -124,7 +124,7 @@ class JobResult:
         return self._last_response.get("download_url")
 
     @property
-    def status(self) -> str:
+    def status(self) -> JobStatus:
         """
         Refreshes and returns the current job status.
 
@@ -175,6 +175,12 @@ class JobResult:
         return self._last_response.get("created_at", None)
 
     def to_dict(self) -> dict:
+        """
+        Returns the most recent job status response as a dictionary.
+
+        Returns:
+            dict: The most recent job status response.
+        """
         return self._last_response
 
     def __str__(self) -> str:
@@ -193,7 +199,12 @@ class JobResult:
         )
 
     def _refresh_sync(self) -> None:
-        """Refresh job status using synchronous HTTP via GIS."""
+        """
+        Refreshes the job status using synchronous HTTP via the GIS instance.
+
+        Returns:
+            None
+        """
         self._last_response = self._gis.get(self._job_url)
 
 

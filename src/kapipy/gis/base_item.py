@@ -30,6 +30,9 @@ class BaseItem:
         Parameters:
             gis (GIS): The GIS instance that this item belongs to.
             item_dict (dict): A dictionary containing the item's details, typically from an API response.
+
+        Returns:
+            None
         """
 
         self._gis = gis

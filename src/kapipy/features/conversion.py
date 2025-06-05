@@ -28,7 +28,7 @@ def map_field_type(field_type: str) -> str:
     return mapping.get(field_type.lower(), "esriFieldTypeString")  # default fallback
 
 
-def geojson_to_featureset(geojson, fields, wkid=4326):
+def geojson_to_featureset(geojson, fields, wkid=4326) -> "arcgis.features.FeatureSet":
     """
     Converts a GeoJSON FeatureCollection or list of features into an ArcGIS FeatureSet.
 
@@ -104,14 +104,15 @@ def geojson_to_gdf(
     Convert GeoJSON features to a GeoDataFrame with enforced data types.
 
     Parameters:
-        geojson (dict or list): Either a GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.
-        epsg (str or int): The EPSG code for the coordinate reference system (e.g., "4326" or 4326).
+        geojson (dict or list): A GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.
+        wkid (int): The EPSG code for the coordinate reference system (e.g., 4326).
         fields (list[dict], optional): A list of dictionaries specifying field names and their desired data types.
 
     Returns:
         gpd.GeoDataFrame: A GeoDataFrame with the specified CRS and column types.
 
     Raises:
+        ImportError: If geopandas is not installed.
         ValueError: If the geojson input is invalid.
     """
 
@@ -190,8 +191,8 @@ def geojson_to_sdf(
     Convert GeoJSON features to a Spatially Enabled DataFrame (SEDF) with enforced data types.
 
     Parameters:
-        geojson (dict or list): Either a GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.
-        epsg (str or int): The EPSG code for the coordinate reference system (e.g., "4326" or 4326).
+        geojson (dict or list): A GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.
+        wkid (int): The EPSG code for the coordinate reference system (e.g., 4326).
         fields (list[dict], optional): A list of dictionaries specifying field names and their desired data types.
 
     Returns:
@@ -227,8 +228,8 @@ def json_to_df(
     """
     Convert JSON features to a DataFrame with enforced data types.
 
-    Parameters:
-        json (dict or list): Either a JSON FeatureCollection (dict) or a list of JSON feature dicts.
+    Paramters:
+        json (dict or list): A JSON FeatureCollection (dict) or a list of JSON feature dicts.
         fields (list[dict], optional): A list of dictionaries specifying field names and their desired data types.
 
     Returns:
@@ -292,16 +293,16 @@ def sdf_or_gdf_to_single_polygon_geojson(
     df: Union["gpd.GeoDataFrame", "pd.DataFrame"],
 ) -> dict[str, Any] | None:
     """
-    Convert an sdf or gdf to a single GeoJSON Polygon geometry object.
+    Convert a GeoDataFrame or SEDF to a single GeoJSON Polygon geometry object.
 
     Parameters:
-        df (gpd.GeoDataFrame or pd.DataFrame): An sdf or gdf containing only Polygon geometries.
+        df (gpd.GeoDataFrame or arcgis.features.GeoAccessor): A GeoDataFrame or SEDF containing only Polygon geometries.
 
     Returns:
         dict: A GeoJSON Polygon geometry object.
 
     Raises:
-        ValueError: If the GeoDataFrame is empty or contains non-polygon geometries.
+        ValueError: If the DataFrame is empty or contains non-polygon geometries.
     """
 
     if df.empty:
@@ -339,7 +340,16 @@ def sdf_or_gdf_to_single_polygon_geojson(
 
 def sdf_or_gdf_to_bbox(df: Any) -> str:
     """
-    Convert an SEDF to a bounding box string in EPSG:4326.
+    Convert a GeoDataFrame or SEDF to a bounding box string in EPSG:4326.
+
+    Parameters:
+        df (gpd.GeoDataFrame or arcgis.features.GeoAccessor): A GeoDataFrame or SEDF.
+
+    Returns:
+        str: Bounding box string in the format "minx,miny,maxx,maxy,EPSG:4326".
+
+    Raises:
+        ValueError: If the DataFrame is empty or does not contain valid geometries.
     """
 
     if df.empty:
@@ -368,14 +378,15 @@ def sdf_or_gdf_to_bbox(df: Any) -> str:
 
 def get_data_type(obj: Any) -> str:
     """
-    Determines if the object is a string, a GeoDataFrame (gdf), or an ArcGIS SEDF (sdef).
+    Determines if the object is a string, a GeoDataFrame (gdf), or an ArcGIS SEDF (sdf).
 
     Parameters:
         obj: The object to check.
 
     Returns:
-        str: "str" if string, "gdf" if GeoDataFrame, "sdf" if ArcGIS SDF, or "unknown" if none match.
+        str: "str" if string, "gdf" if GeoDataFrame, "sdf" if ArcGIS SEDF, or "unknown" if none match.
     """
+
     # Check for string
     if isinstance(obj, str):
         return "str"
@@ -406,12 +417,12 @@ def get_data_type(obj: Any) -> str:
     return "unknown"
 
 
-def get_default_output_format():
+def get_default_output_format() -> str:
     """
     Return a default output format based on which packages are available.
-    If arcgis is installed, default to sdf.
-    Else if geopandas is installed, default to gdf.
-    Otherwise, default to json.
+
+    Returns:
+        str: "sdf" if arcgis is installed, "gdf" if geopandas is installed, otherwise "json".
     """
 
     if has_arcgis:

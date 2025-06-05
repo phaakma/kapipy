@@ -393,9 +393,6 @@ class TableItem(BaseItem):
         )
         return job_result
 
-    def __repr__(self) -> str:
-        return f"TableItem(id={self.id}, title={self.title}, type={self.type}, kind={self.kind})"
-        
 
     def __repr__(self) -> str:
         """
