@@ -310,15 +310,16 @@ def sdf_or_gdf_to_single_polygon_geojson(
 
     data_type = get_data_type(df)
     if data_type == "sdf":
-        if not df.spatial.geometry_type in ["polygon", "multipolygon"]:
-            raise ValueError("sdf must contain polygon geometries.")
-        if df.spatial.sr.wkid == 4326:
+        if not all(g.lower() == "polygon" for g in df.spatial.geometry_type):
+            raise ValueError("All geometries must be of type 'polygon'.")
+        if df.spatial.sr.wkid != 4326:
             df.spatial.project({"wkid": 4326})
-        geometries = sdf.spatial.geometry
+        geometries = df[df.spatial.name]
         shapes = [shape(geom) for geom in geometries]
         unioned = unary_union(shapes)
         # Convert the Shapely geometry to GeoJSON format
-        return mapping(unioned)
+        ext = mapping(unioned)
+        return ext
 
     elif data_type == "gdf":
         if not all(df.geometry.type == "Polygon"):
@@ -359,7 +360,7 @@ def sdf_or_gdf_to_bbox(df: Any) -> str:
     if data_type == "sdf":
         if not df.spatial.geometry_type in ["polygon", "multipolygon"]:
             raise ValueError("sdf must contain polygon geometries.")
-        if df.spatial.sr.wkid == 4326:
+        if df.spatial.sr.wkid != 4326:
             df.spatial.project({"wkid": 4326})
         return ",".join(map(str, df.spatial.full_extent))
 
@@ -376,7 +377,7 @@ def sdf_or_gdf_to_bbox(df: Any) -> str:
         return f"{bounds[0]},{bounds[1]},{bounds[2]},{bounds[3]},EPSG:4326"
 
 
-def get_data_type(obj: Any) -> str:
+def get_data_type(obj: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"]) -> str:
     """
     Determines if the object is a string, a GeoDataFrame (gdf), or an ArcGIS SEDF (sdf).
 
@@ -409,7 +410,7 @@ def get_data_type(obj: Any) -> str:
 
             # SEDF is a pandas.DataFrame with a _spatial accessor
             # pandas.core.frame.DataFrame
-            if isinstance(pd.DataFrame) and hasattr(obj, "spatial"):
+            if isinstance(obj, pd.DataFrame) and hasattr(obj, "spatial"):
                 return "sdf"
         except ImportError:
             pass

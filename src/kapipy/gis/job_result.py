@@ -133,10 +133,10 @@ class JobResult:
         """
 
         self._refresh_sync()
-        return JobStatus({
-            state: self._last_response.get("state"),
-            progress: self._last_response.get("progress", None),
-        })
+        return JobStatus(
+            state = self._last_response.get("state"),
+            progress = self._last_response.get("progress", None),
+        )
 
     @property
     def state(self) -> str:

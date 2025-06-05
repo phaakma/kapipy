@@ -36,12 +36,3 @@ itm = linz.content.get(rail_station_layer_id)
 data = itm.query()
 data.head()
 ```
-
-## Tests  
-Tests are written using pytest. To run tests using UV:  
-
-```bash
-uv run -m pytest --log-cli-level=INFO
-```
-
-There is currently very limited test coverage. Any live tests require a "LINZ_API_KEY" entry to exist in a .env file in the root project folder.  
