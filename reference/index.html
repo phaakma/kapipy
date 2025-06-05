@@ -11301,10 +11301,10 @@ attributes on the JobResult instance after a successful download.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_sync</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">JobStatus</span><span class="p">({</span>
-            <span class="n">state</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">),</span>
-            <span class="n">progress</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;progress&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">JobStatus</span><span class="p">(</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">),</span>
+            <span class="n">progress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;progress&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -13409,7 +13409,7 @@ detailed information about the downloaded file and its context.</p>
                 <code>obj</code>
             </td>
             <td>
-                  <code><span title="typing.Any">Any</span></code>
+                  <code><span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="geopandas.GeoDataFrame">GeoDataFrame</span>, <span title="pandas.DataFrame">DataFrame</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -13449,8 +13449,7 @@ detailed information about the downloaded file and its context.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\conversion.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">379</span>
-<span class="normal">380</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">380</span>
 <span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span>
@@ -13487,7 +13486,8 @@ detailed information about the downloaded file and its context.</p>
 <span class="normal">414</span>
 <span class="normal">415</span>
 <span class="normal">416</span>
-<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_data_type</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">417</span>
+<span class="normal">418</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_data_type</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;gpd.GeoDataFrame&quot;</span><span class="p">,</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines if the object is a string, a GeoDataFrame (gdf), or an ArcGIS SEDF (sdf).</span>
 
@@ -13520,7 +13520,7 @@ detailed information about the downloaded file and its context.</p>
 
             <span class="c1"># SEDF is a pandas.DataFrame with a _spatial accessor</span>
             <span class="c1"># pandas.core.frame.DataFrame</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;spatial&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;spatial&quot;</span><span class="p">):</span>
                 <span class="k">return</span> <span class="s2">&quot;sdf&quot;</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="k">pass</span>
@@ -13571,8 +13571,7 @@ detailed information about the downloaded file and its context.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\conversion.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">420</span>
-<span class="normal">421</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">421</span>
 <span class="normal">422</span>
 <span class="normal">423</span>
 <span class="normal">424</span>
@@ -13583,7 +13582,8 @@ detailed information about the downloaded file and its context.</p>
 <span class="normal">429</span>
 <span class="normal">430</span>
 <span class="normal">431</span>
-<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_default_output_format</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">432</span>
+<span class="normal">433</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_default_output_format</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a default output format based on which packages are available.</span>
 
@@ -13900,8 +13900,7 @@ fields (list[dict], optional): A list of dictionaries specifying field names and
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\conversion.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">341</span>
-<span class="normal">342</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">342</span>
 <span class="normal">343</span>
 <span class="normal">344</span>
 <span class="normal">345</span>
@@ -13935,7 +13934,8 @@ fields (list[dict], optional): A list of dictionaries specifying field names and
 <span class="normal">373</span>
 <span class="normal">374</span>
 <span class="normal">375</span>
-<span class="normal">376</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sdf_or_gdf_to_bbox</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">376</span>
+<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sdf_or_gdf_to_bbox</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a GeoDataFrame or SEDF to a bounding box string in EPSG:4326.</span>
 
@@ -13956,7 +13956,7 @@ fields (list[dict], optional): A list of dictionaries specifying field names and
     <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;sdf&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">df</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">geometry_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;polygon&quot;</span><span class="p">,</span> <span class="s2">&quot;multipolygon&quot;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sdf must contain polygon geometries.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">sr</span><span class="o">.</span><span class="n">wkid</span> <span class="o">==</span> <span class="mi">4326</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">sr</span><span class="o">.</span><span class="n">wkid</span> <span class="o">!=</span> <span class="mi">4326</span><span class="p">:</span>
             <span class="n">df</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">project</span><span class="p">({</span><span class="s2">&quot;wkid&quot;</span><span class="p">:</span> <span class="mi">4326</span><span class="p">})</span>
         <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">full_extent</span><span class="p">))</span>
 
@@ -14116,7 +14116,8 @@ fields (list[dict], optional): A list of dictionaries specifying field names and
 <span class="normal">335</span>
 <span class="normal">336</span>
 <span class="normal">337</span>
-<span class="normal">338</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sdf_or_gdf_to_single_polygon_geojson</span><span class="p">(</span>
+<span class="normal">338</span>
+<span class="normal">339</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sdf_or_gdf_to_single_polygon_geojson</span><span class="p">(</span>
     <span class="n">df</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;gpd.GeoDataFrame&quot;</span><span class="p">,</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -14137,15 +14138,16 @@ fields (list[dict], optional): A list of dictionaries specifying field names and
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="n">get_data_type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;sdf&quot;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">df</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">geometry_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;polygon&quot;</span><span class="p">,</span> <span class="s2">&quot;multipolygon&quot;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sdf must contain polygon geometries.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">sr</span><span class="o">.</span><span class="n">wkid</span> <span class="o">==</span> <span class="mi">4326</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;polygon&quot;</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">geometry_type</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All geometries must be of type &#39;polygon&#39;.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">sr</span><span class="o">.</span><span class="n">wkid</span> <span class="o">!=</span> <span class="mi">4326</span><span class="p">:</span>
             <span class="n">df</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">project</span><span class="p">({</span><span class="s2">&quot;wkid&quot;</span><span class="p">:</span> <span class="mi">4326</span><span class="p">})</span>
-        <span class="n">geometries</span> <span class="o">=</span> <span class="n">sdf</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">geometry</span>
+        <span class="n">geometries</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
         <span class="n">shapes</span> <span class="o">=</span> <span class="p">[</span><span class="n">shape</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span> <span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="n">geometries</span><span class="p">]</span>
         <span class="n">unioned</span> <span class="o">=</span> <span class="n">unary_union</span><span class="p">(</span><span class="n">shapes</span><span class="p">)</span>
         <span class="c1"># Convert the Shapely geometry to GeoJSON format</span>
-        <span class="k">return</span> <span class="n">mapping</span><span class="p">(</span><span class="n">unioned</span><span class="p">)</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">(</span><span class="n">unioned</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ext</span>
 
     <span class="k">elif</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;gdf&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;Polygon&quot;</span><span class="p">):</span>
