@@ -1,0 +1,32 @@
+site_name: kapipy
+repo_url: https://github.com/phaakma/kapipy
+site_url: https://phaakma.github.io/kapipy/
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.instant
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            filters:
+            - "!^_[^_]"
+            
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+watch:
+  - src\kapipy
+
+nav:
+  - Home: index.md
+  - Usage: usage.md
+  - API Reference: reference.md
