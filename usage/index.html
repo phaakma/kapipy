@@ -362,9 +362,42 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#connecting-to-the-linz-data-service" class="md-nav__link">
+  <a href="#installation-notes" class="md-nav__link">
     <span class="md-ellipsis">
-      Connecting to the LINZ Data Service
+      Installation Notes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation Notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#arcgis" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArcGIS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jupyter-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jupyter Notebooks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connecting-to-the-various-open-data-portals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connecting to the various open data portals
     </span>
   </a>
   
@@ -410,15 +443,6 @@
   <a href="#generate-an-export-with-extent-geometry" class="md-nav__link">
     <span class="md-ellipsis">
       Generate an export with extent geometry
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      Tests
     </span>
   </a>
   
@@ -481,9 +505,42 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#connecting-to-the-linz-data-service" class="md-nav__link">
+  <a href="#installation-notes" class="md-nav__link">
     <span class="md-ellipsis">
-      Connecting to the LINZ Data Service
+      Installation Notes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation Notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#arcgis" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArcGIS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jupyter-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jupyter Notebooks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connecting-to-the-various-open-data-portals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connecting to the various open data portals
     </span>
   </a>
   
@@ -534,15 +591,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      Tests
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -564,27 +612,38 @@
 
 <h1 id="usage-guide">Usage Guide<a class="headerlink" href="#usage-guide" title="Permanent link">&para;</a></h1>
 <p>This guide walks you through the main ways to use the <code>kapipy</code> package to query and download data from the LINZ Data Service via Koordinates.</p>
-<h2 id="connecting-to-the-linz-data-service">Connecting to the LINZ Data Service<a class="headerlink" href="#connecting-to-the-linz-data-service" title="Permanent link">&para;</a></h2>
+<h2 id="installation-notes">Installation Notes<a class="headerlink" href="#installation-notes" title="Permanent link">&para;</a></h2>
+<p>Kapipy is designed to use either GeoPandas or the ArcGIS API for Python, returning and reading data as either a GeoDataFrame or a Spatially Enabled DataFrame respectively.  Neither package is defined as a requirement of kapipy, as users may choose to use one over the other and may not want the other automatically installed.  </p>
+<p>This means you need to manually instally one of either <strong>geopandas</strong> or <strong>arcgis</strong> into your Python environment.</p>
+<h3 id="arcgis">ArcGIS<a class="headerlink" href="#arcgis" title="Permanent link">&para;</a></h3>
+<p>If you are an ArcGIS user, cloning the default conda environment from ArcGIS Pro or ArcGIS Server should be sufficient, and you just need to install kapipy. If you choose to start with a blank environment and do not intend to install arcpy, you may need to install the following:<br />
+- pyproj
+- shapely<br />
+- pyshp  </p>
+<h3 id="jupyter-notebooks">Jupyter Notebooks<a class="headerlink" href="#jupyter-notebooks" title="Permanent link">&para;</a></h3>
+<p>If you are starting with a clean Python environment and want to use Jupyter Notebooks (e.g. inside Visual Studio Code), then manually install these packages:<br />
+- ipykernel
+- ptyprocess
+- comm  </p>
+<h2 id="connecting-to-the-various-open-data-portals">Connecting to the various open data portals<a class="headerlink" href="#connecting-to-the-various-open-data-portals" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
-<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">)</span>
+
+<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
+<span class="n">statsnz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;statsnz&#39;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-stats-api-key&quot;</span><span class="p">)</span>
+<span class="n">lris</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;lris&#39;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-lris-api-key&quot;</span><span class="p">)</span>
 </code></pre></div>
 
 <h2 id="get-a-reference-to-an-item">Get a reference to an item<a class="headerlink" href="#get-a-reference-to-an-item" title="Permanent link">&para;</a></h2>
-<p>For this snippet to work, create a .env file in the project root folder and include a variable called 'LINZ_API_KEY'.  </p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span><span class="p">,</span> <span class="n">find_dotenv</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
-<span class="n">dotenv_path</span> <span class="o">=</span> <span class="n">find_dotenv</span><span class="p">()</span>
-<span class="n">load_dotenv</span><span class="p">(</span><span class="n">dotenv_path</span><span class="p">)</span>
-<span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;LINZ_API_KEY&#39;</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
 
 <span class="c1">#create gis object</span>
-<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">)</span>
+<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
 
 <span class="c1">#get item object</span>
 <span class="n">rail_station_layer_id</span> <span class="o">=</span> <span class="s2">&quot;50318&quot;</span> <span class="c1">#rail station 175 points</span>
 <span class="n">itm</span> <span class="o">=</span> <span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rail_station_layer_id</span><span class="p">)</span>
-<span class="c1">#print item title</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">itm</span><span class="p">)</span>
 </code></pre></div>
 
 <h2 id="query-an-item-using-wfs-endpoint">Query an item using WFS endpoint<a class="headerlink" href="#query-an-item-using-wfs-endpoint" title="Permanent link">&para;</a></h2>
@@ -592,23 +651,24 @@
 <div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
 </code></pre></div>
 
-<p>Get first 5 records. Could be any records as there doesn't appear to be a sort argument, so probably only useful for data exploration.  </p>
+<p>Get first 5 records.  </p>
 <div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </code></pre></div>
 
-<p>Data is returned as a geopandas GeoDataFrame, typed by the fields provided by the API.  </p>
+<p>Data is returned as either a geopandas GeoDataFrame or an ArcGIS Spatially Enabled DataFrame, typed by the fields provided by the API.  </p>
 <div class="codehilite"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtypes</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </code></pre></div>
 
 <h2 id="get-a-changeset-using-wfs-endpoint">Get a changeset using WFS endpoint<a class="headerlink" href="#get-a-changeset-using-wfs-endpoint" title="Permanent link">&para;</a></h2>
-<p>Also returned as a GeoDataFrame.</p>
-<div class="codehilite"><pre><span></span><code><span class="n">changeset</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">get_changeset</span><span class="p">(</span><span class="n">from_time</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00Z&quot;</span><span class="p">)</span>
+<p>Also returned as a DataFrame.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">changeset</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">get_changeset</span><span class="p">(</span><span class="n">from_time</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00Z&quot;</span><span class="p">,</span> <span class="n">wkid</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">changeset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
 </code></pre></div>
 
 <h2 id="generate-an-export">Generate an export<a class="headerlink" href="#generate-an-export" title="Permanent link">&para;</a></h2>
-<div class="codehilite"><pre><span></span><code><span class="n">job</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:2193&quot;</span><span class="p">,)</span>
+<p>It is recommended to always specify the wkid.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">job</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">wkid</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
 </code></pre></div>
 
@@ -617,46 +677,12 @@
 </code></pre></div>
 
 <h2 id="generate-an-export-with-extent-geometry">Generate an export with extent geometry<a class="headerlink" href="#generate-an-export-with-extent-geometry" title="Permanent link">&para;</a></h2>
-<div class="codehilite"><pre><span></span><code><span class="n">waikato_polygon</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span>
-          <span class="p">[</span>
-            <span class="p">[</span>
-              <span class="mf">174.30400216373914</span><span class="p">,</span>
-              <span class="o">-</span><span class="mf">36.87399457472202</span>
-            <span class="p">],</span>
-            <span class="p">[</span>
-              <span class="mf">174.30400216373914</span><span class="p">,</span>
-              <span class="o">-</span><span class="mf">38.83764306196984</span>
-            <span class="p">],</span>
-            <span class="p">[</span>
-              <span class="mf">176.83017911725346</span><span class="p">,</span>
-              <span class="o">-</span><span class="mf">38.83764306196984</span>
-            <span class="p">],</span>
-            <span class="p">[</span>
-              <span class="mf">176.83017911725346</span><span class="p">,</span>
-              <span class="o">-</span><span class="mf">36.87399457472202</span>
-            <span class="p">],</span>
-            <span class="p">[</span>
-              <span class="mf">174.30400216373914</span><span class="p">,</span>
-              <span class="o">-</span><span class="mf">36.87399457472202</span>
-            <span class="p">]</span>
-          <span class="p">]</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Polygon&quot;</span>
-      <span class="p">}</span>
+<p>The <em>extent</em> argument can be passed in as a GeoDataFrame or a Spatially Enabled DataFrame.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">waikato_polygon</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;../examples/waikato.json&#39;</span><span class="p">)</span>
+<span class="n">matamata_gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;../examples/matamata_piako.shp&quot;</span><span class="p">)</span>
 
-<span class="n">job</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:2193&quot;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">waikato_polygon</span><span class="p">,)</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">wkid</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">waikato_polygon</span><span class="p">,)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
-</code></pre></div>
-
-<h2 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h2>
-<p>To run all tests:  </p>
-<p>To run all tests with logging. Leave off the log parameter if not wanting logging.  </p>
-<div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>--log-cli-level<span class="o">=</span>INFO
-</code></pre></div>
-
-<p>To run a specific test, replace the relevant file name and test function.  </p>
-<div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/test_simple.py::test_validate_layer_export_params<span class="w"> </span>--log-cli-level<span class="o">=</span>INFO
 </code></pre></div>
 
 

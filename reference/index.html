@@ -409,6 +409,24 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#kapipy.gis.GIS.__repr__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __repr__
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kapipy.gis.GIS.__str__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __str__
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#kapipy.gis.GIS.get" class="md-nav__link">
     <span class="md-ellipsis">
       get
@@ -952,6 +970,15 @@
   <a href="#kapipy.gis.job_result.JobResult.output" class="md-nav__link">
     <span class="md-ellipsis">
       output
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kapipy.gis.job_result.JobResult.to_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      to_dict
     </span>
   </a>
   
@@ -1259,6 +1286,24 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#kapipy.gis.GIS.__repr__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __repr__
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kapipy.gis.GIS.__str__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __str__
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#kapipy.gis.GIS.get" class="md-nav__link">
     <span class="md-ellipsis">
       get
@@ -1802,6 +1847,15 @@
   <a href="#kapipy.gis.job_result.JobResult.output" class="md-nav__link">
     <span class="md-ellipsis">
       output
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kapipy.gis.job_result.JobResult.to_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      to_dict
     </span>
   </a>
   
@@ -2312,7 +2366,28 @@ Used as the main entry point for interacting with Koordinates-hosted data.</p>
 <span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
-<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GIS</span><span class="p">:</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GIS</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Client for connecting to a Koordinates server.</span>
 
@@ -2456,6 +2531,27 @@ Used as the main entry point for interacting with Koordinates-hosted data.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_content_manager</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wfs_manager</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;KServer instance reset.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an unambiguous string representation of the GIS instance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: String representation of the GIS instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;GIS(name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">, url=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="si">!r}</span><span class="s2">, api_key=</span><span class="si">{</span><span class="s1">&#39;***&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;api_version=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_version</span><span class="si">!r}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a user-friendly string representation of the GIS instance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: User-friendly string representation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;GIS: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;Custom&#39;</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2"> (API </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_version</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2703,6 +2799,132 @@ Used as the main entry point for interacting with Koordinates-hosted data.</p>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;API key must be provided.&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;GIS initialized with URL: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="kapipy.gis.GIS.__repr__" class="doc doc-heading">
+            <code class=" language-python"><span class="fm">__repr__</span><span class="p">()</span></code>
+
+<a href="#kapipy.gis.GIS.__repr__" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns an unambiguous string representation of the GIS instance.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>str</code></td>            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>String representation of the GIS instance.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src\kapipy\gis\__init__.py</code></summary>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an unambiguous string representation of the GIS instance.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: String representation of the GIS instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;GIS(name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">, url=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="si">!r}</span><span class="s2">, api_key=</span><span class="si">{</span><span class="s1">&#39;***&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">, &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;api_version=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_version</span><span class="si">!r}</span><span class="s2">)&quot;</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="kapipy.gis.GIS.__str__" class="doc doc-heading">
+            <code class=" language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+<a href="#kapipy.gis.GIS.__str__" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns a user-friendly string representation of the GIS instance.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>str</code></td>            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>User-friendly string representation.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src\kapipy\gis\__init__.py</code></summary>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a user-friendly string representation of the GIS instance.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: User-friendly string representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;GIS: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;Custom&#39;</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2"> (API </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_version</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3178,7 +3400,10 @@ It stores basic metadata and provides dynamic attribute access.</p>
 <span class="normal">77</span>
 <span class="normal">78</span>
 <span class="normal">79</span>
-<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseItem</span><span class="p">:</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseItem</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for representing an item in the Koordinates system.</span>
 
@@ -3204,6 +3429,9 @@ It stores basic metadata and provides dynamic attribute access.</p>
 <span class="sd">        Parameters:</span>
 <span class="sd">            gis (GIS): The GIS instance that this item belongs to.</span>
 <span class="sd">            item_dict (dict): A dictionary containing the item&#39;s details, typically from an API response.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_gis</span> <span class="o">=</span> <span class="n">gis</span>
@@ -3360,10 +3588,7 @@ It stores basic metadata and provides dynamic attribute access.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\gis\base_item.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
@@ -3377,7 +3602,10 @@ It stores basic metadata and provides dynamic attribute access.</p>
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides dynamic attribute access for the item.</span>
 
@@ -3462,6 +3690,29 @@ It stores basic metadata and provides dynamic attribute access.</p>
     </table>
 
 
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>None</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
             <details class="quote">
               <summary>Source code in <code>src\kapipy\gis\base_item.py</code></summary>
               <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
@@ -3481,13 +3732,19 @@ It stores basic metadata and provides dynamic attribute access.</p>
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
-<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gis</span><span class="p">:</span> <span class="s2">&quot;GIS&quot;</span><span class="p">,</span> <span class="n">item_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gis</span><span class="p">:</span> <span class="s2">&quot;GIS&quot;</span><span class="p">,</span> <span class="n">item_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initializes the BaseItem instance from a dictionary returned from the API.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        gis (GIS): The GIS instance that this item belongs to.</span>
 <span class="sd">        item_dict (dict): A dictionary containing the item&#39;s details, typically from an API response.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_gis</span> <span class="o">=</span> <span class="n">gis</span>
@@ -3544,14 +3801,14 @@ It stores basic metadata and provides dynamic attribute access.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\gis\base_item.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
 <span class="normal">70</span>
-<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an unambiguous string representation of the BaseItem instance.</span>
 
@@ -3604,14 +3861,14 @@ It stores basic metadata and provides dynamic attribute access.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\gis\base_item.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">76</span>
 <span class="normal">77</span>
 <span class="normal">78</span>
 <span class="normal">79</span>
-<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a user-friendly string representation of the BaseItem instance.</span>
 
@@ -4174,10 +4431,7 @@ querying records, exporting data, and retrieving changesets.</p>
 <span class="normal">411</span>
 <span class="normal">412</span>
 <span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TableItem</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
+<span class="normal">414</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TableItem</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a table dataset item in the Koordinates system.</span>
 
@@ -4553,9 +4807,6 @@ querying records, exporting data, and retrieving changesets.</p>
             <span class="sa">f</span><span class="s2">&quot;Export job created for item with id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, job id: </span><span class="si">{</span><span class="n">job_result</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">job_result</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;TableItem(id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, title=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">, type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">, kind=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2">)&quot;</span>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -4994,14 +5245,14 @@ querying records, exporting data, and retrieving changesets.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\table_item.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">400</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
 <span class="normal">401</span>
 <span class="normal">402</span>
 <span class="normal">403</span>
-<span class="normal">404</span>
-<span class="normal">405</span>
-<span class="normal">406</span>
-<span class="normal">407</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">404</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an unambiguous string representation of the TableItem instance.</span>
 
@@ -5054,14 +5305,14 @@ querying records, exporting data, and retrieving changesets.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\table_item.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">410</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
 <span class="normal">411</span>
 <span class="normal">412</span>
 <span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">414</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a user-friendly string representation of the TableItem instance.</span>
 
@@ -6936,7 +7187,13 @@ querying features, exporting data, and retrieving changesets.</p>
 <span class="normal">558</span>
 <span class="normal">559</span>
 <span class="normal">560</span>
-<span class="normal">561</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VectorItem</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VectorItem</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a vector dataset item in the Koordinates system.</span>
 
@@ -7091,9 +7348,9 @@ querying features, exporting data, and retrieving changesets.</p>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            cql_filter (str, optional): The CQL filter to apply to the query.</span>
-<span class="sd">            srsName (str, optional): The spatial reference system name to use for the query.</span>
-<span class="sd">            bbox (str or gpd.GeoDataFrame, optional): The bounding box to apply to the query.</span>
-<span class="sd">                If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.</span>
+<span class="sd">            wkid (int, optional): The spatial reference system code to use for the query.</span>
+<span class="sd">            bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the query.</span>
+<span class="sd">                If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.</span>
 <span class="sd">            **kwargs: Additional parameters for the WFS query.</span>
 
 <span class="sd">        Returns:</span>
@@ -7127,22 +7384,22 @@ querying features, exporting data, and retrieving changesets.</p>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;gpd.GeoDataFrame&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Executes a WFS query on the item and returns the result as a GeoDataFrame.</span>
-<span class="sd">        Only works if geopandas is installed.</span>
+<span class="sd">        Executes a WFS query on the item and returns the result as a GeoDataFrame, SEDF, or JSON.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            cql_filter (str, optional): The CQL filter to apply to the query.</span>
-<span class="sd">            srsName (str, optional): The spatial reference system name to use for the query.</span>
-<span class="sd">            bbox (str or gpd.GeoDataFrame, optional): The bounding box to apply to the query.</span>
-<span class="sd">                If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.</span>
-<span class="sd">            output_format (sdef or gdf or json)</span>
+<span class="sd">            wkid (int, optional): The spatial reference system code to use for the query.</span>
+<span class="sd">            bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the query.</span>
+<span class="sd">                If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.</span>
+<span class="sd">            output_format (str, optional): The output format: &#39;gdf&#39;, &#39;sdf&#39;, or &#39;json&#39;. Defaults to the best available.</span>
 <span class="sd">            **kwargs: Additional parameters for the WFS query.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            gpd.GeoDataFrame: The result of the WFS query as a GeoDataFrame.</span>
+<span class="sd">            gpd.GeoDataFrame or arcgis.features.GeoAccessor or dict: The result of the WFS query as a GeoDataFrame, SEDF, or JSON.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ImportError if geopandas is not installed.</span>
+<span class="sd">            ImportError: If the requested output format requires a package that is not installed.</span>
+<span class="sd">            ValueError: If the output format is unknown.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">output_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7233,18 +7490,24 @@ querying features, exporting data, and retrieving changesets.</p>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;gpd.GeoDataFrame&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieves a changeset for the item and returns it as a GeoDataFrame.</span>
+<span class="sd">        Retrieves a changeset for the item and returns it as a GeoDataFrame, SEDF, or JSON.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            from_time (str): The start time for the changeset query, ISO format (e.g., &quot;2015-05-15T04:25:25.334974&quot;).</span>
 <span class="sd">            to_time (str, optional): The end time for the changeset query, ISO format. If not provided, the current time is used.</span>
+<span class="sd">            wkid (int, optional): The spatial reference system code to use for the query.</span>
 <span class="sd">            cql_filter (str, optional): The CQL filter to apply to the changeset query.</span>
-<span class="sd">            bbox (str or gpd.GeoDataFrame, optional): The bounding box to apply to the changeset query.</span>
-<span class="sd">                If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.</span>
+<span class="sd">            bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the changeset query.</span>
+<span class="sd">                If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.</span>
+<span class="sd">            output_format (str, optional): The output format: &#39;gdf&#39;, &#39;sdf&#39;, or &#39;json&#39;. Defaults to the best available.</span>
 <span class="sd">            **kwargs: Additional parameters for the WFS query.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            gpd.GeoDataFrame: The changeset data as a GeoDataFrame.</span>
+<span class="sd">            gpd.GeoDataFrame or arcgis.features.GeoAccessor or dict: The changeset data as a GeoDataFrame, SEDF, or JSON.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ImportError: If the requested output format requires a package that is not installed.</span>
+<span class="sd">            ValueError: If the output format is unknown.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">wkid</span> <span class="o">=</span> <span class="n">wkid</span> <span class="k">if</span> <span class="n">wkid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsg</span>
@@ -7390,8 +7653,8 @@ querying features, exporting data, and retrieving changesets.</p>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            export_format (str): The format to export the item in.</span>
-<span class="sd">            crs (str, optional): The coordinate reference system to use for the export.</span>
-<span class="sd">            extent (dict or gpd.GeoDataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary or a GeoDataFrame.</span>
+<span class="sd">            wkid (int, optional): The coordinate reference system code to use for the export.</span>
+<span class="sd">            extent (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.</span>
 <span class="sd">            poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.</span>
 <span class="sd">            timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).</span>
 <span class="sd">            **kwargs: Additional parameters for the export request.</span>
@@ -8023,14 +8286,14 @@ querying features, exporting data, and retrieving changesets.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\vector_item.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">545</span>
-<span class="normal">546</span>
-<span class="normal">547</span>
-<span class="normal">548</span>
-<span class="normal">549</span>
-<span class="normal">550</span>
-<span class="normal">551</span>
-<span class="normal">552</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an unambiguous string representation of the VectorItem instance.</span>
 
@@ -8083,14 +8346,14 @@ querying features, exporting data, and retrieving changesets.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\vector_item.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span>
-<span class="normal">557</span>
-<span class="normal">558</span>
-<span class="normal">559</span>
-<span class="normal">560</span>
-<span class="normal">561</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a user-friendly string representation of the VectorItem instance.</span>
 
@@ -8115,7 +8378,7 @@ querying features, exporting data, and retrieving changesets.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Retrieves a changeset for the item and returns it as a GeoDataFrame.</p>
+        <p>Retrieves a changeset for the item and returns it as a GeoDataFrame, SEDF, or JSON.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -8163,6 +8426,22 @@ querying features, exporting data, and retrieving changesets.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
+                <code>wkid</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The spatial reference system code to use for the query.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
                 <code>cql_filter</code>
             </td>
             <td>
@@ -8182,12 +8461,28 @@ querying features, exporting data, and retrieving changesets.</p>
                 <code>bbox</code>
             </td>
             <td>
-                  <code><span title="str">str</span> or <span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+                  <code><span title="str">str</span> or <span title="geopandas.GeoDataFrame">GeoDataFrame</span> or <span title="pd.DataFrame">DataFrame</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>The bounding box to apply to the changeset query.
-If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.</p>
+If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>output_format</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The output format: 'gdf', 'sdf', or 'json'. Defaults to the best available.</p>
               </div>
             </td>
             <td>
@@ -8229,7 +8524,40 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
             </td>
             <td>
               <div class="doc-md-description">
-                <p>gpd.GeoDataFrame: The changeset data as a GeoDataFrame.</p>
+                <p>gpd.GeoDataFrame or arcgis.features.GeoAccessor or dict: The changeset data as a GeoDataFrame, SEDF, or JSON.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ImportError">ImportError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the requested output format requires a package that is not installed.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the output format is unknown.</p>
               </div>
             </td>
           </tr>
@@ -8285,7 +8613,13 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
 <span class="normal">361</span>
 <span class="normal">362</span>
 <span class="normal">363</span>
-<span class="normal">364</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">changeset</span><span class="p">(</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">changeset</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">from_time</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">to_time</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -8296,18 +8630,24 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;gpd.GeoDataFrame&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Retrieves a changeset for the item and returns it as a GeoDataFrame.</span>
+<span class="sd">    Retrieves a changeset for the item and returns it as a GeoDataFrame, SEDF, or JSON.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        from_time (str): The start time for the changeset query, ISO format (e.g., &quot;2015-05-15T04:25:25.334974&quot;).</span>
 <span class="sd">        to_time (str, optional): The end time for the changeset query, ISO format. If not provided, the current time is used.</span>
+<span class="sd">        wkid (int, optional): The spatial reference system code to use for the query.</span>
 <span class="sd">        cql_filter (str, optional): The CQL filter to apply to the changeset query.</span>
-<span class="sd">        bbox (str or gpd.GeoDataFrame, optional): The bounding box to apply to the changeset query.</span>
-<span class="sd">            If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.</span>
+<span class="sd">        bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the changeset query.</span>
+<span class="sd">            If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.</span>
+<span class="sd">        output_format (str, optional): The output format: &#39;gdf&#39;, &#39;sdf&#39;, or &#39;json&#39;. Defaults to the best available.</span>
 <span class="sd">        **kwargs: Additional parameters for the WFS query.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        gpd.GeoDataFrame: The changeset data as a GeoDataFrame.</span>
+<span class="sd">        gpd.GeoDataFrame or arcgis.features.GeoAccessor or dict: The changeset data as a GeoDataFrame, SEDF, or JSON.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If the requested output format requires a package that is not installed.</span>
+<span class="sd">        ValueError: If the output format is unknown.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">wkid</span> <span class="o">=</span> <span class="n">wkid</span> <span class="k">if</span> <span class="n">wkid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsg</span>
@@ -8652,18 +8992,18 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>crs</code>
+                <code>wkid</code>
             </td>
             <td>
-                  <code><span title="str">str</span></code>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The coordinate reference system to use for the export.</p>
+                <p>The coordinate reference system code to use for the export.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -8671,11 +9011,11 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
                 <code>extent</code>
             </td>
             <td>
-                  <code><span title="dict">dict</span> or <span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+                  <code><span title="dict">dict</span> or <span title="geopandas.GeoDataFrame">GeoDataFrame</span> or <span title="pd.DataFrame">DataFrame</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The extent to use for the export. Should be a GeoJSON dictionary or a GeoDataFrame.</p>
+                <p>The extent to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.</p>
               </div>
             </td>
             <td>
@@ -8782,13 +9122,7 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\vector_item.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">472</span>
-<span class="normal">473</span>
-<span class="normal">474</span>
-<span class="normal">475</span>
-<span class="normal">476</span>
-<span class="normal">477</span>
-<span class="normal">478</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">478</span>
 <span class="normal">479</span>
 <span class="normal">480</span>
 <span class="normal">481</span>
@@ -8853,7 +9187,13 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
 <span class="normal">540</span>
 <span class="normal">541</span>
 <span class="normal">542</span>
-<span class="normal">543</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">export_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">wkid</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -8867,8 +9207,8 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        export_format (str): The format to export the item in.</span>
-<span class="sd">        crs (str, optional): The coordinate reference system to use for the export.</span>
-<span class="sd">        extent (dict or gpd.GeoDataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary or a GeoDataFrame.</span>
+<span class="sd">        wkid (int, optional): The coordinate reference system code to use for the export.</span>
+<span class="sd">        extent (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.</span>
 <span class="sd">        poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.</span>
 <span class="sd">        timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).</span>
 <span class="sd">        **kwargs: Additional parameters for the export request.</span>
@@ -9006,8 +9346,7 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
 
     <div class="doc doc-contents ">
 
-        <p>Executes a WFS query on the item and returns the result as a GeoDataFrame.
-Only works if geopandas is installed.</p>
+        <p>Executes a WFS query on the item and returns the result as a GeoDataFrame, SEDF, or JSON.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -9039,18 +9378,18 @@ Only works if geopandas is installed.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>srsName</code>
+                <code>wkid</code>
             </td>
             <td>
-                  <code><span title="str">str</span></code>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The spatial reference system name to use for the query.</p>
+                <p>The spatial reference system code to use for the query.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -9058,12 +9397,28 @@ Only works if geopandas is installed.</p>
                 <code>bbox</code>
             </td>
             <td>
-                  <code><span title="str">str</span> or <span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+                  <code><span title="str">str</span> or <span title="geopandas.GeoDataFrame">GeoDataFrame</span> or <span title="pd.DataFrame">DataFrame</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>The bounding box to apply to the query.
-If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.</p>
+If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>output_format</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The output format: 'gdf', 'sdf', or 'json'. Defaults to the best available.</p>
               </div>
             </td>
             <td>
@@ -9105,7 +9460,40 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
             </td>
             <td>
               <div class="doc-md-description">
-                <p>gpd.GeoDataFrame: The result of the WFS query as a GeoDataFrame.</p>
+                <p>gpd.GeoDataFrame or arcgis.features.GeoAccessor or dict: The result of the WFS query as a GeoDataFrame, SEDF, or JSON.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ImportError">ImportError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the requested output format requires a package that is not installed.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the output format is unknown.</p>
               </div>
             </td>
           </tr>
@@ -9170,22 +9558,22 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;gpd.GeoDataFrame&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Executes a WFS query on the item and returns the result as a GeoDataFrame.</span>
-<span class="sd">    Only works if geopandas is installed.</span>
+<span class="sd">    Executes a WFS query on the item and returns the result as a GeoDataFrame, SEDF, or JSON.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        cql_filter (str, optional): The CQL filter to apply to the query.</span>
-<span class="sd">        srsName (str, optional): The spatial reference system name to use for the query.</span>
-<span class="sd">        bbox (str or gpd.GeoDataFrame, optional): The bounding box to apply to the query.</span>
-<span class="sd">            If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.</span>
-<span class="sd">        output_format (sdef or gdf or json)</span>
+<span class="sd">        wkid (int, optional): The spatial reference system code to use for the query.</span>
+<span class="sd">        bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the query.</span>
+<span class="sd">            If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.</span>
+<span class="sd">        output_format (str, optional): The output format: &#39;gdf&#39;, &#39;sdf&#39;, or &#39;json&#39;. Defaults to the best available.</span>
 <span class="sd">        **kwargs: Additional parameters for the WFS query.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        gpd.GeoDataFrame: The result of the WFS query as a GeoDataFrame.</span>
+<span class="sd">        gpd.GeoDataFrame or arcgis.features.GeoAccessor or dict: The result of the WFS query as a GeoDataFrame, SEDF, or JSON.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        ImportError if geopandas is not installed.</span>
+<span class="sd">        ImportError: If the requested output format requires a package that is not installed.</span>
+<span class="sd">        ValueError: If the output format is unknown.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">output_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -9257,18 +9645,18 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>srsName</code>
+                <code>wkid</code>
             </td>
             <td>
-                  <code><span title="str">str</span></code>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The spatial reference system name to use for the query.</p>
+                <p>The spatial reference system code to use for the query.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -9276,12 +9664,12 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
                 <code>bbox</code>
             </td>
             <td>
-                  <code><span title="str">str</span> or <span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>
+                  <code><span title="str">str</span> or <span title="geopandas.GeoDataFrame">GeoDataFrame</span> or <span title="pd.DataFrame">DataFrame</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>The bounding box to apply to the query.
-If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.</p>
+If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.</p>
               </div>
             </td>
             <td>
@@ -9382,9 +9770,9 @@ If a GeoDataFrame is provided, it will be converted to a bounding box string in 
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        cql_filter (str, optional): The CQL filter to apply to the query.</span>
-<span class="sd">        srsName (str, optional): The spatial reference system name to use for the query.</span>
-<span class="sd">        bbox (str or gpd.GeoDataFrame, optional): The bounding box to apply to the query.</span>
-<span class="sd">            If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.</span>
+<span class="sd">        wkid (int, optional): The spatial reference system code to use for the query.</span>
+<span class="sd">        bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the query.</span>
+<span class="sd">            If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.</span>
 <span class="sd">        **kwargs: Additional parameters for the WFS query.</span>
 
 <span class="sd">    Returns:</span>
@@ -9431,15 +9819,15 @@ This is useful for refreshing the item state.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\vector_item.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">390</span>
 <span class="normal">391</span>
-<span class="normal">392</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Resets the VectorItem instance, clearing cached properties.</span>
 <span class="sd">    This is useful for refreshing the item state.</span>
@@ -9687,7 +10075,7 @@ based on their IDs or URLs.</p>
 <span class="sd">            id (str): The ID of the content to retrieve.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            VectorItem or TableItem: The instantiated item, depending on its kind.</span>
+<span class="sd">            VectorItem or TableItem or None: The instantiated item, depending on its kind, or None if not found.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            BadRequest: If the content is not found or the request is invalid.</span>
@@ -9737,12 +10125,12 @@ based on their IDs or URLs.</p>
 <span class="sd">        it pauses polling and downloads that file, then resumes polling the remainder.</span>
 
 <span class="sd">        Parameters:</span>
-<span class="sd">            jobs (list[JobResults]): The list of job result objects to download.</span>
+<span class="sd">            jobs (list[JobResult]): The list of job result objects to download.</span>
 <span class="sd">            folder (str): The output folder where files will be saved.</span>
 <span class="sd">            poll_interval (int, optional): The interval in seconds to poll the jobs. Default is 10.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            list[JobResults]: The list of job result objects after download.</span>
+<span class="sd">            list[JobResult]: The list of job result objects after download.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">pending_jobs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
@@ -10015,7 +10403,7 @@ it pauses polling and downloads that file, then resumes polling the remainder.</
                 <code>jobs</code>
             </td>
             <td>
-                  <code><span title="list">list</span>[<span title="JobResults">JobResults</span>]</code>
+                  <code><span title="list">list</span>[<span title="JobResult">JobResult</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10077,7 +10465,7 @@ it pauses polling and downloads that file, then resumes polling the remainder.</
             </td>
             <td>
               <div class="doc-md-description">
-                <p>list[JobResults]: The list of job result objects after download.</p>
+                <p>list[JobResult]: The list of job result objects after download.</p>
               </div>
             </td>
           </tr>
@@ -10131,12 +10519,12 @@ it pauses polling and downloads that file, then resumes polling the remainder.</
 <span class="sd">    it pauses polling and downloads that file, then resumes polling the remainder.</span>
 
 <span class="sd">    Parameters:</span>
-<span class="sd">        jobs (list[JobResults]): The list of job result objects to download.</span>
+<span class="sd">        jobs (list[JobResult]): The list of job result objects to download.</span>
 <span class="sd">        folder (str): The output folder where files will be saved.</span>
 <span class="sd">        poll_interval (int, optional): The interval in seconds to poll the jobs. Default is 10.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        list[JobResults]: The list of job result objects after download.</span>
+<span class="sd">        list[JobResult]: The list of job result objects after download.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">pending_jobs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
@@ -10222,7 +10610,7 @@ it pauses polling and downloads that file, then resumes polling the remainder.</
             </td>
             <td>
               <div class="doc-md-description">
-                <p>VectorItem or TableItem: The instantiated item, depending on its kind.</p>
+                <p>VectorItem or TableItem or None: The instantiated item, depending on its kind, or None if not found.</p>
               </div>
             </td>
           </tr>
@@ -10329,7 +10717,7 @@ it pauses polling and downloads that file, then resumes polling the remainder.</
 <span class="sd">        id (str): The ID of the content to retrieve.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        VectorItem or TableItem: The instantiated item, depending on its kind.</span>
+<span class="sd">        VectorItem or TableItem or None: The instantiated item, depending on its kind, or None if not found.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        BadRequest: If the content is not found or the request is invalid.</span>
@@ -10825,7 +11213,18 @@ attributes on the JobResult instance after a successful download.</p>
 <span class="normal">298</span>
 <span class="normal">299</span>
 <span class="normal">300</span>
-<span class="normal">301</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">JobResult</span><span class="p">:</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">JobResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents the result of an asynchronous export or processing job.</span>
 
@@ -10893,7 +11292,7 @@ attributes on the JobResult instance after a successful download.</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;download_url&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobStatus</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Refreshes and returns the current job status.</span>
 
@@ -10944,6 +11343,12 @@ attributes on the JobResult instance after a successful download.</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the most recent job status response as a dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The most recent job status response.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -10962,7 +11367,12 @@ attributes on the JobResult instance after a successful download.</p>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_refresh_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Refresh job status using synchronous HTTP via GIS.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Refreshes the job status using synchronous HTTP via the GIS instance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gis</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_job_url</span><span class="p">)</span>
 
 
@@ -11268,7 +11678,7 @@ attributes on the JobResult instance after a successful download.</p>
       <tbody>
           <tr class="doc-section-item">
 <td><code>JobStatus</code></td>            <td>
-                  <code><span title="str">str</span></code>
+                  <code><span title="kapipy.gis.job_result.JobStatus">JobStatus</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -11472,20 +11882,20 @@ attributes on the JobResult instance after a successful download.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\gis\job_result.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">186</span>
 <span class="normal">187</span>
 <span class="normal">188</span>
 <span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
-<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a user-friendly string representation of the JobResult.</span>
 
@@ -11614,18 +12024,7 @@ attributes on the JobResult instance after a successful download.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\gis\job_result.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
@@ -11680,7 +12079,18 @@ attributes on the JobResult instance after a successful download.</p>
 <span class="normal">298</span>
 <span class="normal">299</span>
 <span class="normal">300</span>
-<span class="normal">301</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DownloadResult</span><span class="p">:</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DownloadResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Waits for the job to finish, then downloads the file synchronously.</span>
 
@@ -11825,18 +12235,7 @@ attributes on the JobResult instance after a successful download.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\gis\job_result.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span>
@@ -11857,7 +12256,18 @@ attributes on the JobResult instance after a successful download.</p>
 <span class="normal">229</span>
 <span class="normal">230</span>
 <span class="normal">231</span>
-<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">output</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">output</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Blocks until the job completes, then returns the final job response.</span>
 
@@ -11889,6 +12299,66 @@ attributes on the JobResult instance after a successful download.</p>
             <span class="sa">f</span><span class="s2">&quot;Export job </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2"> failed with state: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="kapipy.gis.job_result.JobResult.to_dict" class="doc doc-heading">
+            <code class=" language-python"><span class="n">to_dict</span><span class="p">()</span></code>
+
+<a href="#kapipy.gis.job_result.JobResult.to_dict" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns the most recent job status response as a dictionary.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>dict</code></td>            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The most recent job status response.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src\kapipy\gis\job_result.py</code></summary>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the most recent job status response as a dictionary.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The most recent job status response.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_response</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -12232,6 +12702,7 @@ detailed information about the downloaded file and its context.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
+                  <code><span title="arcgis.features.FeatureSet">FeatureSet</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -12310,7 +12781,7 @@ detailed information about the downloaded file and its context.</p>
 <span class="normal">93</span>
 <span class="normal">94</span>
 <span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">geojson_to_featureset</span><span class="p">(</span><span class="n">geojson</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">wkid</span><span class="o">=</span><span class="mi">4326</span><span class="p">):</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">geojson_to_featureset</span><span class="p">(</span><span class="n">geojson</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">wkid</span><span class="o">=</span><span class="mi">4326</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;arcgis.features.FeatureSet&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a GeoJSON FeatureCollection or list of features into an ArcGIS FeatureSet.</span>
 
@@ -12416,7 +12887,7 @@ detailed information about the downloaded file and its context.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Either a GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.</p>
+                <p>A GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.</p>
               </div>
             </td>
             <td>
@@ -12425,14 +12896,14 @@ detailed information about the downloaded file and its context.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>epsg</code>
+                <code>wkid</code>
             </td>
             <td>
-                  <code><span title="str">str</span> or <span title="int">int</span></code>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The EPSG code for the coordinate reference system (e.g., "4326" or 4326).</p>
+                <p>The EPSG code for the coordinate reference system (e.g., 4326).</p>
               </div>
             </td>
             <td>
@@ -12491,6 +12962,16 @@ detailed information about the downloaded file and its context.</p>
         </tr>
       </thead>
       <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ImportError">ImportError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If geopandas is not installed.</p>
+              </div>
+            </td>
+          </tr>
           <tr class="doc-section-item">
             <td>
                   <code><span title="ValueError">ValueError</span></code>
@@ -12590,7 +13071,8 @@ detailed information about the downloaded file and its context.</p>
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
-<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">geojson_to_gdf</span><span class="p">(</span>
+<span class="normal">181</span>
+<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">geojson_to_gdf</span><span class="p">(</span>
     <span class="n">geojson</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
     <span class="n">wkid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -12599,14 +13081,15 @@ detailed information about the downloaded file and its context.</p>
 <span class="sd">    Convert GeoJSON features to a GeoDataFrame with enforced data types.</span>
 
 <span class="sd">    Parameters:</span>
-<span class="sd">        geojson (dict or list): Either a GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.</span>
-<span class="sd">        epsg (str or int): The EPSG code for the coordinate reference system (e.g., &quot;4326&quot; or 4326).</span>
+<span class="sd">        geojson (dict or list): A GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.</span>
+<span class="sd">        wkid (int): The EPSG code for the coordinate reference system (e.g., 4326).</span>
 <span class="sd">        fields (list[dict], optional): A list of dictionaries specifying field names and their desired data types.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        gpd.GeoDataFrame: A GeoDataFrame with the specified CRS and column types.</span>
 
 <span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If geopandas is not installed.</span>
 <span class="sd">        ValueError: If the geojson input is invalid.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -12714,7 +13197,7 @@ detailed information about the downloaded file and its context.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Either a GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.</p>
+                <p>A GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.</p>
               </div>
             </td>
             <td>
@@ -12723,14 +13206,14 @@ detailed information about the downloaded file and its context.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>epsg</code>
+                <code>wkid</code>
             </td>
             <td>
-                  <code><span title="str">str</span> or <span title="int">int</span></code>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The EPSG code for the coordinate reference system (e.g., "4326" or 4326).</p>
+                <p>The EPSG code for the coordinate reference system (e.g., 4326).</p>
               </div>
             </td>
             <td>
@@ -12815,8 +13298,7 @@ detailed information about the downloaded file and its context.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\conversion.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
-<span class="normal">185</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span>
 <span class="normal">188</span>
@@ -12852,7 +13334,8 @@ detailed information about the downloaded file and its context.</p>
 <span class="normal">218</span>
 <span class="normal">219</span>
 <span class="normal">220</span>
-<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">geojson_to_sdf</span><span class="p">(</span>
+<span class="normal">221</span>
+<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">geojson_to_sdf</span><span class="p">(</span>
     <span class="n">geojson</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
     <span class="n">wkid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -12861,8 +13344,8 @@ detailed information about the downloaded file and its context.</p>
 <span class="sd">    Convert GeoJSON features to a Spatially Enabled DataFrame (SEDF) with enforced data types.</span>
 
 <span class="sd">    Parameters:</span>
-<span class="sd">        geojson (dict or list): Either a GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.</span>
-<span class="sd">        epsg (str or int): The EPSG code for the coordinate reference system (e.g., &quot;4326&quot; or 4326).</span>
+<span class="sd">        geojson (dict or list): A GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.</span>
+<span class="sd">        wkid (int): The EPSG code for the coordinate reference system (e.g., 4326).</span>
 <span class="sd">        fields (list[dict], optional): A list of dictionaries specifying field names and their desired data types.</span>
 
 <span class="sd">    Returns:</span>
@@ -12907,7 +13390,7 @@ detailed information about the downloaded file and its context.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Determines if the object is a string, a GeoDataFrame (gdf), or an ArcGIS SEDF (sdef).</p>
+        <p>Determines if the object is a string, a GeoDataFrame (gdf), or an ArcGIS SEDF (sdf).</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -12956,7 +13439,7 @@ detailed information about the downloaded file and its context.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>"str" if string, "gdf" if GeoDataFrame, "sdf" if ArcGIS SDF, or "unknown" if none match.</p>
+                <p>"str" if string, "gdf" if GeoDataFrame, "sdf" if ArcGIS SEDF, or "unknown" if none match.</p>
               </div>
             </td>
           </tr>
@@ -12966,17 +13449,7 @@ detailed information about the downloaded file and its context.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\conversion.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">379</span>
 <span class="normal">380</span>
 <span class="normal">381</span>
 <span class="normal">382</span>
@@ -13003,16 +13476,28 @@ detailed information about the downloaded file and its context.</p>
 <span class="normal">403</span>
 <span class="normal">404</span>
 <span class="normal">405</span>
-<span class="normal">406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_data_type</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_data_type</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Determines if the object is a string, a GeoDataFrame (gdf), or an ArcGIS SEDF (sdef).</span>
+<span class="sd">    Determines if the object is a string, a GeoDataFrame (gdf), or an ArcGIS SEDF (sdf).</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        obj: The object to check.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        str: &quot;str&quot; if string, &quot;gdf&quot; if GeoDataFrame, &quot;sdf&quot; if ArcGIS SDF, or &quot;unknown&quot; if none match.</span>
+<span class="sd">        str: &quot;str&quot; if string, &quot;gdf&quot; if GeoDataFrame, &quot;sdf&quot; if ArcGIS SEDF, or &quot;unknown&quot; if none match.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># Check for string</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;str&quot;</span>
@@ -13058,32 +13543,52 @@ detailed information about the downloaded file and its context.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return a default output format based on which packages are available.
-If arcgis is installed, default to sdf.
-Else if geopandas is installed, default to gdf.
-Otherwise, default to json.</p>
+        <p>Return a default output format based on which packages are available.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>str</code></td>            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>"sdf" if arcgis is installed, "gdf" if geopandas is installed, otherwise "json".</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\conversion.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
-<span class="normal">419</span>
-<span class="normal">420</span>
-<span class="normal">421</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_default_output_format</span><span class="p">():</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_default_output_format</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a default output format based on which packages are available.</span>
-<span class="sd">    If arcgis is installed, default to sdf.</span>
-<span class="sd">    Else if geopandas is installed, default to gdf.</span>
-<span class="sd">    Otherwise, default to json.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: &quot;sdf&quot; if arcgis is installed, &quot;gdf&quot; if geopandas is installed, otherwise &quot;json&quot;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">has_arcgis</span><span class="p">:</span>
@@ -13111,52 +13616,11 @@ Otherwise, default to json.</p>
         <p>Convert JSON features to a DataFrame with enforced data types.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>json</code>
-            </td>
-            <td>
-                  <code><span title="dict">dict</span> or <span title="list">list</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Either a JSON FeatureCollection (dict) or a list of JSON feature dicts.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>fields</code>
-            </td>
-            <td>
-                  <code><span title="list">list</span>[<span title="dict">dict</span>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>A list of dictionaries specifying field names and their desired data types.</p>
-              </div>
-            </td>
-            <td>
-                  <code>None</code>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
+<details class="paramters" open>
+  <summary>Paramters</summary>
+  <p>json (dict or list): A JSON FeatureCollection (dict) or a list of JSON feature dicts.
+fields (list[dict], optional): A list of dictionaries specifying field names and their desired data types.</p>
+</details>
 
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
@@ -13206,8 +13670,7 @@ Otherwise, default to json.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\conversion.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
-<span class="normal">224</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
 <span class="normal">227</span>
@@ -13271,15 +13734,16 @@ Otherwise, default to json.</p>
 <span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
-<span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">json_to_df</span><span class="p">(</span>
+<span class="normal">288</span>
+<span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">json_to_df</span><span class="p">(</span>
     <span class="n">json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
     <span class="n">fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert JSON features to a DataFrame with enforced data types.</span>
 
-<span class="sd">    Parameters:</span>
-<span class="sd">        json (dict or list): Either a JSON FeatureCollection (dict) or a list of JSON feature dicts.</span>
+<span class="sd">    Paramters:</span>
+<span class="sd">        json (dict or list): A JSON FeatureCollection (dict) or a list of JSON feature dicts.</span>
 <span class="sd">        fields (list[dict], optional): A list of dictionaries specifying field names and their desired data types.</span>
 
 <span class="sd">    Returns:</span>
@@ -13354,13 +13818,89 @@ Otherwise, default to json.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Convert an SEDF to a bounding box string in EPSG:4326.</p>
+        <p>Convert a GeoDataFrame or SEDF to a bounding box string in EPSG:4326.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>df</code>
+            </td>
+            <td>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span> or <span title="arcgis.features.GeoAccessor">GeoAccessor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A GeoDataFrame or SEDF.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>str</code></td>            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Bounding box string in the format "minx,miny,maxx,maxy,EPSG:4326".</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the DataFrame is empty or does not contain valid geometries.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\conversion.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">340</span>
-<span class="normal">341</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
 <span class="normal">344</span>
@@ -13385,9 +13925,28 @@ Otherwise, default to json.</p>
 <span class="normal">363</span>
 <span class="normal">364</span>
 <span class="normal">365</span>
-<span class="normal">366</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sdf_or_gdf_to_bbox</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sdf_or_gdf_to_bbox</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert an SEDF to a bounding box string in EPSG:4326.</span>
+<span class="sd">    Convert a GeoDataFrame or SEDF to a bounding box string in EPSG:4326.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        df (gpd.GeoDataFrame or arcgis.features.GeoAccessor): A GeoDataFrame or SEDF.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Bounding box string in the format &quot;minx,miny,maxx,maxy,EPSG:4326&quot;.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the DataFrame is empty or does not contain valid geometries.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
@@ -13429,7 +13988,7 @@ Otherwise, default to json.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Convert an sdf or gdf to a single GeoJSON Polygon geometry object.</p>
+        <p>Convert a GeoDataFrame or SEDF to a single GeoJSON Polygon geometry object.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -13448,11 +14007,11 @@ Otherwise, default to json.</p>
                 <code>df</code>
             </td>
             <td>
-                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span> or <span title="pandas.DataFrame">DataFrame</span></code>
+                  <code><span title="geopandas.GeoDataFrame">GeoDataFrame</span> or <span title="arcgis.features.GeoAccessor">GeoAccessor</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>An sdf or gdf containing only Polygon geometries.</p>
+                <p>A GeoDataFrame or SEDF containing only Polygon geometries.</p>
               </div>
             </td>
             <td>
@@ -13501,7 +14060,7 @@ Otherwise, default to json.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>If the GeoDataFrame is empty or contains non-polygon geometries.</p>
+                <p>If the DataFrame is empty or contains non-polygon geometries.</p>
               </div>
             </td>
           </tr>
@@ -13511,8 +14070,7 @@ Otherwise, default to json.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\conversion.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">291</span>
-<span class="normal">292</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">292</span>
 <span class="normal">293</span>
 <span class="normal">294</span>
 <span class="normal">295</span>
@@ -13557,20 +14115,21 @@ Otherwise, default to json.</p>
 <span class="normal">334</span>
 <span class="normal">335</span>
 <span class="normal">336</span>
-<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sdf_or_gdf_to_single_polygon_geojson</span><span class="p">(</span>
+<span class="normal">337</span>
+<span class="normal">338</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sdf_or_gdf_to_single_polygon_geojson</span><span class="p">(</span>
     <span class="n">df</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;gpd.GeoDataFrame&quot;</span><span class="p">,</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert an sdf or gdf to a single GeoJSON Polygon geometry object.</span>
+<span class="sd">    Convert a GeoDataFrame or SEDF to a single GeoJSON Polygon geometry object.</span>
 
 <span class="sd">    Parameters:</span>
-<span class="sd">        df (gpd.GeoDataFrame or pd.DataFrame): An sdf or gdf containing only Polygon geometries.</span>
+<span class="sd">        df (gpd.GeoDataFrame or arcgis.features.GeoAccessor): A GeoDataFrame or SEDF containing only Polygon geometries.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: A GeoJSON Polygon geometry object.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        ValueError: If the GeoDataFrame is empty or contains non-polygon geometries.</span>
+<span class="sd">        ValueError: If the DataFrame is empty or contains non-polygon geometries.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
@@ -13834,11 +14393,21 @@ Otherwise, default to json.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="WfsDownloaderError">WfsDownloaderError</span></code>
+                  <code><a class="autorefs autorefs-internal" title="HTTPError (kapipy.custom_errors.HTTPError)" href="#kapipy.custom_errors.HTTPError">HTTPError</a></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>If the API key or typeNames is missing, or if data fetching fails after all retries.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="BadRequest (kapipy.custom_errors.BadRequest)" href="#kapipy.custom_errors.BadRequest">BadRequest</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a 400 Bad Request is returned from the WFS service.</p>
               </div>
             </td>
           </tr>
@@ -13848,8 +14417,7 @@ Otherwise, default to json.</p>
 
             <details class="quote">
               <summary>Source code in <code>src\kapipy\features\wfs.py</code></summary>
-              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 82</span>
-<span class="normal"> 83</span>
+              <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 83</span>
 <span class="normal"> 84</span>
 <span class="normal"> 85</span>
 <span class="normal"> 86</span>
@@ -13985,7 +14553,9 @@ Otherwise, default to json.</p>
 <span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">download_wfs_data</span><span class="p">(</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">download_wfs_data</span><span class="p">(</span>
     <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">typeNames</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -14012,7 +14582,8 @@ Otherwise, default to json.</p>
 <span class="sd">        dict: A GeoJSON FeatureCollection-like dictionary containing all fetched features.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        WfsDownloaderError: If the API key or typeNames is missing, or if data fetching fails after all retries.</span>
+<span class="sd">        HTTPError: If the API key or typeNames is missing, or if data fetching fails after all retries.</span>
+<span class="sd">        BadRequest: If a 400 Bad Request is returned from the WFS service.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>

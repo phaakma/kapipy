@@ -444,6 +444,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#prompts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prompts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tests
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -520,6 +538,19 @@ the json, fields and wkid. Then I can convert that FeatureSet to an sdf.  </p>
 <h3 id="owslib">OWSLib<a class="headerlink" href="#owslib" title="Permanent link">&para;</a></h3>
 <p>I investigated using the OWSLib python package to download the WFS data, but discovered that it doesn't support the CQL filter keyword option that the LINZ GeoServer provides. OGC filters were still an option, but seem very complex to construct and I believe most users would prefer to use the simpler CQL which is more similar to SQL. So I moved back to using a basic request to the WFS endpoint. The OWSLib package would provide more scope for expansion, but since the intent of this helper library is primarily focused on Koordinates and LINZ in particular, we can afford to be a little more opinionated on our approach, such as not having to support all the WFS versions.<br />
 I'm not sure if the LINZ WFS endpoint is strictly equivalent with all other Koordinates WFS endpoints. So the implementation at the moment is coded to work with LINZ and might not work in other places.  </p>
+<h2 id="prompts">Prompts<a class="headerlink" href="#prompts" title="Permanent link">&para;</a></h2>
+<p>Can you review the docstrings for all classes, methods and functions. Make sure they are accurate and reflect the correct Parameters and Return values. Ensure the syntax is correct, use the word Parameters instead of Args, and ensure the formatting is consistent for use with MkDocs and the Google format. Only provide docstrings that actually need to change. Provide each docstring in a separate section so I can copy and paste it. There is no need to provide the original for comparison. Provide an update for <strong>str</strong> and <strong>repr</strong> if necessary. Check that the type hints are accurate.</p>
+<h2 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h2>
+<p>Tests are written using pytest.</p>
+<p>To run all tests with logging. Leave off the log parameter if not wanting logging.  </p>
+<div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>--log-cli-level<span class="o">=</span>INFO
+</code></pre></div>
+
+<p>To run a specific test, replace the relevant file name and test function.  </p>
+<div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/test_simple.py::test_validate_layer_export_params<span class="w"> </span>--log-cli-level<span class="o">=</span>INFO
+</code></pre></div>
+
+<p>There is currently very limited test coverage. Any live tests require a "LINZ_API_KEY" entry to exist in a .env file in the root project folder.  </p>
 
 
 
