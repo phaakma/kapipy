@@ -15,6 +15,27 @@ If using the code directly rather than installing from PyPi (once it is uploaded
 pip install -e .
 ```
 
+## ArcGIS  
+Recommend using the existing conda manager that comes installed with ArcGIS Pro or ArcGIS Server.  
+If using arcgis module but not arcpy installed, need to install:
+- pyproj
+- shapely  
+- pyshp
+  
+Optionally pip install dotenv if wanting to use that.  
+If creating a blank conda environment (rather than cloning the default), and
+wanting to use Jupyter notebooks, install:
+- ipykernel
+- ptyprocess
+- comm
+
+When converting geojson to sdf, I first tried using FeatureSet.from_geojson(geojson) but I
+found that it assumes that the geojson is in wgs84 (which is the strict definition of geojson).
+But in our case sometimes we often get the geojson returned already in NZTM/2193. So the from_geojson
+ended up with incorrect spatial data. 
+So I write a function that manually converts the geojson to an ArcGIS FeatureSet by passing in
+the json, fields and wkid. Then I can convert that FeatureSet to an sdf.  
+
 ## Development using Jupyter Notebooks  
 I got the following tips from Cookie Cutter Data Science.  
 [Cookie Cutter Data Science](https://cookiecutter-data-science.drivendata.org/)  

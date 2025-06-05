@@ -2,10 +2,10 @@
 
 from .content_manager import ContentManager
 
-import requests
 import os
 from urllib.parse import urljoin
 import logging
+import importlib.util
 from kapipy.custom_errors import ServerError, BadRequest
 import httpx
 
@@ -26,6 +26,14 @@ DEFAULT_API_VERSION = "v1.x"
 SERVICES_PATH = "services/"
 API_PATH = "api/"
 WFS_PATH = "wfs/"
+
+has_arcgis = importlib.util.find_spec("arcgis") is not None
+has_geopandas = importlib.util.find_spec("geopandas") is not None
+has_arcpy = importlib.util.find_spec("arcpy") is not None
+
+logger.debug(f'{has_arcgis=}')
+logger.debug(f'{has_geopandas=}')
+logger.debug(f'{has_arcpy=}')
 
 
 class GIS:

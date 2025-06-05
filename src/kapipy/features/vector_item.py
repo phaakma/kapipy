@@ -6,17 +6,25 @@ A class to represent a vector dataset.
 import logging
 import json
 from datetime import datetime
-import geopandas as gpd
-from typing import Any
+from typing import Any, TYPE_CHECKING, Union
 from kapipy.gis.base_item import BaseItem
 from kapipy.gis.job_result import JobResult
 from . import wfs as wfs_features
 from . import export as export_features
 from .conversion import (
     geojson_to_gdf,
-    gdf_to_single_polygon_geojson,
-    gdf_to_bbox,
+    geojson_to_sdf,
+    sdf_or_gdf_to_single_polygon_geojson,
+    sdf_or_gdf_to_bbox,
+    get_data_type,
+    get_default_output_format
 )
+from kapipy.gis import has_geopandas, has_arcgis
+if TYPE_CHECKING:
+    if has_geopandas:
+        import geopandas as gpd
+    if has_arcgis:
+        import arcgis
 
 logger = logging.getLogger(__name__)
 
@@ -164,11 +172,11 @@ class VectorItem(BaseItem):
         logger.debug(f"Creating WFS service for item with id: {self.id}")
         wfs_service = self._gis.wfs.operations
 
-    def query_json(
+    def query_to_json(
         self,
         cql_filter: str = None,
-        srsName: str = None,
-        bbox: str | gpd.GeoDataFrame = None,
+        wkid: int = None,
+        bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         **kwargs: Any,
     ) -> dict:
         """
@@ -187,18 +195,16 @@ class VectorItem(BaseItem):
 
         logger.debug(f"Executing WFS query for item with id: {self.id}")
 
-        if isinstance(bbox, gpd.GeoDataFrame):
-            logger.debug(
-                f"Converting bbox GeoDataFrame to GeoJSON for item with id: {self.id}"
-            )
-            bbox = gdf_to_bbox(bbox)
+        # Handle bbox
+        if bbox is not None and not isinstance(bbox, str):              
+            bbox = sdf_or_gdf_to_bbox(bbox)
 
         result = wfs_features.download_wfs_data(
             url=self._wfs_url,
             api_key=self._gis._api_key,
             typeNames=f"{self.type}-{self.id}",
             cql_filter=cql_filter,
-            srsName=srsName or f"EPSG:{self.epsg}" if self.epsg else None,
+            srsName=f'EPSG:{wkid}' or f"EPSG:{self.epsg}" if self.epsg else None,
             bbox=bbox,
             **kwargs,
         )
@@ -208,42 +214,59 @@ class VectorItem(BaseItem):
     def query(
         self,
         cql_filter: str = None,
-        srsName: str = None,
-        bbox: str | gpd.GeoDataFrame = None,
+        wkid: int = None,
+        bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        output_format = None,
         **kwargs: Any,
-    ) -> gpd.GeoDataFrame:
+    ) -> "gpd.GeoDataFrame":
         """
         Executes a WFS query on the item and returns the result as a GeoDataFrame.
+        Only works if geopandas is installed.
 
         Parameters:
             cql_filter (str, optional): The CQL filter to apply to the query.
             srsName (str, optional): The spatial reference system name to use for the query.
             bbox (str or gpd.GeoDataFrame, optional): The bounding box to apply to the query.
                 If a GeoDataFrame is provided, it will be converted to a bounding box string in WGS84.
+            output_format (sdef or gdf or json)
             **kwargs: Additional parameters for the WFS query.
 
         Returns:
             gpd.GeoDataFrame: The result of the WFS query as a GeoDataFrame.
+
+        Raises:
+            ImportError if geopandas is not installed.
         """
 
-        logger.debug(f"Executing WFS query for item with id: {self.id}")
+        if output_format is None:
+            output_format = get_default_output_format()
+        output_format = output_format.lower()
+        if output_format not in ('sdf', 'gdf', 'geodataframe', 'json', 'geojson'):
+            raise ValueError(f'Unknown output format: {output_format}')
 
-        result = self.query_json(
+        wkid = wkid if wkid is not None else self.epsg
+
+        result = self.query_to_json(
             cql_filter=cql_filter,
-            srsName=srsName or f"EPSG:{self.epsg}" if self.epsg else None,
+            wkid=wkid,
             bbox=bbox,
             **kwargs,
         )
 
-        gdf = geojson_to_gdf(result, epsg=self.epsg, fields=self.fields)
-        return gdf
+        if output_format == 'sdf':
+            return geojson_to_sdf(result, wkid=wkid, fields=self.fields)
+        elif output_format in ('gdf', 'geodataframe'):
+            return geojson_to_gdf(result, wkid=wkid, fields=self.fields)
+        return result
 
-    def get_changeset_json(
+
+    def changeset_to_json(
         self,
         from_time: str,
         to_time: str = None,
+        wkid = None,
         cql_filter: str = None,
-        bbox: str | gpd.GeoDataFrame = None,
+        bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         **kwargs: Any,
     ) -> dict:
         """
@@ -276,11 +299,9 @@ class VectorItem(BaseItem):
 
         viewparams = f"from:{from_time};to:{to_time}"
 
-        if isinstance(bbox, gpd.GeoDataFrame):
-            logger.debug(
-                f"Converting bbox GeoDataFrame to GeoJSON for item with id: {self.id}"
-            )
-            bbox = gdf_to_bbox(bbox)
+        # Handle bbox
+        if bbox is not None and not isinstance(bbox, str):              
+            bbox = sdf_or_gdf_to_bbox(bbox)
 
         result = wfs_features.download_wfs_data(
             url=self._wfs_url,
@@ -288,20 +309,22 @@ class VectorItem(BaseItem):
             typeNames=f"layer-{self.id}-changeset",
             viewparams=viewparams,
             cql_filter=cql_filter,
-            srsName=f"EPSG:{self.epsg}" if self.epsg else None,
+            srsName=f'EPSG:{wkid}' or f"EPSG:{self.epsg}" if self.epsg else None,
             bbox=bbox,
             **kwargs,
         )
         return result
 
-    def get_changeset(
+    def changeset(
         self,
         from_time: str,
         to_time: str = None,
+        wkid: int = None,
         cql_filter: str = None,
-        bbox: str | gpd.GeoDataFrame = None,
+        bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        output_format = None,
         **kwargs: Any,
-    ) -> gpd.GeoDataFrame:
+    ) -> "gpd.GeoDataFrame":
         """
         Retrieves a changeset for the item and returns it as a GeoDataFrame.
 
@@ -317,16 +340,28 @@ class VectorItem(BaseItem):
             gpd.GeoDataFrame: The changeset data as a GeoDataFrame.
         """
 
-        result = self.get_changeset_json(
+        wkid = wkid if wkid is not None else self.epsg
+
+        if output_format is None:
+            output_format = get_default_output_format()
+        output_format = output_format.lower()
+        if output_format not in ('sdf', 'gdf', 'geodataframe', 'json', 'geojson'):
+            raise ValueError(f'Unknown output format: {output_format}')
+
+        result = self.changeset_to_json(
             from_time=from_time,
             to_time=to_time,
+            wkid=wkid,
             cql_filter=cql_filter,
             bbox=bbox,
             **kwargs,
         )
 
-        gdf = geojson_to_gdf(result, epsg=self.epsg, fields=self.fields)
-        return gdf
+        if output_format == 'sdf':
+            return geojson_to_sdf(result, wkid=wkid, fields=self.fields)
+        elif output_format in ('gdf', 'geodataframe'):
+            return geojson_to_gdf(result, wkid=wkid, fields=self.fields)
+        return result
 
     @property
     def services(self) -> list:
@@ -395,7 +430,7 @@ class VectorItem(BaseItem):
         logger.debug(f"Resolved export format: {mimetype} from {export_format}")
         return mimetype
 
-    def validate_export_request(
+    def _validate_export_request(
         self,
         export_format: str,
         crs: str = None,
@@ -437,8 +472,8 @@ class VectorItem(BaseItem):
     def export(
         self,
         export_format: str,
-        crs: str = None,
-        extent: dict | gpd.GeoDataFrame = None,
+        wkid: int = None,
+        extent: Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         poll_interval: int = 10,
         timeout: int = 600,
         **kwargs: Any,
@@ -463,15 +498,15 @@ class VectorItem(BaseItem):
 
         logger.debug(f"Exporting item with id: {self.id} in format: {export_format}")
 
-        if isinstance(extent, gpd.GeoDataFrame):
-            logger.debug(
-                f"Converting extent GeoDataFrame to GeoJSON for item with id: {self.id}"
-            )
-            extent = gdf_to_single_polygon_geojson(extent)
+        wkid = wkid if wkid is not None else self.epsg
+        crs = f'EPSG:{wkid}'
+
+        if extent is not None:
+            extent = sdf_or_gdf_to_single_polygon_geojson(extent)
 
         export_format = self._resolve_export_format(export_format)
 
-        validate_export_request = self.validate_export_request(
+        validate_export_request = self._validate_export_request(
             export_format,
             crs=crs,
             extent=extent,
