@@ -510,12 +510,11 @@
 <p>A python client for accessing and querying datasets from geospatial open data portals such as LINZ, Stats NZ and LRIS.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>kapipy is a Python package that provides a python interface to the Koordinates geospatial content management system. It allows users to connect a data portal, retrieve metadata, and query vector layers and tables. </p>
-<p>Documentation available at <a href="https://phaakma.github.io/kapipy/">Github Pages documentation website</a>  </p>
 <h2 id="disclaimer">Disclaimer<a class="headerlink" href="#disclaimer" title="Permanent link">&para;</a></h2>
 <p>This is a hobby project and the modules are provided as-is on a best-effort basis and you assume all risk for using it.<br />
-The author has no affiliation with either Koordinates nor LINZ, Stats NZ or LRIS. As such, the underlying API's and services may change at any time without warning and break these modules. The author is not privvy to any inside knowledge or documentation beyond what is available online or by inspecting the payloads returned by the services.  </p>
+The author has no affiliation with either Koordinates nor LINZ, Stats NZ or LRIS. As such, the underlying API's and services may change at any time without warning and break these modules.  </p>
 <p>This project does not cover the full spectrum of the Koordinates API and probably never will. It focuses currently on basic workflows such as connecting using an api key, getting references to datasets and downloading them.  </p>
-<p>The author is happy to take feedback and consider suggestions and code contributions as time allows. Preferred method for feedback is via the Github repository issues page.    </p>
+<p>Suggestions and code contributions can be made by submitting issues via the GitHub page.    </p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>kapipy
 </code></pre></div>
@@ -529,7 +528,7 @@ The author has no affiliation with either Koordinates nor LINZ, Stats NZ or LRIS
 </ul>
 <p>Basic example:  </p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
-<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;my-api-key&quot;</span><span class="p">)</span>
+<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;my-linz-api-key&quot;</span><span class="p">)</span>
 <span class="n">rail_station_layer_id</span> <span class="o">=</span> <span class="s2">&quot;50318&quot;</span>
 <span class="n">itm</span> <span class="o">=</span> <span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rail_station_layer_id</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
