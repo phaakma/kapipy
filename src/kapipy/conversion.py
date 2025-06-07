@@ -4,7 +4,7 @@ from shapely.ops import unary_union
 from shapely.geometry import mapping
 from typing import Any, TYPE_CHECKING, Union
 import logging
-from kapipy.gis import has_geopandas, has_arcgis, has_arcpy
+from .gis import has_geopandas, has_arcgis, has_arcpy
 
 if TYPE_CHECKING:
     if has_geopandas:

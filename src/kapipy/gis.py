@@ -1,12 +1,12 @@
-# __init__.py for gis
+# gis.py
 
-from .content_manager import ContentManager
+
 
 import os
 from urllib.parse import urljoin
 import logging
 import importlib.util
-from kapipy.custom_errors import ServerError, BadRequest
+from .custom_errors import ServerError, BadRequest
 import httpx
 
 logger = logging.getLogger(__name__)
@@ -132,8 +132,7 @@ class GIS:
         """
 
         if self._content_manager is None:
-            from . import ContentManager
-
+            from .content_manager import ContentManager
             self._content_manager = ContentManager(self)
         return self._content_manager
 

@@ -11,7 +11,7 @@ from tenacity import (
     retry_if_not_exception_type,
 )
 import logging
-from kapipy.custom_errors import ExportError
+from .custom_errors import ExportError
 
 logger = logging.getLogger(__name__)
 

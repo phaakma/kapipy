@@ -91,3 +91,53 @@ uv run -m pytest tests/test_simple.py::test_validate_layer_export_params --log-c
 ```  
 
 There is currently very limited test coverage. Any live tests require a "LINZ_API_KEY" entry to exist in a .env file in the root project folder.  
+
+## Data Classes  
+
+BaseItem
+
+LayerItem
+
+Group
+
+Publisher
+
+Theme
+
+Site
+
+DataDetails
+
+Fields
+
+Crs
+
+Extent
+
+ChangeSummary
+
+ImportLog
+
+ExportFormat
+
+Category
+
+Ancestor
+
+Item required fields:
+
+class BaseItem(Protocol):
+    id
+    url
+    type_
+    title
+    description
+    data
+    kind
+    categories
+    tags
+    created_at
+    license
+    metadata
+    num_views
+    num_downloads

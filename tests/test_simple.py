@@ -3,8 +3,8 @@ import pytest
 from dotenv import load_dotenv
 import logging
 
-from kapipy.features.wfs import download_wfs_data
-from kapipy.features.export import validate_export_params
+from kapipy.wfs_utils import download_wfs_data
+from kapipy.export import validate_export_params
 
 logger = logging.getLogger(__name__)
 

@@ -10,7 +10,7 @@ from tenacity import (
     retry_if_not_exception_type,
 )
 import logging
-from kapipy.custom_errors import (BadRequest, HTTPError, ServerError)
+from .custom_errors import (BadRequest, HTTPError, ServerError)
 
 logger = logging.getLogger(__name__)
 
