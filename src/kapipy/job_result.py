@@ -86,8 +86,8 @@ class JobResult:
         self,
         payload: dict,
         gis: "GIS",
-        poll_interval: int = 10,
-        timeout: int = 600,
+        poll_interval: int = None,
+        timeout: int = None,
     ) -> None:
         """
         Initializes the JobResult instance.
@@ -103,8 +103,8 @@ class JobResult:
         self._job_url = payload["url"]
         self._id = payload["id"]
         self.downloaded = False
-        self._poll_interval = poll_interval
-        self._timeout = timeout
+        self._poll_interval = poll_interval if poll_interval is not None else 10
+        self._timeout = timeout if timeout is not None else 600
         self._last_response = payload
         self._gis = gis
 

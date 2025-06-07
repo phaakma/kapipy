@@ -15,6 +15,7 @@ from .data_classes import BaseItem
 from .export import validate_export_params, request_export
 from .items import VectorItem, TableItem
 from .job_result import JobResult
+from .conversion import sdf_or_gdf_to_single_polygon_geojson
 
 from .custom_errors import (
     BadRequest,
@@ -290,7 +291,11 @@ class ContentManager:
         return job_result
 
     def download(
-        self, jobs: list["JobResults"] = None, folder: str = None, poll_interval=10
+        self,
+        jobs: list["JobResults"] = None,
+        folder: str = None,
+        poll_interval: int = 10,
+        force_all: bool = False
     ) -> list["JobResults"]:
         """
         Downloads all exports from a list of jobs.
@@ -314,12 +319,15 @@ class ContentManager:
         folder = folder if folder is not None else self.download_folder
         jobs = jobs if jobs is not None else self.jobs
 
-        logger.info(f'Number of jobs to review: {len(jobs)}')
-        pending_jobs = [job for job in jobs if job.downloaded==False]
-        logger.info(f'Number of jobs to download: {len(pending_jobs)}')
+        logger.info(f"Number of jobs to review: {len(jobs)}")
+        if force_all:
+            pending_jobs = list(jobs)
+        else:
+            pending_jobs = [job for job in jobs if job.downloaded == False]
+        logger.info(f"Number of jobs to download: {len(pending_jobs)}")
 
         while pending_jobs:
-            logger.info("Polling export jobs...")            
+            logger.info("Polling export jobs...")
 
             for job in pending_jobs[:]:  # iterate over a copy
                 job_status = job.status
@@ -331,7 +339,6 @@ class ContentManager:
                     logger.info(job)
             logger.info(f"{len(pending_jobs)} jobs remaining...")
             time.sleep(poll_interval)
-            
 
         logger.info("All jobs completed and downloaded.")
         return jobs
