@@ -28,6 +28,9 @@
     
       <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
       
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
       
 
 
@@ -57,7 +60,14 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -78,7 +88,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="kapipy" class="md-header__button md-logo" aria-label="kapipy" data-md-component="logo">
       
@@ -106,6 +118,42 @@
         </div>
       </div>
     </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="brown" data-md-color-accent="yellow"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="lime"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
     
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
@@ -137,6 +185,8 @@
         </button>
       </nav>
       
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
     </form>
     <div class="md-search__output">
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
@@ -167,14 +217,8 @@
     
   </nav>
   
-</header>
     
-    <div class="md-container" data-md-component="container">
       
-      
-        
-          
-            
 <nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
   <div class="md-grid">
     <ul class="md-tabs__list">
@@ -238,10 +282,54 @@
   
 
       
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../faq/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../about/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
-          
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
         
       
       <main class="md-main" data-md-component="main">
@@ -413,38 +501,77 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#query-an-item-using-wfs-endpoint" class="md-nav__link">
+  <a href="#wfs-queries" class="md-nav__link">
     <span class="md-ellipsis">
-      Query an item using WFS endpoint
+      WFS queries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WFS queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#query" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#get-a-changeset-using-wfs-endpoint" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#changeset" class="md-nav__link">
     <span class="md-ellipsis">
-      Get a changeset using WFS endpoint
+      Changeset
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#generate-an-export" class="md-nav__link">
-    <span class="md-ellipsis">
-      Generate an export
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
+  <a href="#export-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Export data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Export data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-item-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      Single item export
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#generate-an-export-with-extent-geometry" class="md-nav__link">
     <span class="md-ellipsis">
       Generate an export with extent geometry
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#export-and-download-multiple-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      Export and download multiple items
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -469,6 +596,50 @@
   
   <span class="md-ellipsis">
     API Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About
     
   </span>
   
@@ -556,38 +727,77 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#query-an-item-using-wfs-endpoint" class="md-nav__link">
+  <a href="#wfs-queries" class="md-nav__link">
     <span class="md-ellipsis">
-      Query an item using WFS endpoint
+      WFS queries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WFS queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#query" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#get-a-changeset-using-wfs-endpoint" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#changeset" class="md-nav__link">
     <span class="md-ellipsis">
-      Get a changeset using WFS endpoint
+      Changeset
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#generate-an-export" class="md-nav__link">
-    <span class="md-ellipsis">
-      Generate an export
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
+  <a href="#export-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Export data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Export data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-item-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      Single item export
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#generate-an-export-with-extent-geometry" class="md-nav__link">
     <span class="md-ellipsis">
       Generate an export with extent geometry
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#export-and-download-multiple-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      Export and download multiple items
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -614,18 +824,19 @@
 <p>This guide walks you through the main ways to use the <code>kapipy</code> package to query and download data from the LINZ Data Service via Koordinates.</p>
 <h2 id="installation-notes">Installation Notes<a class="headerlink" href="#installation-notes" title="Permanent link">&para;</a></h2>
 <p>Kapipy is designed to use either GeoPandas or the ArcGIS API for Python, returning and reading data as either a GeoDataFrame or a Spatially Enabled DataFrame respectively.  Neither package is defined as a requirement of kapipy, as users may choose to use one over the other and may not want the other automatically installed.  </p>
-<p>This means you need to manually instally one of either <strong>geopandas</strong> or <strong>arcgis</strong> into your Python environment.</p>
+<p>This means you need to manually install one of either <strong>geopandas</strong> or <strong>arcgis</strong> into your Python environment.</p>
 <h3 id="arcgis">ArcGIS<a class="headerlink" href="#arcgis" title="Permanent link">&para;</a></h3>
 <p>If you are an ArcGIS user, cloning the default conda environment from ArcGIS Pro or ArcGIS Server should be sufficient, and you just need to install kapipy. If you choose to start with a blank environment and do not intend to install arcpy, you may need to install the following:<br />
-- pyproj
+- pyproj<br />
 - shapely<br />
 - pyshp  </p>
 <h3 id="jupyter-notebooks">Jupyter Notebooks<a class="headerlink" href="#jupyter-notebooks" title="Permanent link">&para;</a></h3>
 <p>If you are starting with a clean Python environment and want to use Jupyter Notebooks (e.g. inside Visual Studio Code), then manually install these packages:<br />
-- ipykernel
-- ptyprocess
+- ipykernel<br />
+- ptyprocess<br />
 - comm  </p>
 <h2 id="connecting-to-the-various-open-data-portals">Connecting to the various open data portals<a class="headerlink" href="#connecting-to-the-various-open-data-portals" title="Permanent link">&para;</a></h2>
+<p>LINZ, Stats NZ and LRIS have built in names for convenience. Alternatively, pass in the base URL.  </p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
 
 <span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
@@ -633,7 +844,14 @@
 <span class="n">lris</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;lris&#39;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-lris-api-key&quot;</span><span class="p">)</span>
 </code></pre></div>
 
+<p>Passing in a base url:  </p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
+
+<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://data.linz.govt.nz/&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
+</code></pre></div>
+
 <h2 id="get-a-reference-to-an-item">Get a reference to an item<a class="headerlink" href="#get-a-reference-to-an-item" title="Permanent link">&para;</a></h2>
+<p>The gis object has a property called <strong>content</strong> which is a ContentManager. This allows you to get a reference to an item using it's id.  </p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
 
 <span class="c1">#create gis object</span>
@@ -646,43 +864,90 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">itm</span><span class="p">)</span>
 </code></pre></div>
 
-<h2 id="query-an-item-using-wfs-endpoint">Query an item using WFS endpoint<a class="headerlink" href="#query-an-item-using-wfs-endpoint" title="Permanent link">&para;</a></h2>
+<h2 id="wfs-queries">WFS queries<a class="headerlink" href="#wfs-queries" title="Permanent link">&para;</a></h2>
+<p>Items with WFS endpoints can be queried using the <strong>query</strong> and <strong>get_changeset</strong> methods of the itm.</p>
+<p>For spatial items, it is recommended to provide a desired spatial reference via the <strong>out_sr</strong> parameter.  </p>
+<h3 id="query">Query<a class="headerlink" href="#query" title="Permanent link">&para;</a></h3>
 <p>Get all data  </p>
-<div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
 </code></pre></div>
 
 <p>Get first 5 records.  </p>
-<div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
 </code></pre></div>
 
-<p>Data is returned as either a geopandas GeoDataFrame or an ArcGIS Spatially Enabled DataFrame, typed by the fields provided by the API.  </p>
+<p>Spatial data is returned as either a geopandas GeoDataFrame or an ArcGIS Spatially Enabled DataFrame. The attribute types are set according to the item's field list.<br />
+Tabular data is returned as a pandas DataFrame.  </p>
 <div class="codehilite"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtypes</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </code></pre></div>
 
-<h2 id="get-a-changeset-using-wfs-endpoint">Get a changeset using WFS endpoint<a class="headerlink" href="#get-a-changeset-using-wfs-endpoint" title="Permanent link">&para;</a></h2>
-<p>Also returned as a DataFrame.</p>
-<div class="codehilite"><pre><span></span><code><span class="n">changeset</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">get_changeset</span><span class="p">(</span><span class="n">from_time</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00Z&quot;</span><span class="p">,</span> <span class="n">wkid</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
+<h3 id="changeset">Changeset<a class="headerlink" href="#changeset" title="Permanent link">&para;</a></h3>
+<p>Also returned as a data frame with the same logic as the <strong>query</strong> method.<br />
+The datetime parameters should be provided in ISO 8601 format.  </p>
+<p>The <strong>from_time</strong> parameter is the time from which the changeset data will be generated.<br />
+The <strong>to_time</strong> parameter is optional, and is the time up to which the changeset data will be generated. If this parameter is not provided then it defaults to now.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">changeset</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">get_changeset</span><span class="p">(</span><span class="n">from_time</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00Z&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">changeset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
 </code></pre></div>
 
-<h2 id="generate-an-export">Generate an export<a class="headerlink" href="#generate-an-export" title="Permanent link">&para;</a></h2>
-<p>It is recommended to always specify the wkid.  </p>
-<div class="codehilite"><pre><span></span><code><span class="n">job</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">wkid</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
+<h2 id="export-data">Export data<a class="headerlink" href="#export-data" title="Permanent link">&para;</a></h2>
+<p>Exporting data creates an asynchronous task on the data portal server that returns a job id. It is possible to create and manage individual downloads, or treat them collectively.  </p>
+<p>Again, it is recommended to always specify the <strong>out_sr</strong>.  </p>
+<h3 id="single-item-export">Single item export<a class="headerlink" href="#single-item-export" title="Permanent link">&para;</a></h3>
+<p>The item <strong>export</strong> method initiates the creation of the job on the server and a <strong>JobResult</strong> object is returned. Accessing the <strong>status</strong> property triggers a check with the server to get the latest <strong>status</strong> of the job.<br />
+The <strong>status</strong> returned is a <strong>JobStatus</strong> object that has <strong>state</strong> and <strong>progress</strong> properties.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">job</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
 </code></pre></div>
 
-<p>Download the job data once it is ready. If this method is called before the job is complete, it will keep polling the status of the job until it is ready and then downloads it.  </p>
+<p>Download the job data once it is ready. If this method is called before the job <strong>state</strong> is <strong>'complete'</strong>, it will poll the status of the job until it is ready and then downloads it.<br />
+Calling the download method of a JobResult object gives you the flexibility of specifying a specific folders for that download.</p>
 <div class="codehilite"><pre><span></span><code><span class="n">job</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;c:/temp&quot;</span><span class="p">)</span>
 </code></pre></div>
 
-<h2 id="generate-an-export-with-extent-geometry">Generate an export with extent geometry<a class="headerlink" href="#generate-an-export-with-extent-geometry" title="Permanent link">&para;</a></h2>
-<p>The <em>extent</em> argument can be passed in as a GeoDataFrame or a Spatially Enabled DataFrame.  </p>
-<div class="codehilite"><pre><span></span><code><span class="n">waikato_polygon</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;../examples/waikato.json&#39;</span><span class="p">)</span>
+<h3 id="generate-an-export-with-extent-geometry">Generate an export with extent geometry<a class="headerlink" href="#generate-an-export-with-extent-geometry" title="Permanent link">&para;</a></h3>
+<p>The <strong>extent</strong> argument can be passed in as a gdf or an sdf.  </p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># gdf</span>
 <span class="n">matamata_gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;../examples/matamata_piako.shp&quot;</span><span class="p">)</span>
+<span class="c1"># sdf</span>
+<span class="n">matamata_sdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">from_featureclass</span><span class="p">(</span><span class="s2">&quot;../examples/matamata_piako.shp&quot;</span><span class="p">)</span>
 
-<span class="n">job</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">wkid</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">waikato_polygon</span><span class="p">,)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
+</code></pre></div>
+
+<h3 id="export-and-download-multiple-items">Export and download multiple items<a class="headerlink" href="#export-and-download-multiple-items" title="Permanent link">&para;</a></h3>
+<p>Whenever the <strong>export</strong> method of an item is called, the <strong>JobResult</strong> object is added to a list belonging to the ContentManager called <strong>jobs</strong>. </p>
+<p>The ContentManager has a download method as well. Calling this method and passing in a folder will download to that folder any jobs in the content manager's job list that are not already downloaded.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">itm1</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
+<span class="n">itm2</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
+
+<span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;c:/temp&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>The ContentManager also has an <strong>output_folder</strong> property. You can set this and it will be used as the default if no folder is provided.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">download_folder</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;c:/temp&quot;</span>
+
+<span class="n">itm1</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
+<span class="n">itm2</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
+
+<span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+</code></pre></div>
+
+<p>Alternatively, you can pass the content manager's <strong>download</strong> method a list of specific jobs and only those jobs will be downloaded.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">job_1</span> <span class="o">=</span> <span class="n">itm1</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
+<span class="n">job_2</span> <span class="o">=</span> <span class="n">itm2</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
+<span class="n">job_3</span> <span class="o">=</span> <span class="n">itm3</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
+<span class="n">job_4</span> <span class="o">=</span> <span class="n">itm4</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
+<span class="n">job_5</span> <span class="o">=</span> <span class="n">itm5</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
+
+<span class="c1"># only jobs 1, 3 and 5 will be downloaded</span>
+<span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">download</span><span class="p">([</span><span class="n">job_1</span><span class="p">,</span> <span class="n">job_3</span><span class="p">,</span> <span class="n">job_5</span><span class="p">])</span>
+</code></pre></div>
+
+<p>Once a job is downloaded, it's "downloaded" attribute will be set to True, and any future calls to the ContentManager's <strong>download</strong> method will not download it.<br />
+Use the 'force_all' parameter to force a download of all jobs in the list, regardless of their download status.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">force_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 
 
@@ -703,6 +968,12 @@
           
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
         
       </main>
       
@@ -732,7 +1003,7 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.instant", "content.code.copy"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.instant", "content.code.copy", "search.highlight", "search.suggest", "toc.follow"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
