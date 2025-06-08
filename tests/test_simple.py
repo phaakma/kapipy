@@ -6,7 +6,7 @@ import logging
 try:
     from dotenv import load_dotenv
     load_dotenv()
-except Exception() as e:
+except Exception as e:
     print(e)
 
 
