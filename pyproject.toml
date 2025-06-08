@@ -19,7 +19,16 @@ name = "Paul Haakma"
 email = "phaakma@gmail.com"
 
 [dependency-groups]
-dev = [ "ipykernel>=6.29.5", "pytest>=8.3.5", "python-dotenv>=1.1.0", "toml>=0.10.2", "mkdocs", "mkdocs-material", "mkdocstrings[python]",]
+dev = [
+ "ipykernel>=6.29.5",
+ "pytest>=8.3.5",
+ "python-dotenv>=1.1.0",
+ "toml>=0.10.2",
+ "mkdocs",
+ "mkdocs-material",
+ "mkdocstrings[python]",
+ "ruff>=0.11.13",
+]
 
 [tool.uv]
 [[tool.uv.index]]

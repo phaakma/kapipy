@@ -44,11 +44,11 @@ class GIS:
     Used as the main entry point for interacting with Koordinates-hosted data.
 
     Attributes:
-        name (str): The name of the Koordinates portal.
+        name (str): The name of the Koordinates portal.  
+            If this is provided, the url is ignored.  
         url (str): The base URL of the Koordinates server.
         _api_version (str): The API version to use.
         _content_manager (ContentManager or None): Cached ContentManager instance.
-        _wfs_manager (object or None): Cached WFS manager instance (if implemented).
         _api_key (str): The API key for authenticating requests.
     """
 
@@ -77,12 +77,13 @@ class GIS:
         if name:
             self.name = PORTAL_DETAILS.get(name.lower()).get("name")
             self.url = PORTAL_DETAILS.get(name.lower()).get("url")
+        else:
+            self.url = url
         self.url = (
             self.url if self.url.endswith("/") else f"{self.url}/"
         )  # ensure trailing slash
         self._api_version = api_version
         self._content_manager = None
-        self._wfs_manager = None
         self._api_key = api_key
         if not self._api_key:
             raise ValueError("API key must be provided.")
@@ -168,8 +169,8 @@ class GIS:
 
     def reset(self) -> None:
         """
-        Resets the GIS instance, forcing the content manager and WFS manager
-        to reinitialize the next time they are accessed. This is useful if the API key
+        Resets the GIS instance. 
+        This is useful if the API key
         or other configurations change.
 
         Returns:
@@ -177,8 +178,7 @@ class GIS:
         """
 
         self._content_manager = None
-        self._wfs_manager = None
-        logger.info("KServer instance reset.")
+        logger.info("GIS instance reset.")
 
     def __repr__(self) -> str:
         """

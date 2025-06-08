@@ -33,7 +33,7 @@ class VectorItem(BaseItem, WFS):
 
         Parameters:
             cql_filter (str, optional): The CQL filter to apply to the query.
-            wkid (int, optional): The spatial reference system code to use for the query.
+            out_sr (int, optional): The spatial reference system code to use for the query.
             bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the query.
                 If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.
             **kwargs: Additional parameters for the WFS query.
@@ -179,7 +179,7 @@ class VectorItem(BaseItem, WFS):
         Parameters:
             from_time (str): The start time for the changeset query, ISO format (e.g., "2015-05-15T04:25:25.334974").
             to_time (str, optional): The end time for the changeset query, ISO format. If not provided, the current time is used.
-            wkid (int, optional): The spatial reference system code to use for the query.
+            out_sr (int, optional): The spatial reference system code to use for the query.
             cql_filter (str, optional): The CQL filter to apply to the changeset query.
             bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the changeset query.
                 If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.
@@ -231,7 +231,7 @@ class VectorItem(BaseItem, WFS):
 
         Parameters:
             export_format (str): The format to export the item in.
-            wkid (int, optional): The coordinate reference system code to use for the export.
+            out_sr (int, optional): The coordinate reference system code to use for the export.
             extent (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
             poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.
             timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).
