@@ -1,4 +1,6 @@
 import pandas as pd
+from dateutil.parser import parse as date_parse
+from dataclasses import asdict
 from shapely.geometry import shape
 from shapely.ops import unary_union
 from shapely.geometry import mapping
@@ -14,6 +16,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 def map_field_type(field_type: str) -> str:
     mapping = {
         "integer": "esriFieldTypeInteger",
@@ -23,12 +26,38 @@ def map_field_type(field_type: str) -> str:
         "date": "esriFieldTypeDate",
         "boolean": "esriFieldTypeSmallInteger",  # or esriFieldTypeInteger if needed
         "objectid": "esriFieldTypeOID",
-        "guid": "esriFieldTypeGUID"
+        "guid": "esriFieldTypeGUID",
     }
     return mapping.get(field_type.lower(), "esriFieldTypeString")  # default fallback
 
 
-def geojson_to_featureset(geojson, fields, wkid=4326) -> "arcgis.features.FeatureSet":
+def map_geometry_type(geom_type: str) -> str:
+    mapping = {
+        "Point": "esriGeometryPoint",
+        "MultiPoint": "esriGeometryMultipoint",
+        "LineString": "esriGeometryPolyline",
+        "Polygon": "esriGeometryPolygon",
+    }
+    return mapping.get(geom_type, None)
+
+
+def is_valid_date(val):
+    if val is None:
+        return True  # Accept nulls
+    try:
+        # Accept int/float as epoch
+        if isinstance(val, (int, float)):
+            return True
+        # Try parsing as date string
+        date_parse(str(val))
+        return True
+    except Exception:
+        return False
+
+
+def geojson_to_featureset(
+    geojson: dict | list, geometry_type: str, fields, wkid: int = 4326
+) -> "arcgis.features.FeatureSet":
     """
     Converts a GeoJSON FeatureCollection or list of features into an ArcGIS FeatureSet.
 
@@ -56,24 +85,26 @@ def geojson_to_featureset(geojson, fields, wkid=4326) -> "arcgis.features.Featur
     else:
         raise ValueError("geojson must be a FeatureCollection or list of features.")
 
+    # validate that any date fields can be parsed
+    # If any value is not parseable, set the field type to string
+    for field in fields:
+        if field.type_.lower() == "date":
+            for feature in features:
+                val = feature.get("properties", {}).get(field.name)
+                if not is_valid_date(val):
+                    # Set this field to string
+                    logger.debug(
+                        f"Data for date field '{field.name}' was unable to be parsed. Overriding field type to string."
+                    )
+                    field.type_ = "string"
+
+                    break  # No need to check further for this field
+
     arcgis_fields = [
-        {**f, "type": map_field_type(f["type"])}
+        {**asdict(f), "type": map_field_type(f.type_)}
         for f in fields
-        if f["type"].lower() != "geometry"  # exclude geometry from field list
+        if f.type_.lower() != "geometry"  # exclude geometry from field list
     ]
-
-
-    # Infer geometry type from first feature
-    geojson_type = features[0].get("geometry", {}).get("type")
-    geometry_type_map = {
-        "Point": "esriGeometryPoint",
-        "MultiPoint": "esriGeometryMultipoint",
-        "LineString": "esriGeometryPolyline",
-        "Polygon": "esriGeometryPolygon",
-    }
-    geometry_type = geometry_type_map.get(geojson_type)
-    if not geometry_type:
-        raise ValueError(f"Unsupported geometry type: {geojson_type}")
 
     # Convert features
     arcgis_features = []
@@ -94,6 +125,7 @@ def geojson_to_featureset(geojson, fields, wkid=4326) -> "arcgis.features.Featur
         geometry_type=geometry_type,
         spatial_reference=SpatialReference(wkid),
     )
+
 
 def geojson_to_gdf(
     geojson: dict[str, Any] | list[dict[str, Any]],
@@ -185,6 +217,7 @@ def geojson_to_gdf(
 def geojson_to_sdf(
     geojson: dict[str, Any] | list[dict[str, Any]],
     wkid: int,
+    geometry_type: str,
     fields: list[dict[str, str]] | None = None,
 ) -> "arcgis.features.GeoAccessor":
     """
@@ -216,10 +249,13 @@ def geojson_to_sdf(
     from arcgis.geometry import SpatialReference
 
     logger.debug(f"{wkid=}")
-    feature_set = geojson_to_featureset(geojson=geojson, fields=fields, wkid=wkid)
+    feature_set = geojson_to_featureset(
+        geojson=geojson, geometry_type=geometry_type, fields=fields, wkid=wkid
+    )
     sdf = feature_set.sdf
 
     return sdf
+
 
 def json_to_df(
     json: dict[str, Any] | list[dict[str, Any]],
@@ -358,11 +394,13 @@ def sdf_or_gdf_to_bbox(df: Any) -> str:
 
     data_type = get_data_type(df)
     if data_type == "sdf":
-        if not df.spatial.geometry_type in ["polygon", "multipolygon"]:
+        logger.info(df.spatial.geometry_type)
+        if not df.spatial.geometry_type[0] in ["polygon", "multipolygon"]:
             raise ValueError("sdf must contain polygon geometries.")
         if df.spatial.sr.wkid != 4326:
             df.spatial.project({"wkid": 4326})
-        return ",".join(map(str, df.spatial.full_extent))
+        bbox = ",".join(map(str, df.spatial.full_extent))
+        return f"{bbox},EPSG:4326"
 
     elif data_type == "gdf":
         if not all(df.geometry.type.isin(["Polygon", "MultiPolygon"])):

@@ -10,6 +10,7 @@ from .conversion import (
     geojson_to_gdf,
     json_to_df,
     geojson_to_sdf,
+    sdf_or_gdf_to_bbox,
 )
 from .wfs_utils import download_wfs_data
 
@@ -102,7 +103,7 @@ class VectorItem(BaseItem, WFS):
         )
 
         if output_format == "sdf":
-            return geojson_to_sdf(result, wkid=wkid, fields=self.data.fields)
+            return geojson_to_sdf(result,  wkid=wkid, geometry_type=self.data.geometry_type, fields=self.data.fields)
         elif output_format in ("gdf", "geodataframe"):
             return geojson_to_gdf(result, wkid=wkid, fields=self.data.fields)
         return result
@@ -211,7 +212,7 @@ class VectorItem(BaseItem, WFS):
         )
 
         if output_format == "sdf":
-            return geojson_to_sdf(result, wkid=wkid, fields=self.data.fields)
+            return geojson_to_sdf(result, wkid=wkid, geometry_type=self.data.geometry_type, fields=self.data.fields)
         elif output_format in ("gdf", "geodataframe"):
             return geojson_to_gdf(result, wkid=wkid, fields=self.data.fields)
         return result
