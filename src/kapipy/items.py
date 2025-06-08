@@ -24,7 +24,7 @@ class VectorItem(BaseItem, WFS):
     def query_to_json(
         self,
         cql_filter: str = None,
-        wkid: int = None,
+        out_sr: int = None,
         bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         **kwargs: Any,
     ) -> dict:
@@ -53,7 +53,7 @@ class VectorItem(BaseItem, WFS):
             api_key=self._gis._api_key,
             typeNames=f"{self.type_}-{self.id}",
             cql_filter=cql_filter,
-            srsName=f"EPSG:{wkid}" or self.data.crs.srid,
+            srsName=f"EPSG:{out_sr}" or self.data.crs.srid,
             bbox=bbox,
             **kwargs,
         )
@@ -63,7 +63,7 @@ class VectorItem(BaseItem, WFS):
     def query(
         self,
         cql_filter: str = None,
-        wkid: int = None,
+        out_sr: int = None,
         bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         output_format=None,
         **kwargs: Any,
@@ -73,7 +73,7 @@ class VectorItem(BaseItem, WFS):
 
         Parameters:
             cql_filter (str, optional): The CQL filter to apply to the query.
-            wkid (int, optional): The spatial reference system code to use for the query.
+            out_sr (int, optional): The spatial reference system code to use for the query.
             bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the query.
                 If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.
             output_format (str, optional): The output format: 'gdf', 'sdf', or 'json'. Defaults to the best available.
@@ -93,26 +93,26 @@ class VectorItem(BaseItem, WFS):
         if output_format not in ("sdf", "gdf", "geodataframe", "json", "geojson"):
             raise ValueError(f"Unknown output format: {output_format}")
 
-        wkid = wkid if wkid is not None else self.data.crs.srid
+        out_sr = out_sr if out_sr is not None else self.data.crs.srid
 
         result = self.query_to_json(
             cql_filter=cql_filter,
-            wkid=wkid,
+            out_sr=out_sr,
             bbox=bbox,
             **kwargs,
         )
 
         if output_format == "sdf":
-            return geojson_to_sdf(result,  wkid=wkid, geometry_type=self.data.geometry_type, fields=self.data.fields)
+            return geojson_to_sdf(result,  wkid=out_sr, geometry_type=self.data.geometry_type, fields=self.data.fields)
         elif output_format in ("gdf", "geodataframe"):
-            return geojson_to_gdf(result, wkid=wkid, fields=self.data.fields)
+            return geojson_to_gdf(result, wkid=out_sr, fields=self.data.fields)
         return result
 
     def changeset_to_json(
         self,
         from_time: str,
         to_time: str = None,
-        wkid=None,
+        out_sr=None,
         cql_filter: str = None,
         bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         **kwargs: Any,
@@ -157,7 +157,7 @@ class VectorItem(BaseItem, WFS):
             typeNames=f"{self.type_}-{self.id}-changeset",
             viewparams=viewparams,
             cql_filter=cql_filter,
-            srsName=f"EPSG:{wkid}" or f"{self.data.crs.id}",
+            srsName=f"EPSG:{out_sr}" or f"{self.data.crs.id}",
             bbox=bbox,
             **kwargs,
         )
@@ -167,7 +167,7 @@ class VectorItem(BaseItem, WFS):
         self,
         from_time: str,
         to_time: str = None,
-        wkid: int = None,
+        out_sr: int = None,
         cql_filter: str = None,
         bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         output_format=None,
@@ -194,7 +194,7 @@ class VectorItem(BaseItem, WFS):
             ValueError: If the output format is unknown.
         """
 
-        wkid = wkid if wkid is not None else self.epsg
+        out_sr = out_sr if out_sr is not None else self.epsg
 
         if output_format is None:
             output_format = get_default_output_format()
@@ -205,22 +205,22 @@ class VectorItem(BaseItem, WFS):
         result = self.changeset_to_json(
             from_time=from_time,
             to_time=to_time,
-            wkid=wkid,
+            out_sr=out_sr,
             cql_filter=cql_filter,
             bbox=bbox,
             **kwargs,
         )
 
         if output_format == "sdf":
-            return geojson_to_sdf(result, wkid=wkid, geometry_type=self.data.geometry_type, fields=self.data.fields)
+            return geojson_to_sdf(result, wkid=out_sr, geometry_type=self.data.geometry_type, fields=self.data.fields)
         elif output_format in ("gdf", "geodataframe"):
-            return geojson_to_gdf(result, wkid=wkid, fields=self.data.fields)
+            return geojson_to_gdf(result, wkid=out_sr, fields=self.data.fields)
         return result
 
     def export(
         self,
         export_format: str,
-        wkid: int = None,
+        out_sr: int = None,
         extent: Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         poll_interval: int = None,
         timeout: int = None,
@@ -249,7 +249,7 @@ class VectorItem(BaseItem, WFS):
         job_result = self._gis.content.export(
             itm=self,
             export_format=export_format,
-            wkid=wkid,
+            wkid=out_sr,
             extent=extent,
             poll_interval=poll_interval,
             timeout=timeout,
