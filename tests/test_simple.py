@@ -1,10 +1,17 @@
 import os
 import pytest
-from dotenv import load_dotenv
+
 import logging
 
-from kapipy.features.wfs import download_wfs_data
-from kapipy.features.export import validate_export_params
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception as e:
+    print(e)
+
+
+from kapipy.wfs_utils import download_wfs_data
+from kapipy.export import validate_export_params
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +24,7 @@ suburb_locality_table_id = "113761"  # Suburb Locality - Population 3190 records
 DEFAULT_API_VERSION = "v1.x"
 
 def test_download_linz_wfs_data_live(id: str = rail_station_layer_id):
-    # Load environment variables from .env file
-    load_dotenv()
+    # Load environment variables from .env file    
     api_key = os.getenv("LINZ_API_KEY")
     assert api_key, "LINZ_API_KEY must be set in your .env file"
 
@@ -40,8 +46,6 @@ def test_download_linz_wfs_data_live(id: str = rail_station_layer_id):
     assert len(features) > 0, "Should return at least one feature"
 
 def test_validate_layer_export_params(layer_id:str = rail_station_layer_id, api_version=DEFAULT_API_VERSION):
-    # Load environment variables from .env file
-    load_dotenv()
     api_key = os.getenv("LINZ_API_KEY")
     assert api_key, "LINZ_API_KEY must be set in your .env file"
     api_url = f"https://data.linz.govt.nz/services/api/{DEFAULT_API_VERSION}/"

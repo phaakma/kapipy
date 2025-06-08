@@ -1,18 +1,18 @@
 [project]
 name = "kapipy"
-version = "0.1.7"
+version = "0.1.8"
 description = "A python client for accessing and querying geospatial open data portals."
 keywords = [ "koordinates", "LINZ", "geospatial", "open data", "API", "GIS", "Stats NZ", "LRIS",]
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [ "pandas>=2.0.2", "requests>=2.30.0", "tenacity>=9.0.0", "httpx>=0.25.0", "shapely>=2.0.5",]
+dependencies = [ "pandas>=2.0.2", "requests>=2.30.0", "tenacity>=9.0.0", "httpx>=0.25.0", "shapely>=2.0.5", "dacite>=1.9.2",]
 license = "MIT"
 [[project.authors]]
 name = "Paul Haakma"
 email = "phaakma@gmail.com"
 
 [dependency-groups]
-dev = [ "ipykernel>=6.29.5", "pytest>=8.3.5", "python-dotenv>=1.1.0", "toml>=0.10.2", "mkdocs", "mkdocs-material", "mkdocstrings[python]",]
+dev = [ "ipykernel>=6.29.5", "pytest>=8.3.5", "python-dotenv>=1.1.0", "toml>=0.10.2", "mkdocs", "mkdocs-material", "mkdocstrings[python]", "ruff>=0.11.13",]
 
 [tool.uv]
 [[tool.uv.index]]

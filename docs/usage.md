@@ -5,21 +5,23 @@ This guide walks you through the main ways to use the `kapipy` package to query 
 ## Installation Notes  
 Kapipy is designed to use either GeoPandas or the ArcGIS API for Python, returning and reading data as either a GeoDataFrame or a Spatially Enabled DataFrame respectively.  Neither package is defined as a requirement of kapipy, as users may choose to use one over the other and may not want the other automatically installed.  
 
-This means you need to manually instally one of either **geopandas** or **arcgis** into your Python environment.
+This means you need to manually install one of either **geopandas** or **arcgis** into your Python environment.
 
 ### ArcGIS  
  If you are an ArcGIS user, cloning the default conda environment from ArcGIS Pro or ArcGIS Server should be sufficient, and you just need to install kapipy. If you choose to start with a blank environment and do not intend to install arcpy, you may need to install the following:  
-- pyproj
+- pyproj  
 - shapely  
 - pyshp  
 
 ### Jupyter Notebooks  
 If you are starting with a clean Python environment and want to use Jupyter Notebooks (e.g. inside Visual Studio Code), then manually install these packages:  
-- ipykernel
-- ptyprocess
+- ipykernel  
+- ptyprocess  
 - comm  
 
 ## Connecting to the various open data portals  
+
+LINZ, Stats NZ and LRIS have built in names for convenience. Alternatively, pass in the base URL.  
 
 ```python
 from kapipy.gis import GIS
@@ -29,8 +31,15 @@ statsnz = GIS(name='statsnz', api_key="your-stats-api-key")
 lris = GIS(name='lris', api_key="your-lris-api-key")
 ```
 
-## Get a reference to an item  
+Passing in a base url:  
+```python
+from kapipy.gis import GIS
 
+linz = GIS(url="https://data.linz.govt.nz/", api_key="your-linz-api-key")
+```
+
+## Get a reference to an item  
+The gis object has a property called **content** which is a ContentManager. This allows you to get a reference to an item using it's id.  
 
 ```python
 from kapipy.gis import GIS
@@ -45,54 +54,115 @@ itm = linz.content.get(rail_station_layer_id)
 print(itm)
 ```
 
-## Query an item using WFS endpoint  
+## WFS queries  
+Items with WFS endpoints can be queried using the **query** and **get_changeset** methods of the itm.
 
+For spatial items, it is recommended to provide a desired spatial reference via the **out_sr** parameter.  
+
+### Query  
 Get all data  
 ```python  
-data = itm.query()
+data = itm.query(out_sr=2193)
 ```
 
 Get first 5 records.  
 
 ```python
-data = itm.query(count=5)
+data = itm.query(count=5, out_sr=2193)
 ```
 
-Data is returned as either a geopandas GeoDataFrame or an ArcGIS Spatially Enabled DataFrame, typed by the fields provided by the API.  
+Spatial data is returned as either a geopandas GeoDataFrame or an ArcGIS Spatially Enabled DataFrame. The attribute types are set according to the item's field list.  
+Tabular data is returned as a pandas DataFrame.  
+
 ```python
 print(data.dtypes())
 print(data.head())
 ```
 
-## Get a changeset using WFS endpoint  
+### Changeset    
 
-Also returned as a DataFrame.
+Also returned as a data frame with the same logic as the **query** method.  
+The datetime parameters should be provided in ISO 8601 format.  
+
+The **from_time** parameter is the time from which the changeset data will be generated.  
+The **to_time** parameter is optional, and is the time up to which the changeset data will be generated. If this parameter is not provided then it defaults to now.  
+
 ```python
-changeset = itm.get_changeset(from_time="2024-01-01T00:00:00Z", wkid=2193)
+changeset = itm.get_changeset(from_time="2024-01-01T00:00:00Z", out_sr=2193)
 print((f"Total records returned {itm.title}: {changeset.shape[0]}"))
 ```
 
-## Generate an export  
+## Export data    
+Exporting data creates an asynchronous task on the data portal server that returns a job id. It is possible to create and manage individual downloads, or treat them collectively.  
 
-It is recommended to always specify the wkid.  
+Again, it is recommended to always specify the **out_sr**.  
+
+### Single item export  
+
+The item **export** method initiates the creation of the job on the server and a **JobResult** object is returned. Accessing the **status** property triggers a check with the server to get the latest **status** of the job.  
+The **status** returned is a **JobStatus** object that has **state** and **progress** properties.  
 
 ```python
-job = itm.export("geodatabase", wkid=2193)
+job = itm.export("geodatabase", out_sr=2193)
 print(job.status)
 ```
-Download the job data once it is ready. If this method is called before the job is complete, it will keep polling the status of the job until it is ready and then downloads it.  
+Download the job data once it is ready. If this method is called before the job **state** is **'complete'**, it will poll the status of the job until it is ready and then downloads it.  
+Calling the download method of a JobResult object gives you the flexibility of specifying a specific folders for that download.
 ```python
 job.download(folder=r"c:/temp")
 ```
 
-## Generate an export with extent geometry  
+### Generate an export with extent geometry  
 
-The *extent* argument can be passed in as a GeoDataFrame or a Spatially Enabled DataFrame.  
+The **extent** argument can be passed in as a gdf or an sdf.  
 
 ```python
-waikato_polygon = gpd.read_file('../examples/waikato.json')
+# gdf
 matamata_gdf = gpd.read_file("../examples/matamata_piako.shp")
+# sdf
+matamata_sdf = pd.DataFrame.spatial.from_featureclass("../examples/matamata_piako.shp")
 
-job = itm.export("geodatabase", wkid=2193, extent=waikato_polygon,)
-print(job.status)
+job = itm.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
+```
+
+### Export and download multiple items  
+
+Whenever the **export** method of an item is called, the **JobResult** object is added to a list belonging to the ContentManager called **jobs**. 
+
+The ContentManager has a download method as well. Calling this method and passing in a folder will download to that folder any jobs in the content manager's job list that are not already downloaded.  
+
+```python
+itm1.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
+itm2.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
+
+linz.content.download(folder=r"c:/temp")
+```
+
+The ContentManager also has an **output_folder** property. You can set this and it will be used as the default if no folder is provided.  
+```python
+linz.content.download_folder = r"c:/temp"
+
+itm1.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
+itm2.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
+
+linz.content.download()
+```
+
+Alternatively, you can pass the content manager's **download** method a list of specific jobs and only those jobs will be downloaded.  
+```python
+job_1 = itm1.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
+job_2 = itm2.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
+job_3 = itm3.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
+job_4 = itm4.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
+job_5 = itm5.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
+
+# only jobs 1, 3 and 5 will be downloaded
+linz.content.download([job_1, job_3, job_5])
+```
+
+Once a job is downloaded, it's "downloaded" attribute will be set to True, and any future calls to the ContentManager's **download** method will not download it.  
+Use the 'force_all' parameter to force a download of all jobs in the list, regardless of their download status.  
+
+```python
+linz.content.download(force_all=True)
 ```

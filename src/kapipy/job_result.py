@@ -1,6 +1,4 @@
-"""
-job_result.py
-"""
+# job_result.py
 
 import logging
 import os
@@ -88,8 +86,8 @@ class JobResult:
         self,
         payload: dict,
         gis: "GIS",
-        poll_interval: int = 10,
-        timeout: int = 600,
+        poll_interval: int = None,
+        timeout: int = None,
     ) -> None:
         """
         Initializes the JobResult instance.
@@ -104,8 +102,9 @@ class JobResult:
         self._initial_payload = payload
         self._job_url = payload["url"]
         self._id = payload["id"]
-        self._poll_interval = poll_interval
-        self._timeout = timeout
+        self.downloaded = False
+        self._poll_interval = poll_interval if poll_interval is not None else 10
+        self._timeout = timeout if timeout is not None else 600
         self._last_response = payload
         self._gis = gis
 
@@ -147,7 +146,6 @@ class JobResult:
             str: The job state. Possible values include 'complete', 'processing', 'cancelled', 'error', 'gone'.
         """
 
-        self._refresh_sync()
         return self._last_response.get("state")
 
 
@@ -160,7 +158,6 @@ class JobResult:
             float | None: The progress value, or None if not available.
         """
 
-        self._refresh_sync()
         return self._last_response.get("progress", None)
 
     @property
@@ -191,11 +188,12 @@ class JobResult:
             str: User-friendly string representation.
         """
 
-        self._refresh_sync()
+        progress = self.progress
+        progress_str = f"{progress:.2f}" if progress is not None else "None"
         return (
             f"JobResult(id={self.id}, name='{self.name}', "
-            f"status='{self._last_response.get('state')}', "
-            f"progress={self.progress})"
+            f"state='{self._last_response.get('state')}', "
+            f"progress={progress_str})"
         )
 
     def _refresh_sync(self) -> None:
@@ -298,6 +296,7 @@ class JobResult:
         self.download_completed_at = completed_at
         self.download_resolved_url = final_url
         self.download_checksum = checksum
+        self.downloaded = True
 
         return DownloadResult(
             folder=folder,
