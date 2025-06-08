@@ -34,4 +34,4 @@ jobs:
       env:
         LINZ_API_KEY: ${{secrets.LINZ_API_KEY}}
       run: |
-        pytest
+        uv run pytest
