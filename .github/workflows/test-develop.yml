@@ -29,8 +29,9 @@ jobs:
         pip install uv pytest
         uv sync
         uv add geopandas
+        uv pip install -e .
     - name: Test with pytest
       env:
         LINZ_API_KEY: ${{secrets.LINZ_API_KEY}}
       run: |
-        pytest
+        uv run pytest
