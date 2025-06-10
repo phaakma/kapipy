@@ -11,3 +11,8 @@ The recommended way is via the [GitHub issues page](https://github.com/phaakma/k
 
 ## Will it work with other Koordinates data portals?  
 Probably? Maybe? Not sure. Try it and provide feedback if it doesn't! The focus during development is purely on LINZ, Stats NZ and LRIS, so those are the only ones that have been tested.  
+
+## Can I download the entire NZ Primary Parcels layer using the query method?  
+Never tried. And you probably shouldn't either.   
+For context, the NZ Primary Parcels layer is approx 2.7M polygons. The query method uses the WFS endpoint, and would have to page hundreds of thousands of requests to download the data. That seems to be just asking for a network or connection error of some sort to cut you off halfway through.  
+Use the **export** method to generate and download large datasets, and then use the **changeset** method to retrieve changes and then apply those.  

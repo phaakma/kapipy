@@ -5,8 +5,12 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "cSpell.words": [
+        "automagically",
+        "Centrelines",
         "codehilite",
         "crossrefs",
+        "dotenv",
+        "levelname",
         "mkdocs"
     ]
 }
