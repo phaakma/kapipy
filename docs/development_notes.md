@@ -92,52 +92,27 @@ uv run -m pytest tests/test_simple.py::test_validate_layer_export_params --log-c
 
 There is currently very limited test coverage. Any live tests require a "LINZ_API_KEY" entry to exist in a .env file in the root project folder.  
 
-## Data Classes  
+## Build: Guidelines and Processes  
 
-BaseItem
+- Do all development work on the develop branch.  
+- Push all commits to Github on develop.  
+- When ready to create a release:
+- - Increment the version in pyproject.toml and __version__.py  
+- - Create a pull request in Github across to the main branch.
+- - Create a release in main.  
+- This will trigger Github action which will build and publish to PyPi.  
 
-LayerItem
+Pushing commits to develop branch in Github should trigger Github action to run pytest tests.  
 
-Group
+## Documentation  
+Documentation uses MkDocs to generate and publish documentation website using Github Pages.  
 
-Publisher
+Locally, run ```mkdocs build```  then ```mkdocs gh-deploy --clean```  
 
-Theme
+This could probably be set up as a Github action. If the gh-deploy was run from a Github workflow, need to figure out a way to use secrets.GITHUB_TOKEN. Or does it need authentication at all? Maybe it just works from there?    
 
-Site
 
-DataDetails
 
-Fields
 
-Crs
 
-Extent
 
-ChangeSummary
-
-ImportLog
-
-ExportFormat
-
-Category
-
-Ancestor
-
-Item required fields:
-
-class BaseItem(Protocol):
-    id
-    url
-    type_
-    title
-    description
-    data
-    kind
-    categories
-    tags
-    created_at
-    license
-    metadata
-    num_views
-    num_downloads

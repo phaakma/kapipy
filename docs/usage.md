@@ -97,6 +97,13 @@ Exporting data creates an asynchronous task on the data portal server that retur
 
 Again, it is recommended to always specify the **out_sr**.  
 
+### Export formats  
+You can check the available export formats by using the **data.export_formats** property.  
+
+```python
+print(itm.data.export_formats)
+```  
+
 ### Single item export  
 
 The item **export** method initiates the creation of the job on the server and a **JobResult** object is returned. Accessing the **status** property triggers a check with the server to get the latest **status** of the job.  
