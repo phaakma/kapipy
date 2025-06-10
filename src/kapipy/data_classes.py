@@ -337,6 +337,13 @@ class BaseItem(Protocol):
     num_views: int
     num_downloads: int
 
+    def __str__(self) -> None:
+        """
+        User friendly string of a base item.
+        """
+
+        return f'Item id: {self.id}, type_: {self.type_}, title: {self.title}'
+
 @dataclass
 class WFS:
     """Item is able to be queried."""
