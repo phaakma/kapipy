@@ -218,7 +218,7 @@ class ContentManager:
         self,
         itm: BaseItem,
         export_format: str,
-        wkid: Optional[int] = None,
+        out_sr: Optional[int] = None,
         extent: Optional[Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"]] = None,
         poll_interval: int = 10,
         timeout: int = 600,
@@ -229,7 +229,7 @@ class ContentManager:
 
         Parameters:
             export_format (str): The format to export the item in.
-            wkid (int, optional): The coordinate reference system code to use for the export.
+            out_sr (int, optional): The coordinate reference system code to use for the export.
             extent (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
             poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.
             timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).
@@ -246,8 +246,8 @@ class ContentManager:
 
         crs = None
         if itm.kind in ["vector"]:
-            wkid = wkid if wkid is not None else itm.data.crs.srid
-            crs = f"EPSG:{wkid}"
+            out_sr = out_sr if out_sr is not None else itm.data.crs.srid
+            crs = f"EPSG:{out_sr}"
             if extent is not None:
                 extent = sdf_or_gdf_to_single_polygon_geojson(extent)
 

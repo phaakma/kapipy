@@ -41,6 +41,13 @@ class DownloadResult:
     completed_at: float
     checksum: str | None = None
 
+    def __str__(self):
+        """
+        Return a user friendly string of the DownloadResult
+        """
+
+        return f"DownloadResult: job id: {self.job_id}, file path: {self.file_path}"
+
 @dataclass
 class JobStatus:
     """
