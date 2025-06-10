@@ -595,9 +595,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#data-classes" class="md-nav__link">
+  <a href="#build-guidelines-and-processes" class="md-nav__link">
     <span class="md-ellipsis">
-      Data Classes
+      Build: Guidelines and Processes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
     </span>
   </a>
   
@@ -692,38 +701,33 @@ I'm not sure if the LINZ WFS endpoint is strictly equivalent with all other Koor
 </code></pre></div>
 
 <p>There is currently very limited test coverage. Any live tests require a "LINZ_API_KEY" entry to exist in a .env file in the root project folder.  </p>
-<h2 id="data-classes">Data Classes<a class="headerlink" href="#data-classes" title="Permanent link">&para;</a></h2>
-<p>BaseItem</p>
-<p>LayerItem</p>
-<p>Group</p>
-<p>Publisher</p>
-<p>Theme</p>
-<p>Site</p>
-<p>DataDetails</p>
-<p>Fields</p>
-<p>Crs</p>
-<p>Extent</p>
-<p>ChangeSummary</p>
-<p>ImportLog</p>
-<p>ExportFormat</p>
-<p>Category</p>
-<p>Ancestor</p>
-<p>Item required fields:</p>
-<p>class BaseItem(Protocol):
-    id
-    url
-    type_
-    title
-    description
-    data
-    kind
-    categories
-    tags
-    created_at
-    license
-    metadata
-    num_views
-    num_downloads</p>
+<h2 id="build-guidelines-and-processes">Build: Guidelines and Processes<a class="headerlink" href="#build-guidelines-and-processes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Do all development work on the develop branch.  </li>
+<li>Push all commits to Github on develop.  </li>
+<li>When ready to create a release:</li>
+<li>
+<ul>
+<li>Increment the version in pyproject.toml and <strong>version</strong>.py  </li>
+</ul>
+</li>
+<li>
+<ul>
+<li>Create a pull request in Github across to the main branch.</li>
+</ul>
+</li>
+<li>
+<ul>
+<li>Create a release in main.  </li>
+</ul>
+</li>
+<li>This will trigger Github action which will build and publish to PyPi.  </li>
+</ul>
+<p>Pushing commits to develop branch in Github should trigger Github action to run pytest tests.  </p>
+<h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
+<p>Documentation uses MkDocs to generate and publish documentation website using Github Pages.  </p>
+<p>Locally, run <code>mkdocs build</code>  then <code>mkdocs gh-deploy --clean</code>  </p>
+<p>This could probably be set up as a Github action. If the gh-deploy was run from a Github workflow, need to figure out a way to use secrets.GITHUB_TOKEN. Or does it need authentication at all? Maybe it just works from there?    </p>
 
 
 

@@ -544,6 +544,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#export-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Export formats
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#single-item-export" class="md-nav__link">
     <span class="md-ellipsis">
       Single item export
@@ -770,6 +779,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#export-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Export formats
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#single-item-export" class="md-nav__link">
     <span class="md-ellipsis">
       Single item export
@@ -894,6 +912,11 @@ The <strong>to_time</strong> parameter is optional, and is the time up to which 
 <h2 id="export-data">Export data<a class="headerlink" href="#export-data" title="Permanent link">&para;</a></h2>
 <p>Exporting data creates an asynchronous task on the data portal server that returns a job id. It is possible to create and manage individual downloads, or treat them collectively.  </p>
 <p>Again, it is recommended to always specify the <strong>out_sr</strong>.  </p>
+<h3 id="export-formats">Export formats<a class="headerlink" href="#export-formats" title="Permanent link">&para;</a></h3>
+<p>You can check the available export formats by using the <strong>data.export_formats</strong> property.  </p>
+<div class="codehilite"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">export_formats</span><span class="p">)</span>
+</code></pre></div>
+
 <h3 id="single-item-export">Single item export<a class="headerlink" href="#single-item-export" title="Permanent link">&para;</a></h3>
 <p>The item <strong>export</strong> method initiates the creation of the job on the server and a <strong>JobResult</strong> object is returned. Accessing the <strong>status</strong> property triggers a check with the server to get the latest <strong>status</strong> of the job.<br />
 The <strong>status</strong> returned is a <strong>JobStatus</strong> object that has <strong>state</strong> and <strong>progress</strong> properties.  </p>
