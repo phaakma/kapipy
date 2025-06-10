@@ -103,9 +103,9 @@ class VectorItem(BaseItem, WFS):
         )
 
         if output_format == "sdf":
-            return geojson_to_sdf(result,  wkid=out_sr, geometry_type=self.data.geometry_type, fields=self.data.fields)
+            return geojson_to_sdf(result,  out_sr=out_sr, geometry_type=self.data.geometry_type, fields=self.data.fields)
         elif output_format in ("gdf", "geodataframe"):
-            return geojson_to_gdf(result, wkid=out_sr, fields=self.data.fields)
+            return geojson_to_gdf(result, out_sr=out_sr, fields=self.data.fields)
         return result
 
     def changeset_to_json(
@@ -212,9 +212,9 @@ class VectorItem(BaseItem, WFS):
         )
 
         if output_format == "sdf":
-            return geojson_to_sdf(result, wkid=out_sr, geometry_type=self.data.geometry_type, fields=self.data.fields)
+            return geojson_to_sdf(result, out_sr=out_sr, geometry_type=self.data.geometry_type, fields=self.data.fields)
         elif output_format in ("gdf", "geodataframe"):
-            return geojson_to_gdf(result, wkid=out_sr, fields=self.data.fields)
+            return geojson_to_gdf(result, out_sr=out_sr, fields=self.data.fields)
         return result
 
     def export(
@@ -249,7 +249,7 @@ class VectorItem(BaseItem, WFS):
         job_result = self._gis.content.export(
             itm=self,
             export_format=export_format,
-            wkid=out_sr,
+            out_sr=out_sr,
             extent=extent,
             poll_interval=poll_interval,
             timeout=timeout,

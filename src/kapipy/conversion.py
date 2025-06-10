@@ -56,7 +56,7 @@ def is_valid_date(val):
 
 
 def geojson_to_featureset(
-    geojson: dict | list, geometry_type: str, fields, wkid: int = 4326
+    geojson: dict | list, geometry_type: str, fields, out_sr: int = 4326
 ) -> "arcgis.features.FeatureSet":
     """
     Converts a GeoJSON FeatureCollection or list of features into an ArcGIS FeatureSet.
@@ -64,7 +64,7 @@ def geojson_to_featureset(
     Args:
         geojson (dict or list): A GeoJSON FeatureCollection (dict with 'features') or a list of GeoJSON features.
         fields (list): A list of field definitions like [{'name': 'id', 'type': 'integer'}, ...].
-        wkid (int): The well-known ID of the spatial reference system (e.g., 2193 for NZTM).
+        out_sr (int): The well-known ID of the spatial reference system (e.g., 2193 for NZTM).
 
     Returns:
         arcgis.features.FeatureSet: An ArcGIS-compatible FeatureSet.
@@ -113,7 +113,7 @@ def geojson_to_featureset(
         attributes = feature.get("properties", {})
 
         # ArcGIS expects the geometry dict to include spatial reference
-        arcgis_geometry = Geometry({"spatialReference": {"wkid": wkid}, **geometry})
+        arcgis_geometry = Geometry({"spatialReference": {"wkid": out_sr}, **geometry})
 
         arcgis_feature = Feature(geometry=arcgis_geometry, attributes=attributes)
         arcgis_features.append(arcgis_feature)
@@ -123,13 +123,13 @@ def geojson_to_featureset(
         features=arcgis_features,
         fields=arcgis_fields,
         geometry_type=geometry_type,
-        spatial_reference=SpatialReference(wkid),
+        spatial_reference=SpatialReference(out_sr),
     )
 
 
 def geojson_to_gdf(
     geojson: dict[str, Any] | list[dict[str, Any]],
-    wkid: int,
+    out_sr: int,
     fields: list[dict[str, str]] | None = None,
 ) -> "gpd.GeoDataFrame":
     """
@@ -137,7 +137,7 @@ def geojson_to_gdf(
 
     Parameters:
         geojson (dict or list): A GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.
-        wkid (int): The EPSG code for the coordinate reference system (e.g., 4326).
+        out_sr (int): The EPSG code for the coordinate reference system (e.g., 4326).
         fields (list[dict], optional): A list of dictionaries specifying field names and their desired data types.
 
     Returns:
@@ -178,7 +178,7 @@ def geojson_to_gdf(
         geometries.append(shape(geom) if geom else None)
 
     # Create GeoDataFrame
-    crs = f"EPSG:{wkid}"
+    crs = f"EPSG:{out_sr}"
     df = pd.DataFrame(records)
     gdf = gpd.GeoDataFrame(df, geometry=geometries, crs=crs)
 
@@ -216,7 +216,7 @@ def geojson_to_gdf(
 
 def geojson_to_sdf(
     geojson: dict[str, Any] | list[dict[str, Any]],
-    wkid: int,
+    out_sr: int,
     geometry_type: str,
     fields: list[dict[str, str]] | None = None,
 ) -> "arcgis.features.GeoAccessor":
@@ -225,7 +225,7 @@ def geojson_to_sdf(
 
     Parameters:
         geojson (dict or list): A GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.
-        wkid (int): The EPSG code for the coordinate reference system (e.g., 4326).
+        out_sr (int): The EPSG code for the coordinate reference system (e.g., 4326).
         fields (list[dict], optional): A list of dictionaries specifying field names and their desired data types.
 
     Returns:
@@ -248,9 +248,9 @@ def geojson_to_sdf(
     from arcgis.features import GeoAccessor, GeoSeriesAccessor
     from arcgis.geometry import SpatialReference
 
-    logger.debug(f"{wkid=}")
+    logger.debug(f"{out_sr=}")
     feature_set = geojson_to_featureset(
-        geojson=geojson, geometry_type=geometry_type, fields=fields, wkid=wkid
+        geojson=geojson, geometry_type=geometry_type, fields=fields, out_sr=out_sr
     )
     sdf = feature_set.sdf
 
