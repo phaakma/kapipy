@@ -291,6 +291,12 @@ class VectorItem(BaseItem, WFS):
         )
         return job_result
 
+    def __str__(self) -> None:
+        """
+        User friendly string of a base item.
+        """
+
+        return f'Item id: {self.id}, type_: {self.type_}, title: {self.title}'
 
 @dataclass
 class TableItem(BaseItem, WFS):
@@ -438,3 +444,10 @@ class TableItem(BaseItem, WFS):
             f"Export job created for item with id: {self.id}, job id: {job_result.id}"
         )
         return job_result
+
+    def __str__(self) -> None:
+        """
+        User friendly string of a base item.
+        """
+
+        return f'Item id: {self.id}, type_: {self.type_}, title: {self.title}'
