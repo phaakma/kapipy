@@ -36,7 +36,7 @@ logger.debug(f'{has_geopandas=}')
 logger.debug(f'{has_arcpy=}')
 
 
-class GIS:
+class GISK:
     """
     Client for connecting to a Koordinates server.
 
@@ -60,7 +60,7 @@ class GIS:
         api_version=DEFAULT_API_VERSION,
     ) -> None:
         """
-        Initializes the GIS instance with the base URL, API version, and API key.
+        Initializes the GISK instance with the base URL, API version, and API key.
 
         Parameters:
             name (str, optional): The name of the Koordinates portal (e.g., 'linz'). If provided, overrides url.
@@ -87,7 +87,7 @@ class GIS:
         self._api_key = api_key
         if not self._api_key:
             raise ValueError("API key must be provided.")
-        logger.debug(f"GIS initialized with URL: {self.url}")
+        logger.debug(f"GISK initialized with URL: {self.url}")
 
     @property
     def _service_url(self) -> str:
@@ -169,7 +169,7 @@ class GIS:
 
     def reset(self) -> None:
         """
-        Resets the GIS instance. 
+        Resets the GISK instance. 
         This is useful if the API key
         or other configurations change.
 
@@ -178,25 +178,25 @@ class GIS:
         """
 
         self._content_manager = None
-        logger.info("GIS instance reset.")
+        logger.info("GISK instance reset.")
 
     def __repr__(self) -> str:
         """
-        Returns an unambiguous string representation of the GIS instance.
+        Returns an unambiguous string representation of the GISK instance.
 
         Returns:
-            str: String representation of the GIS instance.
+            str: String representation of the GISK instance.
         """
         return (
-            f"GIS(name={self.name!r}, url={self.url!r}, api_key={'***' if self._api_key else None}, "
+            f"GISK(name={self.name!r}, url={self.url!r}, api_key={'***' if self._api_key else None}, "
             f"api_version={self._api_version!r})"
         )
 
     def __str__(self) -> str:
         """
-        Returns a user-friendly string representation of the GIS instance.
+        Returns a user-friendly string representation of the GISK instance.
 
         Returns:
             str: User-friendly string representation.
         """
-        return f"GIS: {self.name or 'Custom'} at {self.url} (API {self._api_version})"
+        return f"GISK: {self.name or 'Custom'} at {self.url} (API {self._api_version})"

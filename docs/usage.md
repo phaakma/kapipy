@@ -24,28 +24,28 @@ If you are starting with a clean Python environment and want to use Jupyter Note
 LINZ, Stats NZ and LRIS have built in names for convenience. Alternatively, pass in the base URL.  
 
 ```python
-from kapipy.gis import GIS
+from kapipy.gis import GISK
 
-linz = GIS(name="linz", api_key="your-linz-api-key")
-statsnz = GIS(name='statsnz', api_key="your-stats-api-key")
-lris = GIS(name='lris', api_key="your-lris-api-key")
+linz = GISK(name="linz", api_key="your-linz-api-key")
+statsnz = GISK(name='statsnz', api_key="your-stats-api-key")
+lris = GISK(name='lris', api_key="your-lris-api-key")
 ```
 
 Passing in a base url:  
 ```python
 from kapipy.gis import GIS
 
-linz = GIS(url="https://data.linz.govt.nz/", api_key="your-linz-api-key")
+linz = GISK(url="https://data.linz.govt.nz/", api_key="your-linz-api-key")
 ```
 
 ## Get a reference to an item  
 The gis object has a property called **content** which is a ContentManager. This allows you to get a reference to an item using it's id.  
 
 ```python
-from kapipy.gis import GIS
+from kapipy.gis import GISK
 
 #create gis object
-linz = GIS(name="linz", api_key="your-linz-api-key")
+linz = GISK(name="linz", api_key="your-linz-api-key")
 
 #get item object
 rail_station_layer_id = "50318" #rail station 175 points

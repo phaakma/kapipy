@@ -92,6 +92,17 @@ uv run -m pytest tests/test_simple.py::test_validate_layer_export_params --log-c
 
 There is currently very limited test coverage. Any live tests require a "LINZ_API_KEY" entry to exist in a .env file in the root project folder.  
 
+To manually test the current build in a conda ArcGIS environment, need to manually install the current build into that environment.  
+- Open the ArcGIS python command prompt.  
+- Activate the desired environment.  
+- Change directory into the local kapipy development folder.  
+- If necessary, uninstall any existing install of kapipy.  
+- Run the following pip command.  
+
+```bash
+pip install -e .
+```  
+
 ## Build: Guidelines and Processes  
 
 - Do all development work on the develop branch.  
@@ -103,6 +114,17 @@ There is currently very limited test coverage. Any live tests require a "LINZ_AP
 - This will trigger Github action which will build and publish to PyPi.  
 
 Pushing commits to develop branch in Github should trigger Github action to run pytest tests.  
+
+Uv commands to manually build and publish.  
+```bash
+uv build --no-sources
+
+# testpypi
+uv publish --index testpypi
+
+# or PyPi
+uv publish --index pypi
+```  
 
 ## Documentation  
 Documentation uses MkDocs to generate and publish documentation website using Github Pages.  

@@ -1,6 +1,6 @@
 """
 ContentManager is a class that manages the content
-of a GIS instance.
+of a GISK instance.
 """
 
 from urllib.parse import urljoin
@@ -37,21 +37,21 @@ field_config = Config(strict=False, convert_key=lambda k: safe_keys.get(k, k))
 
 class ContentManager:
     """
-    Manages content for a GIS instance.
+    Manages content for a GISK instance.
 
     Provides methods to search for, retrieve, and instantiate Koordinates items (layers, tables, etc.)
     based on their IDs or URLs.
 
     Attributes:
-        _gis (GIS): The GIS instance this manager is associated with.
+        _gis (GISK): The GISK instance this manager is associated with.
     """
 
-    def __init__(self, gis: "GIS") -> None:
+    def __init__(self, gis: "GISK") -> None:
         """
-        Initializes the ContentManager with a GIS instance.
+        Initializes the ContentManager with a GISK instance.
 
         Parameters:
-            gis (GIS): The GIS instance to manage content for.
+            gis (GISK): The GISK instance to manage content for.
         """
         self._gis = gis
         self.jobs = []
@@ -59,13 +59,13 @@ class ContentManager:
 
     def _search_by_id(self, id: str) -> dict:
         """
-        Searches for content by ID in the GIS.
+        Searches for content by ID in the GISK.
 
         Parameters:
             id (str): The ID of the content to search for.
 
         Returns:
-            dict: The search result(s) from the GIS API.
+            dict: The search result(s) from the GISK API.
         """
 
         # Example: https://data.linz.govt.nz/services/api/v1.x/data/?id=51571
@@ -75,7 +75,7 @@ class ContentManager:
 
     def get(self, id: str) -> dict:
         """
-        Retrieves and instantiates a content item by ID from the GIS.
+        Retrieves and instantiates a content item by ID from the GISK.
 
         Parameters:
             id (str): The ID of the content to retrieve.
@@ -360,7 +360,7 @@ class ContentManager:
         Returns:
             str: User-friendly string representation.
         """
-        return f"ContentManager for GIS: {getattr(self._gis, 'name', None) or getattr(self._gis, 'url', 'Unknown')}"
+        return f"ContentManager for GISK: {getattr(self._gis, 'name', None) or getattr(self._gis, 'url', 'Unknown')}"
 
 
 @dataclass
