@@ -122,6 +122,7 @@ def download_wfs_data(
 
     logger.debug(f"Starting WFS data download for typeNames: '{typeNames}'")
 
+
     wfs_request_params = {
         "service": DEFAULT_WFS_SERVICE,
         "version": DEFAULT_WFS_VERSION,
@@ -137,6 +138,12 @@ def download_wfs_data(
         wfs_request_params["cql_filter"] = cql_filter
     if bbox:
         wfs_request_params["bbox"] = bbox
+    if out_fields is not None:
+        if isinstance(out_fields, list):
+            out_fields = ",".join(out_fields)        
+        out_fields = f'({out_fields})'
+        logger.info(f'{out_fields=}')
+        wfs_request_params['PropertyName'] = out_fields
 
     pages_fetched = 0
     while pages_fetched < MAX_PAGE_FETCHES:
