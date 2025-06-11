@@ -11,6 +11,7 @@
         "crossrefs",
         "dotenv",
         "levelname",
-        "mkdocs"
+        "mkdocs",
+        "viewparams"
     ]
 }

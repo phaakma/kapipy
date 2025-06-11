@@ -25,6 +25,8 @@ class VectorItem(BaseItem, WFS):
         self,
         cql_filter: str = None,
         out_sr: int = None,
+        out_fields: str | list[str] = None,
+        result_record_count: int = None,
         bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         **kwargs: Any,
     ) -> dict:
@@ -34,6 +36,8 @@ class VectorItem(BaseItem, WFS):
         Parameters:
             cql_filter (str, optional): The CQL filter to apply to the query.
             out_sr (int, optional): The spatial reference system code to use for the query.
+            out_fields (str, list of strings, optional): Attribute fields to include in the response. NOT IMPLEMENTED YET...
+            result_record_count (int, optional): Restricts the maximum number of results to return.
             bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the query.
                 If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.
             **kwargs: Additional parameters for the WFS query.
@@ -54,6 +58,8 @@ class VectorItem(BaseItem, WFS):
             typeNames=f"{self.type_}-{self.id}",
             cql_filter=cql_filter,
             srsName=f"EPSG:{out_sr}" or self.data.crs.srid,
+            out_fields=out_fields,
+            result_record_count=result_record_count,
             bbox=bbox,
             **kwargs,
         )
@@ -64,6 +70,8 @@ class VectorItem(BaseItem, WFS):
         self,
         cql_filter: str = None,
         out_sr: int = None,
+        out_fields: str | list[str] = None,
+        result_record_count: int = None,
         bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         output_format=None,
         **kwargs: Any,
@@ -74,6 +82,8 @@ class VectorItem(BaseItem, WFS):
         Parameters:
             cql_filter (str, optional): The CQL filter to apply to the query.
             out_sr (int, optional): The spatial reference system code to use for the query.
+            out_fields (str, list of strings, optional): Attribute fields to include in the response. NOT IMPLEMENTED YET...
+            result_record_count (int, optional): Restricts the maximum number of results to return.
             bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the query.
                 If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.
             output_format (str, optional): The output format: 'gdf', 'sdf', or 'json'. Defaults to the best available.
@@ -98,12 +108,19 @@ class VectorItem(BaseItem, WFS):
         result = self.query_to_json(
             cql_filter=cql_filter,
             out_sr=out_sr,
+            out_fields=out_fields,
+            result_record_count=result_record_count,
             bbox=bbox,
             **kwargs,
         )
 
         if output_format == "sdf":
-            return geojson_to_sdf(result,  out_sr=out_sr, geometry_type=self.data.geometry_type, fields=self.data.fields)
+            return geojson_to_sdf(
+                result,
+                out_sr=out_sr,
+                geometry_type=self.data.geometry_type,
+                fields=self.data.fields,
+            )
         elif output_format in ("gdf", "geodataframe"):
             return geojson_to_gdf(result, out_sr=out_sr, fields=self.data.fields)
         return result
@@ -115,6 +132,8 @@ class VectorItem(BaseItem, WFS):
         out_sr=None,
         cql_filter: str = None,
         bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        out_fields: str | list[str] = None,
+        result_record_count: int = None,
         **kwargs: Any,
     ) -> dict:
         """
@@ -159,6 +178,8 @@ class VectorItem(BaseItem, WFS):
             cql_filter=cql_filter,
             srsName=f"EPSG:{out_sr}" or f"{self.data.crs.id}",
             bbox=bbox,
+            out_fields=out_fields,
+            result_record_count=result_record_count,
             **kwargs,
         )
         return result
@@ -171,6 +192,8 @@ class VectorItem(BaseItem, WFS):
         cql_filter: str = None,
         bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         output_format=None,
+        out_fields: str | list[str] = None,
+        result_record_count: int = None,
         **kwargs: Any,
     ) -> "gpd.GeoDataFrame":
         """
@@ -208,11 +231,18 @@ class VectorItem(BaseItem, WFS):
             out_sr=out_sr,
             cql_filter=cql_filter,
             bbox=bbox,
+            out_fields=out_fields,
+            result_record_count=result_record_count,
             **kwargs,
         )
 
         if output_format == "sdf":
-            return geojson_to_sdf(result, out_sr=out_sr, geometry_type=self.data.geometry_type, fields=self.data.fields)
+            return geojson_to_sdf(
+                result,
+                out_sr=out_sr,
+                geometry_type=self.data.geometry_type,
+                fields=self.data.fields,
+            )
         elif output_format in ("gdf", "geodataframe"):
             return geojson_to_gdf(result, out_sr=out_sr, fields=self.data.fields)
         return result

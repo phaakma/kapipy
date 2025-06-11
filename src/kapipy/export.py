@@ -1,5 +1,5 @@
 # export.py
-import requests
+import httpx
 import os
 from datetime import datetime
 from typing import Any
@@ -50,7 +50,6 @@ def validate_export_params(
 
     logger.debug("Validating export parameters")
 
-
     api_url = api_url if api_url.endswith("/") else f"{api_url}/"
     if data_type == "layer":
         download_url = f"{api_url}layers/"
@@ -79,11 +78,11 @@ def validate_export_params(
     is_valid = False
 
     try:
-        response = requests.post(validation_url, headers=headers, json=data)
+        response = httpx.post(validation_url, headers=headers, json=data)
         response.raise_for_status()
 
         # if response has any 200 status code, check for validation errors
-        if response.status_code in (200, 201, "200", "201"):
+        if response.status_code in (200, 201):
             try:
                 json_response = response.json()
                 if any(
@@ -99,12 +98,12 @@ def validate_export_params(
                 logger.debug(err)
                 raise ValueError(err)
 
-    except requests.exceptions.HTTPError as e:
+    except httpx.HTTPStatusError as e:
         status = e.response.status_code if e.response is not None else None
         logger.error(
             f"HTTP error during validation: {status} - {getattr(e.response, 'text', '')}"
         )
-        if 400 <= status < 500:
+        if status is not None and 400 <= status < 500:
             raise ValueError(
                 f"Bad request ({status}) for URL {validation_url}: {getattr(e.response, 'text', '')}"
             ) from e
@@ -176,7 +175,7 @@ def request_export(
 
     request_datetime = datetime.utcnow().isoformat()
     try:
-        response = requests.post(export_url, headers=headers, json=data)
+        response = httpx.post(export_url, headers=headers, json=data)
         response.raise_for_status()
         try:
             json_response = response.json()
@@ -184,8 +183,8 @@ def request_export(
             err = f"Error parsing JSON from export request: {e}"
             logger.debug(err)
             raise ExportError(err)
-    except requests.exceptions.HTTPError as e:
-        err = f"Failed export request with status code: {response.status_code}"
+    except httpx.HTTPStatusError as e:
+        err = f"Failed export request with status code: {e.response.status_code if e.response else 'unknown'}"
         logger.debug(err)
         logger.debug(e)
         raise ExportError(err)
