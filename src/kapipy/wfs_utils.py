@@ -14,7 +14,7 @@ from .custom_errors import (BadRequest, HTTPError, ServerError)
 logger = logging.getLogger(__name__)
 
 # --- Configuration ---
-DEFAULT_PAGE_COUNT = 5000
+DEFAULT_FEATURES_PER_PAGE = 2000
 
 DEFAULT_WFS_SERVICE = "WFS"
 DEFAULT_WFS_VERSION = "2.0.0"
@@ -77,8 +77,9 @@ def download_wfs_data(
     srsName: str = DEFAULT_SRSNAME,
     cql_filter: str = None,
     bbox: str = None,
-    count=None,
-    page_count: int = DEFAULT_PAGE_COUNT,
+    out_fields: str | list[str] = None,
+    result_record_count: int = None,
+    page_count: int = DEFAULT_FEATURES_PER_PAGE,
     **other_wfs_params: Any,
 ) -> dict:
     """
@@ -91,8 +92,9 @@ def download_wfs_data(
         srsName (str, optional): Spatial Reference System name (e.g., "EPSG:2193"). Defaults to "EPSG:2193".
         cql_filter (str, optional): CQL filter to apply to the WFS request. Defaults to None.
         bbox (str, optional): Bounding box string to filter the request by extent. Defaults to None.
-        count (int, optional): Maximum number of features to fetch.
-        page_count (int, optional): Number of features per page request. Defaults to 1000.
+        out_fields (str, list of strings, optional): Attribute fields to include in the response. NOT IMPLEMENTED YET...
+        result_record_count (int, optional): Maximum number of features to fetch.
+        page_count (int, optional): Number of features per page request. Defaults to 2000.
         **other_wfs_params: Additional WFS parameters.
 
     Returns:
@@ -111,36 +113,39 @@ def download_wfs_data(
     headers = {"Authorization": f"key {api_key}"}
     all_features = []
     start_index = 0
-    page_count = min(page_count, count) if count is not None else page_count
+    if result_record_count is not None and result_record_count < page_count:
+        page_count = result_record_count
     crs_info = None
     total_features_service_reported = None
 
     result = None
 
     logger.debug(f"Starting WFS data download for typeNames: '{typeNames}'")
-    if cql_filter:
+
+    wfs_request_params = {
+        "service": DEFAULT_WFS_SERVICE,
+        "version": DEFAULT_WFS_VERSION,
+        "request": DEFAULT_WFS_REQUEST,
+        "outputFormat": DEFAULT_WFS_OUTPUT_FORMAT,
+        "typeNames": typeNames,
+        "srsName": srsName,
+        **{k: v for k, v in other_wfs_params.items()},
+    }
+
+    if cql_filter is not None:
         logger.debug(f"Using CQL filter: {cql_filter}")
+        wfs_request_params["cql_filter"] = cql_filter
+    if bbox:
+        wfs_request_params["bbox"] = bbox
 
     pages_fetched = 0
     while pages_fetched < MAX_PAGE_FETCHES:
         logger.debug(f"Pages fetched: {pages_fetched} of max: {MAX_PAGE_FETCHES}")
         pages_fetched += 1
-        wfs_request_params = {
-            "service": DEFAULT_WFS_SERVICE,
-            "version": DEFAULT_WFS_VERSION,
-            "request": DEFAULT_WFS_REQUEST,
-            "outputFormat": DEFAULT_WFS_OUTPUT_FORMAT,
-            "typeNames": typeNames,
-            "srsName": srsName,
-            "startIndex": start_index,
-            "count": page_count,
-            **{k: v for k, v in other_wfs_params.items()},
-        }
+        wfs_request_params["startIndex"] = start_index
+        wfs_request_params["count"] = page_count
 
-        if cql_filter is not None:
-            wfs_request_params["cql_filter"] = cql_filter
-        if bbox:
-            wfs_request_params["bbox"] = bbox
+        logger.debug(f'{start_index=}, {page_count=}')
 
         try:
             page_data = _fetch_single_page_data(url, headers, wfs_request_params)
@@ -187,13 +192,15 @@ def download_wfs_data(
                 f"Last page fetched for '{typeNames}' (received {len(features_on_page)} features, requested up to {page_count})."
             )
             break
-        if count is not None and len(all_features) >= count:
+        if result_record_count is not None and len(all_features) >= result_record_count:
             logger.debug(
-                f"Reached maximum count of {count} features for '{typeNames}'. Stopping download."
+                f"Reached maximum count of {result_record_count} features for '{typeNames}'. Stopping download."
             )
             break
 
         start_index += page_count
+        if result_record_count is not None and result_record_count - len(all_features) < page_count:
+            page_count = result_record_count - len(all_features)
 
     result["features"] = all_features
     result["totalFeatures"] = len(all_features)

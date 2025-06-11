@@ -90,6 +90,7 @@ class ContentManager:
         """
 
         search_result = self._search_by_id(id)
+        logger.debug(f'ContentManager getting this id: {id}')
         if len(search_result) == 0:
             return None
         elif len(search_result) > 1:
