@@ -11,6 +11,8 @@ from .conversion import (
     json_to_df,
     geojson_to_sdf,
     sdf_or_gdf_to_bbox,
+    bbox_sdf_into_cql_filter,
+    geom_sdf_into_cql_filter,
 )
 from .wfs_utils import download_wfs_data
 
@@ -27,7 +29,10 @@ class VectorItem(BaseItem, WFS):
         out_sr: int = None,
         out_fields: str | list[str] = None,
         result_record_count: int = None,
-        bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        bbox: str = None,
+        bbox_geometry: Union["gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        filter_geometry: Union["gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        spatial_rel: str = None,
         **kwargs: Any,
     ) -> dict:
         """
@@ -49,8 +54,38 @@ class VectorItem(BaseItem, WFS):
         logger.debug(f"Executing WFS query for item with id: {self.id}")
 
         # Handle bbox
-        if bbox is not None and not isinstance(bbox, str):
-            bbox = sdf_or_gdf_to_bbox(bbox)
+
+        if bbox is not None and cql_filter is not None:
+            raise ValueError(
+                f"Cannot process both bbox string and cql_filter together."
+            )
+
+        if bbox is not None and (bbox_geometry is not None or filter_geometry is not None):
+            raise ValueError(
+                f"Cannot process both a bbox string and a geometry together."
+            )
+
+        if bbox_geometry is not None and filter_geometry is not None:
+            raise ValueError(
+                f"Cannot process both a bbox_geometry and filter_geometry together."
+            )
+
+        if bbox_geometry is not None:
+            cql_filter = bbox_sdf_into_cql_filter(
+                sdf=bbox_geometry,
+                geometry_field=self.data.geometry_field,
+                srid=self.data.crs.srid,
+                cql_filter=cql_filter,                
+            )
+
+        if filter_geometry is not None:
+            cql_filter = geom_sdf_into_cql_filter(
+                sdf=filter_geometry,
+                geometry_field=self.data.geometry_field,
+                srid=self.data.crs.srid,
+                cql_filter=cql_filter,
+                spatial_rel=spatial_rel,              
+            )
 
         result = download_wfs_data(
             url=self._wfs_url,
@@ -72,8 +107,11 @@ class VectorItem(BaseItem, WFS):
         out_sr: int = None,
         out_fields: str | list[str] = None,
         result_record_count: int = None,
-        bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         output_format=None,
+        bbox: str = None,
+        bbox_geometry: Union["gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        filter_geometry: Union["gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        spatial_rel: str = None,
         **kwargs: Any,
     ) -> "gpd.GeoDataFrame":
         """
@@ -111,6 +149,9 @@ class VectorItem(BaseItem, WFS):
             out_fields=out_fields,
             result_record_count=result_record_count,
             bbox=bbox,
+            bbox_geometry=bbox_geometry,
+            filter_geometry=filter_geometry,
+            spatial_rel=spatial_rel,
             **kwargs,
         )
 
@@ -131,9 +172,12 @@ class VectorItem(BaseItem, WFS):
         to_time: str = None,
         out_sr=None,
         cql_filter: str = None,
-        bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         out_fields: str | list[str] = None,
         result_record_count: int = None,
+        bbox: str = None,
+        bbox_geometry: Union["gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        filter_geometry: Union["gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        spatial_rel: str = None,
         **kwargs: Any,
     ) -> dict:
         """
@@ -166,9 +210,37 @@ class VectorItem(BaseItem, WFS):
 
         viewparams = f"from:{from_time};to:{to_time}"
 
-        # Handle bbox
-        if bbox is not None and not isinstance(bbox, str):
-            bbox = sdf_or_gdf_to_bbox(bbox)
+        if bbox is not None and cql_filter is not None:
+            raise ValueError(
+                f"Cannot process both bbox string and cql_filter together."
+            )
+
+        if bbox is not None and (bbox_geometry is not None or filter_geometry is not None):
+            raise ValueError(
+                f"Cannot process both a bbox string and a geometry together."
+            )
+
+        if bbox_geometry is not None and filter_geometry is not None:
+            raise ValueError(
+                f"Cannot process both a bbox_geometry and filter_geometry together."
+            )
+
+        if bbox_geometry is not None:
+            cql_filter = bbox_sdf_into_cql_filter(
+                sdf=bbox_geometry,
+                geometry_field=self.data.geometry_field,
+                srid=self.data.crs.srid,
+                cql_filter=cql_filter,                
+            )
+
+        if filter_geometry is not None:
+            cql_filter = geom_sdf_into_cql_filter(
+                sdf=filter_geometry,
+                geometry_field=self.data.geometry_field,
+                srid=self.data.crs.srid,
+                cql_filter=cql_filter,
+                spatial_rel=spatial_rel,              
+            )
 
         result = download_wfs_data(
             url=self._wfs_url,
@@ -190,10 +262,13 @@ class VectorItem(BaseItem, WFS):
         to_time: str = None,
         out_sr: int = None,
         cql_filter: str = None,
-        bbox: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
         output_format=None,
         out_fields: str | list[str] = None,
         result_record_count: int = None,
+        bbox: str = None,
+        bbox_geometry: Union["gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        filter_geometry: Union["gpd.GeoDataFrame", "pd.DataFrame"] = None,
+        spatial_rel: str = None,
         **kwargs: Any,
     ) -> "gpd.GeoDataFrame":
         """
@@ -231,6 +306,9 @@ class VectorItem(BaseItem, WFS):
             out_sr=out_sr,
             cql_filter=cql_filter,
             bbox=bbox,
+            bbox_geometry=bbox_geometry,
+            filter_geometry=filter_geometry,
+            spatial_rel=spatial_rel,
             out_fields=out_fields,
             result_record_count=result_record_count,
             **kwargs,
@@ -296,7 +374,8 @@ class VectorItem(BaseItem, WFS):
         User friendly string of a base item.
         """
 
-        return f'Item id: {self.id}, type_: {self.type_}, title: {self.title}'
+        return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
+
 
 @dataclass
 class TableItem(BaseItem, WFS):
@@ -450,4 +529,4 @@ class TableItem(BaseItem, WFS):
         User friendly string of a base item.
         """
 
-        return f'Item id: {self.id}, type_: {self.type_}, title: {self.title}'
+        return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"

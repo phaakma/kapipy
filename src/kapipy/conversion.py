@@ -1,4 +1,6 @@
 import pandas as pd
+import json
+import re
 from dateutil.parser import parse as date_parse
 from dataclasses import asdict
 from shapely.geometry import shape
@@ -350,12 +352,10 @@ def sdf_or_gdf_to_single_polygon_geojson(
             raise ValueError("All geometries must be of type 'polygon'.")
         if df.spatial.sr.wkid != 4326:
             df.spatial.project({"wkid": 4326})
-        geometries = df[df.spatial.name]
-        shapes = [shape(geom) for geom in geometries]
-        unioned = unary_union(shapes)
-        # Convert the Shapely geometry to GeoJSON format
-        ext = mapping(unioned)
-        return ext
+
+        geom = sdf_to_single_geometry(df)
+        geo_json = geom.JSON  # this is Esri JSON
+        return esri_json_to_geojson(geom.JSON, geom.geometry_type)
 
     elif data_type == "gdf":
         if not all(df.geometry.type == "Polygon"):
@@ -469,3 +469,138 @@ def get_default_output_format() -> str:
     if has_geopandas:
         return "gdf"
     return "json"
+
+
+def sdf_to_single_geometry(sdf: "pd.DataFrame") -> Any:
+    """
+    Convert a spatially enabled dataframe to a single geometry.
+    """
+
+    import pandas as pd
+    from arcgis.features import GeoAccessor
+
+    geoms = sdf[sdf.spatial.name]
+    union_geom = geoms[0]
+    for geom in geoms[1:]:
+        union_geom = union_geom.union(geom)
+    return union_geom
+
+
+def esri_json_to_geojson(esri_json: dict, geom_type: str) -> dict:
+    """
+    Convert an Esri JSON geometry (Polygon, Polyline, Point, MultiPoint) to GeoJSON format.
+
+    Parameters:
+        esri_json (dict): The Esri JSON geometry dictionary.
+        geom_type (str): The geometry type ("point", "multipoint", "polyline", "polygon")
+
+    Returns:
+        dict: The equivalent GeoJSON geometry dictionary.
+
+    Raises:
+        ValueError: If the geometry type is not supported or the input is invalid.
+    """
+    VALID_GEOM_TYPES = ("point", "multipoint", "polyline", "polygon")
+    geom_type = geom_type.lower()
+
+    if isinstance(esri_json, str):
+        esri_json = json.loads(esri_json)
+
+    if not isinstance(esri_json, dict) or geom_type not in VALID_GEOM_TYPES:
+        raise ValueError("Invalid Esri JSON geometry.")
+
+    if geom_type == "point":
+        return {
+            "type": "Point",
+            "coordinates": [esri_json["x"], esri_json["y"]],
+        }
+    elif geom_type == "multipoint":
+        return {
+            "type": "MultiPoint",
+            "coordinates": esri_json["points"],
+        }
+    elif geom_type == "polyline":
+        # Esri JSON uses "paths" for polylines
+        return {
+            "type": "MultiLineString" if len(esri_json["paths"]) > 1 else "LineString",
+            "coordinates": (
+                esri_json["paths"]
+                if len(esri_json["paths"]) > 1
+                else esri_json["paths"][0]
+            ),
+        }
+    elif geom_type == "polygon":
+        # Esri JSON uses "rings" for polygons
+        return {
+            "type": "Polygon",
+            "coordinates": esri_json["rings"],
+        }
+    else:
+        raise ValueError(f"Unsupported geometry type: {geom_type}")
+
+
+def bbox_sdf_into_cql_filter(
+    sdf: "pd.DataFrame", geometry_field: str, srid: int, cql_filter: str = None
+):
+    """
+    Construct cql_filter and bbox parameters.
+    """
+
+    if sdf.spatial.sr.wkid != srid:
+        sdf.spatial.project({"wkid": srid})
+    minX, minY, maxX, maxY = sdf.spatial.full_extent
+    bbox = f"bbox({geometry_field},{minY},{minX},{maxY},{maxX})"
+    if cql_filter is None or cql_filter == "":
+        cql_filter = bbox
+    elif cql_filter > "":
+        cql_filter = f"{bbox} AND {cql_filter}"
+
+    return cql_filter
+
+
+def geom_sdf_into_cql_filter(
+    sdf: "pd.DataFrame",
+    geometry_field: str,
+    srid: int,
+    spatial_rel: str = None,
+    cql_filter: str = None,
+):
+    """
+    Construct cql_filter and geometry filter parameters.
+    """
+    VALID_SPATIAL_RELATIONSHIPS = (
+        "INTERSECTS",
+        "WITHIN",
+        "DISJOINT",
+        "CONTAINS",
+        "TOUCHES",
+        "CROSSES",
+        "OVERLAPS",
+        "EQUALS",
+    )
+
+    if spatial_rel is None:
+        spatial_rel = "INTERSECTS"
+    spatial_rel = spatial_rel.upper()
+    if spatial_rel not in VALID_SPATIAL_RELATIONSHIPS:
+        raise ValueError(f"Invalid spatial_rel parameter supplied: {spatial_rel}")
+
+    if sdf.spatial.sr.wkid != srid:
+        sdf.spatial.project({"wkid": srid})
+
+    geom = sdf_to_single_geometry(sdf)
+
+    # wkt coordinate x,y pairs need to be reversed
+    # Pattern to match coordinate pairs
+    pattern = r"(-?\d+\.\d+)\s+(-?\d+\.\d+)"
+    # Swap each (x y) to (y x)
+    reversed_wkt = re.sub(pattern, r"\2 \1", geom.WKT)
+
+    spatial_filter = f"{spatial_rel}({geometry_field},{reversed_wkt})"
+
+    if cql_filter is None or cql_filter == "":
+        cql_filter = spatial_filter
+    elif cql_filter > "":
+        cql_filter = f"{spatial_filter} AND {cql_filter}"
+
+    return cql_filter

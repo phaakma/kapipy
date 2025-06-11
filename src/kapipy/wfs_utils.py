@@ -9,7 +9,7 @@ from tenacity import (
     retry_if_not_exception_type,
 )
 import logging
-from .custom_errors import (BadRequest, HTTPError, ServerError)
+from .custom_errors import BadRequest, HTTPError, ServerError
 
 logger = logging.getLogger(__name__)
 
@@ -23,9 +23,10 @@ DEFAULT_WFS_OUTPUT_FORMAT = "json"
 DEFAULT_SRSNAME = "EPSG:2193"
 MAX_PAGE_FETCHES = 1000  # Maximum number of pages to fetch, to prevent infinite loops
 
+
 @retry(
     retry=retry_if_not_exception_type((HTTPError, BadRequest)),
-    stop=stop_after_attempt(5),
+    stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=10),
     reraise=True,
 )
@@ -49,7 +50,7 @@ def _fetch_single_page_data(url: str, headers: dict, params: dict, timeout=30) -
     """
     try:
         logger.debug(f"Requesting WFS data. URL: {url}, Params: {params}")
-        response = httpx.get(url, headers=headers, params=params, timeout=timeout)
+        response = httpx.post(url, headers=headers, data=params, timeout=timeout)
         response.raise_for_status()
         json_data = response.json()
         logger.debug(
@@ -69,6 +70,7 @@ def _fetch_single_page_data(url: str, headers: dict, params: dict, timeout=30) -
     except httpx.RequestError as e:
         logger.warning(f"Request failed for URL {url}: {e}")
         raise  # Reraise for tenacity to handle
+
 
 def download_wfs_data(
     url: str,
@@ -110,7 +112,11 @@ def download_wfs_data(
     if not typeNames:
         raise HTTPError("Typenames (i.e. layer id) must be provided.")
 
-    headers = {"Authorization": f"key {api_key}"}
+    headers = {
+        "Authorization": f"key {api_key}",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+
     all_features = []
     start_index = 0
     if result_record_count is not None and result_record_count < page_count:
@@ -121,7 +127,6 @@ def download_wfs_data(
     result = None
 
     logger.debug(f"Starting WFS data download for typeNames: '{typeNames}'")
-
 
     wfs_request_params = {
         "service": DEFAULT_WFS_SERVICE,
@@ -134,16 +139,17 @@ def download_wfs_data(
     }
 
     if cql_filter is not None:
-        logger.debug(f"Using CQL filter: {cql_filter}")
+        logger.debug(f"{cql_filter=}")
         wfs_request_params["cql_filter"] = cql_filter
     if bbox:
+        logger.debug(f"{bbox=}")
         wfs_request_params["bbox"] = bbox
     if out_fields is not None:
         if isinstance(out_fields, list):
-            out_fields = ",".join(out_fields)        
-        out_fields = f'({out_fields})'
-        logger.info(f'{out_fields=}')
-        wfs_request_params['PropertyName'] = out_fields
+            out_fields = ",".join(out_fields)
+        out_fields = f"({out_fields})"
+        logger.debug(f"{out_fields=}")
+        wfs_request_params["PropertyName"] = out_fields
 
     pages_fetched = 0
     while pages_fetched < MAX_PAGE_FETCHES:
@@ -152,7 +158,7 @@ def download_wfs_data(
         wfs_request_params["startIndex"] = start_index
         wfs_request_params["count"] = page_count
 
-        logger.debug(f'{start_index=}, {page_count=}')
+        logger.debug(f"{start_index=}, {page_count=}")
 
         try:
             page_data = _fetch_single_page_data(url, headers, wfs_request_params)
@@ -206,7 +212,10 @@ def download_wfs_data(
             break
 
         start_index += page_count
-        if result_record_count is not None and result_record_count - len(all_features) < page_count:
+        if (
+            result_record_count is not None
+            and result_record_count - len(all_features) < page_count
+        ):
             page_count = result_record_count - len(all_features)
 
     result["features"] = all_features
