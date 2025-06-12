@@ -14,14 +14,15 @@ from .custom_errors import BadRequest, HTTPError, ServerError
 logger = logging.getLogger(__name__)
 
 # --- Configuration ---
-DEFAULT_FEATURES_PER_PAGE = 2000
+
 
 DEFAULT_WFS_SERVICE = "WFS"
 DEFAULT_WFS_VERSION = "2.0.0"
 DEFAULT_WFS_REQUEST = "GetFeature"
 DEFAULT_WFS_OUTPUT_FORMAT = "json"
 DEFAULT_SRSNAME = "EPSG:2193"
-MAX_PAGE_FETCHES = 1000  # Maximum number of pages to fetch, to prevent infinite loops
+MAX_PAGE_FETCHES = 50  # Maximum number of pages to fetch, to prevent infinite loops
+DEFAULT_FEATURES_PER_PAGE = 10000
 
 
 @retry(
