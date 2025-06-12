@@ -10,9 +10,11 @@ from .conversion import (
     geojson_to_gdf,
     json_to_df,
     geojson_to_sdf,
-    sdf_or_gdf_to_bbox,
     bbox_sdf_into_cql_filter,
     geom_sdf_into_cql_filter,
+    bbox_gdf_into_cql_filter,
+    geom_gdf_into_cql_filter,
+    get_data_type
 )
 from .wfs_utils import download_wfs_data
 
@@ -71,21 +73,40 @@ class VectorItem(BaseItem, WFS):
             )
 
         if bbox_geometry is not None:
-            cql_filter = bbox_sdf_into_cql_filter(
-                sdf=bbox_geometry,
-                geometry_field=self.data.geometry_field,
-                srid=self.data.crs.srid,
-                cql_filter=cql_filter,                
-            )
+            data_type = get_data_type(bbox_geometry)
+            if data_type == "sdf":
+                cql_filter = bbox_sdf_into_cql_filter(
+                    sdf=bbox_geometry,
+                    geometry_field=self.data.geometry_field,
+                    srid=self.data.crs.srid,
+                    cql_filter=cql_filter,                
+                )
+            elif data_type == "gdf":                
+                cql_filter = bbox_gdf_into_cql_filter(
+                    gdf=bbox_geometry,
+                    geometry_field=self.data.geometry_field,
+                    srid=self.data.crs.srid,
+                    cql_filter=cql_filter,                
+                )
 
         if filter_geometry is not None:
-            cql_filter = geom_sdf_into_cql_filter(
-                sdf=filter_geometry,
-                geometry_field=self.data.geometry_field,
-                srid=self.data.crs.srid,
-                cql_filter=cql_filter,
-                spatial_rel=spatial_rel,              
-            )
+            data_type = get_data_type(filter_geometry)
+            if data_type == "sdf":
+                cql_filter = geom_sdf_into_cql_filter(
+                    sdf=filter_geometry,
+                    geometry_field=self.data.geometry_field,
+                    srid=self.data.crs.srid,
+                    cql_filter=cql_filter,
+                    spatial_rel=spatial_rel,              
+                )
+            elif data_type == "gdf":
+                cql_filter = geom_gdf_into_cql_filter(
+                    gdf=filter_geometry,
+                    geometry_field=self.data.geometry_field,
+                    srid=self.data.crs.srid,
+                    cql_filter=cql_filter,
+                    spatial_rel=spatial_rel,              
+                )
 
         result = download_wfs_data(
             url=self._wfs_url,
@@ -226,21 +247,40 @@ class VectorItem(BaseItem, WFS):
             )
 
         if bbox_geometry is not None:
-            cql_filter = bbox_sdf_into_cql_filter(
-                sdf=bbox_geometry,
-                geometry_field=self.data.geometry_field,
-                srid=self.data.crs.srid,
-                cql_filter=cql_filter,                
-            )
+            data_type = get_data_type(bbox_geometry)
+            if data_type == "sdf":
+                cql_filter = bbox_sdf_into_cql_filter(
+                    sdf=bbox_geometry,
+                    geometry_field=self.data.geometry_field,
+                    srid=self.data.crs.srid,
+                    cql_filter=cql_filter,                
+                )
+            elif data_type == "gdf":                
+                cql_filter = bbox_gdf_into_cql_filter(
+                    gdf=bbox_geometry,
+                    geometry_field=self.data.geometry_field,
+                    srid=self.data.crs.srid,
+                    cql_filter=cql_filter,                
+                )
 
         if filter_geometry is not None:
-            cql_filter = geom_sdf_into_cql_filter(
-                sdf=filter_geometry,
-                geometry_field=self.data.geometry_field,
-                srid=self.data.crs.srid,
-                cql_filter=cql_filter,
-                spatial_rel=spatial_rel,              
-            )
+            data_type = get_data_type(filter_geometry)
+            if data_type == "sdf":
+                cql_filter = geom_sdf_into_cql_filter(
+                    sdf=filter_geometry,
+                    geometry_field=self.data.geometry_field,
+                    srid=self.data.crs.srid,
+                    cql_filter=cql_filter,
+                    spatial_rel=spatial_rel,              
+                )
+            elif data_type == "gdf":
+                cql_filter = geom_gdf_into_cql_filter(
+                    gdf=filter_geometry,
+                    geometry_field=self.data.geometry_field,
+                    srid=self.data.crs.srid,
+                    cql_filter=cql_filter,
+                    spatial_rel=spatial_rel,              
+                )
 
         result = download_wfs_data(
             url=self._wfs_url,
