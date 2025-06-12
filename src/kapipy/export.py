@@ -24,7 +24,7 @@ def validate_export_params(
     kind: str,
     export_format: str,
     crs: str = None,
-    extent: dict = None,
+    filter_geometry: dict = None,
     **kwargs: Any,
 ) -> bool:
     """
@@ -38,7 +38,7 @@ def validate_export_params(
         kind (str): The kind of export (e.g., 'shp', 'geojson').
         export_format (str): The format for the export.
         crs (str, optional): Coordinate Reference System, if applicable.
-        extent (dict, optional): Spatial extent for the export.
+        filter_geometry (dict, optional): Spatial filter_geometry for the export.
         **kwargs: Additional parameters for the export.
 
     Returns:
@@ -69,10 +69,10 @@ def validate_export_params(
 
     if data_type == "layer" and crs:
         data["crs"] = crs
-    if data_type == "layer" and extent:
-        data["extent"] = extent
+    if data_type == "layer" and filter_geometry:
+        data["extent"] = filter_geometry
 
-    logger.debug(f"{data=}")
+    logger.debug(f"Validate: {data=}")
 
     headers = {"Authorization": f"key {api_key}"}
     is_valid = False
@@ -88,7 +88,7 @@ def validate_export_params(
                 if any(
                     not item.get("is_valid", "true") for item in json_response["items"]
                 ):
-                    err = "An error occured when attempting to validate an export with this configuration. Check for 'invalid_reasons' in the logs."
+                    err = "An error occurred when attempting to validate an export with this configuration. Check for 'invalid_reasons' in the logs."
                     logger.error(err)
                     logger.error(json_response["items"])
                     raise ValueError(err)
@@ -121,7 +121,7 @@ def request_export(
     kind: str,
     export_format: str,
     crs: str = None,
-    extent: dict = None,
+    filter_geometry: dict = None,
     **kwargs: Any,
 ) -> dict:
     """
@@ -135,7 +135,7 @@ def request_export(
         kind (str): The kind of export (e.g., 'shp', 'geojson').
         export_format (str): The format for the export.
         crs (str, optional): Coordinate Reference System, if applicable.
-        extent (dict, optional): Spatial extent for the export.
+        filter_geometry (dict, optional): Spatial filter_geometry for the export.
         **kwargs: Additional parameters for the export.
 
     Returns:
@@ -145,8 +145,6 @@ def request_export(
         ExportError: If the export request fails or if the response cannot be parsed.
         ValueError: If the data type is unsupported or not implemented.
     """
-
-    logger.debug("Requesting export")
 
     api_url = api_url if api_url.endswith("/") else f"{api_url}/"
     export_url = f"{api_url}exports/"
@@ -166,10 +164,10 @@ def request_export(
 
     if data_type == "layer" and crs:
         data["crs"] = crs
-    if data_type == "layer" and extent:
-        data["extent"] = extent
+    if data_type == "layer" and filter_geometry:
+        data["extent"] = filter_geometry
 
-    logger.debug(f"{data=}")
+    logger.debug(f"Export request: {data=}")
 
     headers = {"Authorization": f"key {api_key}"}
 

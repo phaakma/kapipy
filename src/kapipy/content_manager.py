@@ -15,18 +15,18 @@ from .data_classes import BaseItem
 from .export import validate_export_params, request_export
 from .items import VectorItem, TableItem
 from .job_result import JobResult
-from .conversion import sdf_or_gdf_to_single_polygon_geojson
+from .conversion import (
+    sdf_or_gdf_to_single_polygon_geojson,
+    get_data_type,
+    sdf_to_single_polygon_geojson,
+    gdf_to_single_polygon_geojson,
+)
 
 from .custom_errors import (
     BadRequest,
     ServerError,
     UnknownItemTypeError,
 )
-
-# from .layer_item import LayerItem, BaseItem
-
-
-# from .items.vector_item import VectorItem
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +90,7 @@ class ContentManager:
         """
 
         search_result = self._search_by_id(id)
-        logger.debug(f'ContentManager getting this id: {id}')
+        logger.debug(f"ContentManager getting this id: {id}")
         if len(search_result) == 0:
             return None
         elif len(search_result) > 1:
@@ -180,7 +180,7 @@ class ContentManager:
         itm: BaseItem,
         export_format: str,
         crs: str = None,
-        extent: dict = None,
+        filter_geometry: dict = None,
         **kwargs: Any,
     ) -> bool:
         """
@@ -189,7 +189,7 @@ class ContentManager:
         Parameters:
             export_format (str): The format to export the item in.
             crs (str, optional): The coordinate reference system to use for the export.
-            extent (dict, optional): The extent to use for the export. Should be a GeoJSON dictionary.
+            filter_geometry (dict, optional): The filter_geometry to use for the export. Should be a GeoJSON dictionary.
             **kwargs: Additional parameters for the export request.
 
         Returns:
@@ -200,7 +200,7 @@ class ContentManager:
 
         # log out all the input parameters including kwargs
         logger.debug(
-            f"Validating export request for item with id: {itm.id}, {export_format=}, {crs=}, {extent=},  {kwargs=}"
+            f"Validating export request for item with id: {itm.id}, {export_format=}, {crs=}, {filter_geometry=},  {kwargs=}"
         )
 
         return validate_export_params(
@@ -211,7 +211,7 @@ class ContentManager:
             itm.kind,
             export_format,
             crs,
-            extent,
+            filter_geometry,
             **kwargs,
         )
 
@@ -220,7 +220,7 @@ class ContentManager:
         itm: BaseItem,
         export_format: str,
         out_sr: Optional[int] = None,
-        extent: Optional[Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"]] = None,
+        filter_geometry: Optional[Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"]] = None,
         poll_interval: int = 10,
         timeout: int = 600,
         **kwargs: Any,
@@ -231,7 +231,7 @@ class ContentManager:
         Parameters:
             export_format (str): The format to export the item in.
             out_sr (int, optional): The coordinate reference system code to use for the export.
-            extent (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
+            filter_geometry (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
             poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.
             timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).
             **kwargs: Additional parameters for the export request.
@@ -249,8 +249,13 @@ class ContentManager:
         if itm.kind in ["vector"]:
             out_sr = out_sr if out_sr is not None else itm.data.crs.srid
             crs = f"EPSG:{out_sr}"
-            if extent is not None:
-                extent = sdf_or_gdf_to_single_polygon_geojson(extent)
+            data_type = get_data_type(filter_geometry)
+            if data_type == "unknown":
+                filter_geometry=None
+            elif data_type == "sdf":
+                filter_geometry = sdf_to_single_polygon_geojson(filter_geometry)
+            elif data_type == "gdf":
+                filter_geometry = gdf_to_single_polygon_geojson(filter_geometry)
 
         export_format = self._resolve_export_format(itm, export_format)
 
@@ -258,7 +263,7 @@ class ContentManager:
             itm,
             export_format,
             crs=crs,
-            extent=extent,
+            filter_geometry=filter_geometry,
             **kwargs,
         )
 
@@ -278,7 +283,7 @@ class ContentManager:
             itm.kind,
             export_format,
             crs=crs,
-            extent=extent,
+            filter_geometry=filter_geometry,
             **kwargs,
         )
 
@@ -296,7 +301,7 @@ class ContentManager:
         jobs: list["JobResults"] = None,
         folder: str = None,
         poll_interval: int = 10,
-        force_all: bool = False
+        force_all: bool = False,
     ) -> list["JobResults"]:
         """
         Downloads all exports from a list of jobs.

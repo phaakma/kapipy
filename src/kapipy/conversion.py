@@ -337,6 +337,43 @@ def json_to_df(
 
     return df
 
+def sdf_to_single_polygon_geojson(
+    sdf: "pd.DataFrame"
+) -> dict[str, Any] | None:
+
+    if sdf.empty:
+        raise ValueError("sdf must contain at least one geometry.")
+
+    if sdf.spatial.sr.wkid != 4326:
+        sdf.spatial.project({"wkid": 4326})
+
+    geom = sdf_to_single_geometry(sdf)
+    geo_json = geom.JSON  # this is Esri JSON
+    return esri_json_to_geojson(geom.JSON, geom.geometry_type)
+
+def gdf_to_single_polygon_geojson(
+    gdf: "gpd.GeoDataFrame",
+) -> dict[str, Any] | None:
+
+    if gdf.empty:
+        raise ValueError("gdf must contain at least one geometry.")
+
+    if not all(gdf.geometry.type == "Polygon"):
+        raise ValueError("GeoDataFrame must contain only Polygon geometries.")    
+
+    # convert crs to EPSG:4326 if not already
+    if gdf.crs is None:
+        gdf.set_crs(epsg=4326, inplace=True)
+
+    # Union all geometries into a single geometry
+    single_geometry = gdf.unary_union
+    if single_geometry.is_empty:
+        raise ValueError("Resulting geometry is empty after union.")
+
+    import geopandas as gpd
+    gdf_single = gpd.GeoDataFrame(geometry=[single_geometry], crs=gdf.crs)
+    geojson_str = gdf_single.to_json(to_wgs84=True)
+    return json.loads(geojson_str)['features'][0]['geometry']
 
 def sdf_or_gdf_to_single_polygon_geojson(
     df: Union["gpd.GeoDataFrame", "pd.DataFrame"],
@@ -386,7 +423,7 @@ def sdf_or_gdf_to_single_polygon_geojson(
         return single_geometry.__geo_interface__
 
 
-def get_data_type(obj: Union[str, "gpd.GeoDataFrame", "pd.DataFrame"]) -> str:
+def get_data_type(obj: Any) -> str:
     """
     Determines if the object is a string, a GeoDataFrame (gdf), or an ArcGIS SEDF (sdf).
 
