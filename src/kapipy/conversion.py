@@ -375,54 +375,6 @@ def gdf_to_single_polygon_geojson(
     geojson_str = gdf_single.to_json(to_wgs84=True)
     return json.loads(geojson_str)['features'][0]['geometry']
 
-def sdf_or_gdf_to_single_polygon_geojson(
-    df: Union["gpd.GeoDataFrame", "pd.DataFrame"],
-) -> dict[str, Any] | None:
-    """
-    Convert a GeoDataFrame or SEDF to a single GeoJSON Polygon geometry object.
-
-    Parameters:
-        df (gpd.GeoDataFrame or arcgis.features.GeoAccessor): A GeoDataFrame or SEDF containing only Polygon geometries.
-
-    Returns:
-        dict: A GeoJSON Polygon geometry object.
-
-    Raises:
-        ValueError: If the DataFrame is empty or contains non-polygon geometries.
-    """
-
-    if df.empty:
-        raise ValueError("sdf or gdf must contain at least one geometry.")
-
-    data_type = get_data_type(df)
-    if data_type == "sdf":
-        if not all(g.lower() == "polygon" for g in df.spatial.geometry_type):
-            raise ValueError("All geometries must be of type 'polygon'.")
-        if df.spatial.sr.wkid != 4326:
-            df.spatial.project({"wkid": 4326})
-
-        geom = sdf_to_single_geometry(df)
-        geo_json = geom.JSON  # this is Esri JSON
-        return esri_json_to_geojson(geom.JSON, geom.geometry_type)
-
-    elif data_type == "gdf":
-        if not all(df.geometry.type == "Polygon"):
-            raise ValueError("GeoDataFrame must contain only Polygon geometries.")
-
-        # convert crs to EPSG:4326 if not already
-        if df.crs is None:
-            df.set_crs(epsg=4326, inplace=True)
-        elif df.crs.to_epsg() != 4326:
-            df = df.to_crs(epsg=4326)
-
-        # Union all geometries into a single geometry
-        single_geometry = df.unary_union
-        if single_geometry.is_empty:
-            raise ValueError("Resulting geometry is empty after union.")
-
-        return single_geometry.__geo_interface__
-
-
 def get_data_type(obj: Any) -> str:
     """
     Determines if the object is a string, a GeoDataFrame (gdf), or an ArcGIS SEDF (sdf).

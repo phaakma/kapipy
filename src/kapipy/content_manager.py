@@ -16,7 +16,6 @@ from .export import validate_export_params, request_export
 from .items import VectorItem, TableItem
 from .job_result import JobResult
 from .conversion import (
-    sdf_or_gdf_to_single_polygon_geojson,
     get_data_type,
     sdf_to_single_polygon_geojson,
     gdf_to_single_polygon_geojson,
