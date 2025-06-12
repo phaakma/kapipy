@@ -78,6 +78,7 @@ class GISK:
             self.name = PORTAL_DETAILS.get(name.lower()).get("name")
             self.url = PORTAL_DETAILS.get(name.lower()).get("url")
         else:
+            self.name = "Custom"
             self.url = url
         self.url = (
             self.url if self.url.endswith("/") else f"{self.url}/"
@@ -199,4 +200,4 @@ class GISK:
         Returns:
             str: User-friendly string representation.
         """
-        return f"GISK: {self.name or 'Custom'} at {self.url} (API {self._api_version})"
+        return f"GISK: {self.name} at {self.url} (API {self._api_version})"
