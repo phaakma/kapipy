@@ -77,7 +77,7 @@ class JobResult:
         _poll_interval (int): Polling interval in seconds.
         _timeout (int): Maximum time to wait for job completion in seconds.
         _last_response (dict): The most recent job status response.
-        _gis (GIS): The GIS instance associated with this job.
+        _gis (GISK): The GISK instance associated with this job.
 
         # Populated after download:
         download_folder (str): The directory where the file was saved.
@@ -92,7 +92,7 @@ class JobResult:
     def __init__(
         self,
         payload: dict,
-        gis: "GIS",
+        gis: "GISK",
         poll_interval: int = None,
         timeout: int = None,
     ) -> None:
@@ -101,7 +101,7 @@ class JobResult:
 
         Parameters:
             payload (dict): The job payload, typically from an API response.
-            gis (GIS): The GIS instance associated with this job.
+            gis (GISK): The GISK instance associated with this job.
             poll_interval (int, optional): Interval in seconds to poll the job status. Default is 10.
             timeout (int, optional): Maximum time in seconds to wait for the job to complete. Default is 600.
         """
@@ -205,7 +205,7 @@ class JobResult:
 
     def _refresh_sync(self) -> None:
         """
-        Refreshes the job status using synchronous HTTP via the GIS instance.
+        Refreshes the job status using synchronous HTTP via the GISK instance.
 
         Returns:
             None
