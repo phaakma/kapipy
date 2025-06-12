@@ -366,7 +366,7 @@ def gdf_to_single_polygon_geojson(
         gdf.set_crs(epsg=4326, inplace=True)
 
     # Union all geometries into a single geometry
-    single_geometry = gdf.unary_union
+    single_geometry = gdf.union_all()
     if single_geometry.is_empty:
         raise ValueError("Resulting geometry is empty after union.")
 
@@ -546,7 +546,7 @@ def geom_gdf_into_cql_filter(
         gdf = gdf.to_crs(epsg=srid)
 
     # Union all geometries into a single geometry
-    single_geometry = gdf.unary_union
+    single_geometry = gdf.union_all()
     if single_geometry.is_empty:
         raise ValueError("Resulting geometry is empty after union.")
 
