@@ -99,26 +99,13 @@ class ContentManager:
 
         # Assume the first item is the desired content
         itm_properties_json = self._gis.get(search_result[0]["url"])
-        # add the raw json as it's own property before converting into a class
-        # itm_properties_json["_raw_json"] = copy.copy(itm_properties_json)
-        # itm_properties = dacite.from_dict(
-        #     data_class=LayerItem, data=itm_properties_json, config=field_config
-        # )
-
-        # itm_properties_json['_gis'] = self._gis
-
         # Based on the kind of item, return the appropriate item class.
         if itm_properties_json.get("kind") == "vector":
-            # from kapipy.features import VectorItem
-            # item = VectorItem(self._gis, item_details)
             item = from_dict(
                 data_class=VectorItem, data=itm_properties_json, config=field_config
             )
 
         elif itm_properties_json.get("kind") == "table":
-
-            # from kapipy.features import TableItem
-            # item = TableItem(self._gis, item_details)
             item = from_dict(
                 data_class=TableItem, data=itm_properties_json, config=field_config
             )
@@ -230,7 +217,7 @@ class ContentManager:
         Parameters:
             export_format (str): The format to export the item in.
             out_sr (int, optional): The coordinate reference system code to use for the export.
-            filter_geometry (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
+            filter_geometry (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The filter_geometry to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
             poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.
             timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).
             **kwargs: Additional parameters for the export request.

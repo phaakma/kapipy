@@ -322,6 +322,10 @@ class Version:
 
 @dataclass
 class BaseItem(ABC):
+    """
+    Base class for Items. Should not be created directly. Instead, use the ContentManager
+    to return an Item.
+    """
     id: int
     url: str
     type_: str
