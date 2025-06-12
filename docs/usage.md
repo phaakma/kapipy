@@ -79,6 +79,15 @@ print(data.dtypes())
 print(data.head())
 ```
 
+Only fetch specified attribute fields. Remember to include the geometry field if you want that in the data.  
+```python
+df = itm.query(
+    out_fields=['id', 'geodetic_code', itm.data.geometry_field],
+    out_sr = 2193)
+print(f"Total records returned {itm.title}: {df.shape[0]}")
+df.head()
+```
+
 ### Changeset    
 
 Also returned as a data frame with the same logic as the **query** method.  
@@ -90,6 +99,22 @@ The **to_time** parameter is optional, and is the time up to which the changeset
 ```python
 changeset = itm.get_changeset(from_time="2024-01-01T00:00:00Z", out_sr=2193)
 print((f"Total records returned {itm.title}: {changeset.shape[0]}"))
+```
+
+### Query with a spatial filter  
+The **filter_geometry** argument can be passed in as a gdf, sdf or geojson.  
+
+It is recommended to only have one polygon geometry in the dataframe, and avoid complex geometries with lots of vertices. If there is more than one record in the dataframe, the records will be unioned into one geometry.  
+
+The following example will only return features that intersect the **filter_geometry** object.  
+```python
+df = itm.changeset(
+    from_time="2024-01-01T00:00:00Z", 
+    out_sr=2193,
+    filter_geometry=matamata_gdf
+    )
+print(f"Total records returned {itm.title}: {df.shape[0]}")
+df.head()
 ```
 
 ## Export data    
@@ -119,9 +144,13 @@ Calling the download method of a JobResult object gives you the flexibility of s
 job.download(folder=r"c:/temp")
 ```
 
-### Generate an export with extent geometry  
+### Generate an export using a spatial filter    
 
-The **extent** argument can be passed in as a gdf or an sdf.  
+The **filter_geometry** argument can be passed in as a gdf, sdf or geojson.  
+
+It is recommended to only have one polygon geometry in the dataframe, and avoid complex geometries with lots of vertices. If there is more than one record in the dataframe, the records will be unioned into one geometry.  
+
+The following example will only return features that intersect the **filter_geometry** object.  
 
 ```python
 # gdf
@@ -129,7 +158,7 @@ matamata_gdf = gpd.read_file("../examples/matamata_piako.shp")
 # sdf
 matamata_sdf = pd.DataFrame.spatial.from_featureclass("../examples/matamata_piako.shp")
 
-job = itm.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
+job = itm.export("geodatabase", out_sr=2193, filter_geometry=matamata_sdf,)
 ```
 
 ### Export and download multiple items  
