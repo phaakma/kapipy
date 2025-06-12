@@ -10,6 +10,7 @@
         "codehilite",
         "crossrefs",
         "dotenv",
+        "GISK",
         "levelname",
         "mkdocs",
         "viewparams"

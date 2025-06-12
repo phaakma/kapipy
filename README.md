@@ -15,14 +15,14 @@ pip install kapipy
 ## Basic Usage  
 
 * Import kapipy.  
-* Create a GIS object, passing in an api key.  
+* Create a GISK object, passing in an api key.  
 * Get a reference to an item using {gis}.content.get({layer_id})
 * Perform actions on the item.  
 
 Basic example:  
 ```python
-from kapipy.gis import GIS
-linz = GIS(name="linz", api_key="my-linz-api-key")
+from kapipy.gis import GISK
+linz = GISK(name="linz", api_key="my-linz-api-key")
 rail_station_layer_id = "50318"
 itm = linz.content.get(rail_station_layer_id)
 data = itm.query()

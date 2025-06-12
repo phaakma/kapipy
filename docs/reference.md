@@ -1,6 +1,6 @@
 # API Reference
 
-::: kapipy.gis.GIS
+::: kapipy.gis.GISK
 
 ::: kapipy.content_manager.ContentManager
 

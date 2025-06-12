@@ -1,6 +1,7 @@
 import logging
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Union, Protocol, runtime_checkable
+from typing import List, Optional, Dict, Any
+from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
 
@@ -320,7 +321,11 @@ class Version:
 
 
 @dataclass
-class BaseItem(Protocol):
+class BaseItem(ABC):
+    """
+    Base class for Items. Should not be created directly. Instead, use the ContentManager
+    to return an Item.
+    """
     id: int
     url: str
     type_: str
@@ -337,6 +342,7 @@ class BaseItem(Protocol):
     num_views: int
     num_downloads: int
 
+    @abstractmethod
     def __str__(self) -> None:
         """
         User friendly string of a base item.

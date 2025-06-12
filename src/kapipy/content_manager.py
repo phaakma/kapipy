@@ -1,6 +1,6 @@
 """
 ContentManager is a class that manages the content
-of a GIS instance.
+of a GISK instance.
 """
 
 from urllib.parse import urljoin
@@ -15,18 +15,17 @@ from .data_classes import BaseItem
 from .export import validate_export_params, request_export
 from .items import VectorItem, TableItem
 from .job_result import JobResult
-from .conversion import sdf_or_gdf_to_single_polygon_geojson
+from .conversion import (
+    get_data_type,
+    sdf_to_single_polygon_geojson,
+    gdf_to_single_polygon_geojson,
+)
 
 from .custom_errors import (
     BadRequest,
     ServerError,
     UnknownItemTypeError,
 )
-
-# from .layer_item import LayerItem, BaseItem
-
-
-# from .items.vector_item import VectorItem
 
 logger = logging.getLogger(__name__)
 
@@ -37,21 +36,21 @@ field_config = Config(strict=False, convert_key=lambda k: safe_keys.get(k, k))
 
 class ContentManager:
     """
-    Manages content for a GIS instance.
+    Manages content for a GISK instance.
 
     Provides methods to search for, retrieve, and instantiate Koordinates items (layers, tables, etc.)
     based on their IDs or URLs.
 
     Attributes:
-        _gis (GIS): The GIS instance this manager is associated with.
+        _gis (GISK): The GISK instance this manager is associated with.
     """
 
-    def __init__(self, gis: "GIS") -> None:
+    def __init__(self, gis: "GISK") -> None:
         """
-        Initializes the ContentManager with a GIS instance.
+        Initializes the ContentManager with a GISK instance.
 
         Parameters:
-            gis (GIS): The GIS instance to manage content for.
+            gis (GISK): The GISK instance to manage content for.
         """
         self._gis = gis
         self.jobs = []
@@ -59,13 +58,13 @@ class ContentManager:
 
     def _search_by_id(self, id: str) -> dict:
         """
-        Searches for content by ID in the GIS.
+        Searches for content by ID in the GISK.
 
         Parameters:
             id (str): The ID of the content to search for.
 
         Returns:
-            dict: The search result(s) from the GIS API.
+            dict: The search result(s) from the GISK API.
         """
 
         # Example: https://data.linz.govt.nz/services/api/v1.x/data/?id=51571
@@ -75,7 +74,7 @@ class ContentManager:
 
     def get(self, id: str) -> dict:
         """
-        Retrieves and instantiates a content item by ID from the GIS.
+        Retrieves and instantiates a content item by ID from the GISK.
 
         Parameters:
             id (str): The ID of the content to retrieve.
@@ -90,7 +89,7 @@ class ContentManager:
         """
 
         search_result = self._search_by_id(id)
-        logger.debug(f'ContentManager getting this id: {id}')
+        logger.debug(f"ContentManager getting this id: {id}")
         if len(search_result) == 0:
             return None
         elif len(search_result) > 1:
@@ -100,26 +99,13 @@ class ContentManager:
 
         # Assume the first item is the desired content
         itm_properties_json = self._gis.get(search_result[0]["url"])
-        # add the raw json as it's own property before converting into a class
-        # itm_properties_json["_raw_json"] = copy.copy(itm_properties_json)
-        # itm_properties = dacite.from_dict(
-        #     data_class=LayerItem, data=itm_properties_json, config=field_config
-        # )
-
-        # itm_properties_json['_gis'] = self._gis
-
         # Based on the kind of item, return the appropriate item class.
         if itm_properties_json.get("kind") == "vector":
-            # from kapipy.features import VectorItem
-            # item = VectorItem(self._gis, item_details)
             item = from_dict(
                 data_class=VectorItem, data=itm_properties_json, config=field_config
             )
 
         elif itm_properties_json.get("kind") == "table":
-
-            # from kapipy.features import TableItem
-            # item = TableItem(self._gis, item_details)
             item = from_dict(
                 data_class=TableItem, data=itm_properties_json, config=field_config
             )
@@ -180,7 +166,7 @@ class ContentManager:
         itm: BaseItem,
         export_format: str,
         crs: str = None,
-        extent: dict = None,
+        filter_geometry: dict = None,
         **kwargs: Any,
     ) -> bool:
         """
@@ -189,7 +175,7 @@ class ContentManager:
         Parameters:
             export_format (str): The format to export the item in.
             crs (str, optional): The coordinate reference system to use for the export.
-            extent (dict, optional): The extent to use for the export. Should be a GeoJSON dictionary.
+            filter_geometry (dict, optional): The filter_geometry to use for the export. Should be a GeoJSON dictionary.
             **kwargs: Additional parameters for the export request.
 
         Returns:
@@ -200,7 +186,7 @@ class ContentManager:
 
         # log out all the input parameters including kwargs
         logger.debug(
-            f"Validating export request for item with id: {itm.id}, {export_format=}, {crs=}, {extent=},  {kwargs=}"
+            f"Validating export request for item with id: {itm.id}, {export_format=}, {crs=}, {filter_geometry=},  {kwargs=}"
         )
 
         return validate_export_params(
@@ -211,7 +197,7 @@ class ContentManager:
             itm.kind,
             export_format,
             crs,
-            extent,
+            filter_geometry,
             **kwargs,
         )
 
@@ -220,7 +206,7 @@ class ContentManager:
         itm: BaseItem,
         export_format: str,
         out_sr: Optional[int] = None,
-        extent: Optional[Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"]] = None,
+        filter_geometry: Optional[Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"]] = None,
         poll_interval: int = 10,
         timeout: int = 600,
         **kwargs: Any,
@@ -231,7 +217,7 @@ class ContentManager:
         Parameters:
             export_format (str): The format to export the item in.
             out_sr (int, optional): The coordinate reference system code to use for the export.
-            extent (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
+            filter_geometry (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The filter_geometry to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
             poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.
             timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).
             **kwargs: Additional parameters for the export request.
@@ -249,8 +235,13 @@ class ContentManager:
         if itm.kind in ["vector"]:
             out_sr = out_sr if out_sr is not None else itm.data.crs.srid
             crs = f"EPSG:{out_sr}"
-            if extent is not None:
-                extent = sdf_or_gdf_to_single_polygon_geojson(extent)
+            data_type = get_data_type(filter_geometry)
+            if data_type == "unknown":
+                filter_geometry=None
+            elif data_type == "sdf":
+                filter_geometry = sdf_to_single_polygon_geojson(filter_geometry)
+            elif data_type == "gdf":
+                filter_geometry = gdf_to_single_polygon_geojson(filter_geometry)
 
         export_format = self._resolve_export_format(itm, export_format)
 
@@ -258,7 +249,7 @@ class ContentManager:
             itm,
             export_format,
             crs=crs,
-            extent=extent,
+            filter_geometry=filter_geometry,
             **kwargs,
         )
 
@@ -278,7 +269,7 @@ class ContentManager:
             itm.kind,
             export_format,
             crs=crs,
-            extent=extent,
+            filter_geometry=filter_geometry,
             **kwargs,
         )
 
@@ -296,7 +287,7 @@ class ContentManager:
         jobs: list["JobResults"] = None,
         folder: str = None,
         poll_interval: int = 10,
-        force_all: bool = False
+        force_all: bool = False,
     ) -> list["JobResults"]:
         """
         Downloads all exports from a list of jobs.
@@ -360,7 +351,7 @@ class ContentManager:
         Returns:
             str: User-friendly string representation.
         """
-        return f"ContentManager for GIS: {getattr(self._gis, 'name', None) or getattr(self._gis, 'url', 'Unknown')}"
+        return f"ContentManager for GISK: {getattr(self._gis, 'name', None) or getattr(self._gis, 'url', 'Unknown')}"
 
 
 @dataclass
