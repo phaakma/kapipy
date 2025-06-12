@@ -13,7 +13,8 @@ import copy
 
 from .data_classes import BaseItem
 from .export import validate_export_params, request_export
-from .items import VectorItem, TableItem
+from .vector_item import VectorItem
+from .table_item import TableItem
 from .job_result import JobResult
 from .conversion import (
     get_data_type,

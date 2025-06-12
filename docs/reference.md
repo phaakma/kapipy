@@ -22,9 +22,9 @@
 
 ::: kapipy.data_classes.ItemData  
 
-::: kapipy.items.VectorItem
+::: kapipy.vector_item.VectorItem
 
-::: kapipy.items.TableItem
+::: kapipy.table_item.TableItem
 
 ::: kapipy.job_result.JobResult
 
