@@ -4,7 +4,7 @@ from datetime import datetime
 import logging
 
 from .job_result import JobResult
-from .data_classes import BaseItem, WFS
+from .data_classes import BaseItem
 from .conversion import (
     json_to_df,
 )
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class TableItem(BaseItem, WFS):
+class TableItem(BaseItem):
 
     def query_json(self, cql_filter: str = None, **kwargs: Any) -> dict:
         """

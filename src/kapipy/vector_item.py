@@ -4,7 +4,7 @@ from datetime import datetime
 import logging
 
 from .job_result import JobResult
-from .data_classes import BaseItem, WFS, VectorItemData
+from .data_classes import BaseItem, VectorItemData
 from .conversion import (
     get_default_output_format,
     geojson_to_gdf,
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class VectorItem(BaseItem, WFS):
+class VectorItem(BaseItem):
     data: VectorItemData
 
     def query_to_json(

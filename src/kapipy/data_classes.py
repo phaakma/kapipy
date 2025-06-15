@@ -342,6 +342,11 @@ class BaseItem(ABC):
     num_views: int
     num_downloads: int
 
+    def __post_init__(self):
+        self._supports_changesets = None
+        self.services_list = None
+        self._supports_wfs = None
+
     @abstractmethod
     def __str__(self) -> None:
         """
@@ -370,15 +375,6 @@ class BaseItem(ABC):
 
         return self._supports_changesets
 
-@dataclass
-class WFS:
-    """Item is able to be queried."""
-
-    def __post_init__(self):
-        self._supports_changesets = None
-        self.services_list = None
-        self._supports_wfs = None
-
     @property
     def _wfs_url(self) -> str:
         """
@@ -399,7 +395,3 @@ class WFS:
             return None 
 
         return f"{self._gis._service_url}wfs/"
-
-
-
-
