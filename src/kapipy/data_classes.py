@@ -377,6 +377,7 @@ class WFS:
     def __post_init__(self):
         self._supports_changesets = None
         self.services_list = None
+        self._supports_wfs = None
 
     @property
     def _wfs_url(self) -> str:
@@ -386,6 +387,17 @@ class WFS:
         Returns:
             str: The WFS URL associated with the item.
         """
+
+        if self._supports_wfs is None:
+            if self.services_list is None:
+                self.services_list = self._gis.get(self.services)
+            self._supports_wfs = any(
+                service.get("key") == "wfs" for service in self.services_list
+            )
+        
+        if self._supports_wfs is False:
+            return None 
+
         return f"{self._gis._service_url}wfs/"
 
 
