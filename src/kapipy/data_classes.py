@@ -350,24 +350,6 @@ class BaseItem(ABC):
 
         return f'Item id: {self.id}, type_: {self.type_}, title: {self.title}'
 
-@dataclass
-class WFS:
-    """Item is able to be queried."""
-
-    def __post_init__(self):
-        self._supports_changesets = None
-        self.services_list = None
-
-    @property
-    def _wfs_url(self) -> str:
-        """
-        Returns the WFS URL for the item.
-
-        Returns:
-            str: The WFS URL associated with the item.
-        """
-        return f"{self._gis._service_url}wfs/"
-
     @property
     def supports_changesets(self) -> bool:
         """
@@ -387,5 +369,25 @@ class WFS:
             )
 
         return self._supports_changesets
+
+@dataclass
+class WFS:
+    """Item is able to be queried."""
+
+    def __post_init__(self):
+        self._supports_changesets = None
+        self.services_list = None
+
+    @property
+    def _wfs_url(self) -> str:
+        """
+        Returns the WFS URL for the item.
+
+        Returns:
+            str: The WFS URL associated with the item.
+        """
+        return f"{self._gis._service_url}wfs/"
+
+
 
 
