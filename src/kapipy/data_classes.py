@@ -379,8 +379,8 @@ class WFS:
         if self._supports_changesets is None:
             logger.debug(f"Checking if item with id: {self.id} supports changesets")
 
-            # fetch services list
-            self.services_list = self._gis.get(self.services)
+            if self.services_list is None:
+                self.services_list = self._gis.get(self.services)
 
             self._supports_changesets = any(
                 service.get("key") == "wfs-changesets" for service in self.services_list
