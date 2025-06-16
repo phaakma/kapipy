@@ -9,7 +9,6 @@ from shapely.geometry import mapping
 from typing import Any, TYPE_CHECKING, Union
 import logging
 from .gis import has_geopandas, has_arcgis, has_arcpy
-from .data_classes import FieldDef
 
 if TYPE_CHECKING:
     if has_geopandas:
@@ -70,7 +69,7 @@ def is_valid_date(val):
 
 
 def geojson_to_featureset(
-    geojson: dict | list, geometry_type: str, fields: list[FieldDef], out_sr: int = 4326
+    geojson: dict | list, geometry_type: str, fields: list["FieldDef"], out_sr: int = 4326
 ) -> "arcgis.features.FeatureSet":
     """
     Converts a GeoJSON FeatureCollection or list of features into an ArcGIS FeatureSet.
@@ -232,7 +231,7 @@ def geojson_to_sdf(
     geojson: dict[str, Any] | list[dict[str, Any]],
     out_sr: int,
     geometry_type: str,
-    fields: list[FieldDef] | None = None,
+    fields: list["FieldDef"] | None = None,
 ) -> "arcgis.features.GeoAccessor":
     """
     Convert GeoJSON features to a Spatially Enabled DataFrame (SEDF) with enforced data types.
@@ -261,6 +260,7 @@ def geojson_to_sdf(
     import pandas as pd
     from arcgis.features import GeoAccessor, GeoSeriesAccessor
     from arcgis.geometry import SpatialReference
+    from .data_classes import FieldDef
 
     # If fields is None, infer fields from geojson properties
     if fields is None:

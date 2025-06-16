@@ -122,44 +122,6 @@ class TableItem(BaseItem):
         df = json_to_df(result, fields=self.data.fields)
         return df
 
-    def export(
-        self,
-        export_format: str,
-        poll_interval: int = None,
-        timeout: int = None,
-        **kwargs: Any,
-    ) -> JobResult:
-        """
-        Exports the item in the specified format.
-
-        Parameters:
-            export_format (str): The format to export the item in.
-            poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.
-            timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).
-            **kwargs: Additional parameters for the export request.
-
-        Returns:
-            JobResult: A JobResult instance containing the export job details.
-
-        Raises:
-            ValueError: If export validation fails.
-        """
-
-        logger.debug(f"!! Exporting item with id: {self.id} in format: {export_format}")
-
-        job_result = self._gis.content.export(
-            itm=self,
-            export_format=export_format,
-            poll_interval=poll_interval,
-            timeout=timeout,
-            **kwargs,
-        )
-
-        logger.debug(
-            f"Export job created for item with id: {self.id}, job id: {job_result.id}"
-        )
-        return job_result
-
     def __str__(self) -> None:
         """
         User friendly string of a base item.

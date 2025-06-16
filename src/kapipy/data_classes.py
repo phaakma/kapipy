@@ -1,7 +1,14 @@
 import logging
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 from abc import ABC, abstractmethod
+from .export import validate_export_params, request_export
+from .job_result import JobResult
+from .conversion import (
+    get_data_type,
+    sdf_to_single_polygon_geojson,
+    gdf_to_single_polygon_geojson,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -395,3 +402,158 @@ class BaseItem(ABC):
             return None 
 
         return f"{self._gis._service_url}wfs/"
+
+
+    def export(
+        self,
+        export_format: str,
+        out_sr: int = None,
+        filter_geometry: Optional[Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"]] = None,
+        poll_interval: int = None,
+        timeout: int = None,
+        **kwargs: Any,
+    ) -> JobResult:
+        """
+        Exports the item in the specified format.
+
+        Parameters:
+            export_format (str): The format to export the item in.
+            out_sr (int, optional): The coordinate reference system code to use for the export.
+            filter_geometry (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The filter_geometry to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
+            poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.
+            timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).
+            **kwargs: Additional parameters for the export request.
+
+        Returns:
+            JobResult: A JobResult instance containing the export job details.
+
+        Raises:
+            ValueError: If export validation fails.
+        """
+
+        logger.debug(f"Exporting item with id: {self.id} in format: {export_format}")
+
+        crs = None
+        if self.kind in ["vector"]:
+            out_sr = out_sr if out_sr is not None else self.data.crs.srid
+            crs = f"EPSG:{out_sr}"
+            data_type = get_data_type(filter_geometry)
+            if data_type == "unknown":
+                filter_geometry=None
+            elif data_type == "sdf":
+                filter_geometry = sdf_to_single_polygon_geojson(filter_geometry)
+            elif data_type == "gdf":
+                filter_geometry = gdf_to_single_polygon_geojson(filter_geometry)
+
+        export_format = self._resolve_export_format(export_format)
+
+        validate_export_request = self._validate_export_request(
+            export_format,
+            crs=crs,
+            filter_geometry=filter_geometry,
+            **kwargs,
+        )
+
+        if not validate_export_request:
+            raise ValueError(f"Export validation failed for item with id: {self.id} in format: {export_format}")
+
+        export_request = request_export(
+            self._gis._api_url,
+            self._gis._api_key,
+            self.id,
+            self.type_,
+            self.kind,
+            export_format,
+            crs=crs,
+            filter_geometry=filter_geometry,
+            **kwargs,
+        )
+
+        job_result = JobResult(
+            export_request, self._gis, poll_interval=poll_interval, timeout=timeout
+        )
+        self._gis.content.jobs.append(job_result)
+        logger.debug(
+            f"Export job created for item with id: {self.id}, job id: {job_result.id}"
+        )
+        return job_result
+
+    def _validate_export_request(
+        self,        
+        export_format: str,
+        crs: str = None,
+        filter_geometry: dict = None,
+        **kwargs: Any,
+    ) -> bool:
+        """
+        Validates the export request parameters for the item.
+
+        Parameters:
+            export_format (str): The format to export the item in.
+            crs (str, optional): The coordinate reference system to use for the export.
+            filter_geometry (dict, optional): The filter_geometry to use for the export. Should be a GeoJSON dictionary.
+            **kwargs: Additional parameters for the export request.
+
+        Returns:
+            bool: True if the export request is valid, False otherwise.
+        """
+
+        export_format = self._resolve_export_format(export_format)
+
+        # log out all the input parameters including kwargs
+        logger.debug(
+            f"Validating export request for item with id: {self.id}, {export_format=}, {crs=}, {filter_geometry=},  {kwargs=}"
+        )
+
+        return validate_export_params(
+            self._gis._api_url,
+            self._gis._api_key,
+            self.id,
+            self.type_,
+            self.kind,
+            export_format,
+            crs,
+            filter_geometry,
+            **kwargs,
+        )
+
+    def _resolve_export_format(self, export_format: str) -> str:
+        """
+        Validates if the export format is supported by the item and returns the mimetype.
+
+        Parameters:
+            export_format (str): The format to validate.
+
+        Returns:
+            str: The mimetype of the export format if supported.
+
+        Raises:
+            ValueError: If the export format is not supported by this item.
+        """
+
+        logger.debug(
+            f"Validating export format: {export_format} for item with id: {self.id}"
+        )
+        mimetype = None
+
+        # check if the export format is either any of the names or mimetypes in the example_formats
+        export_format = export_format.lower()
+
+        # Handle special cases for export formats geopackage and sqlite as it seems a
+        # strange string argument to expect a user to pass in
+        if export_format in ("geopackage", "sqlite"):
+            export_format = "GeoPackage / SQLite".lower()
+
+        export_formats = self.data.export_formats
+
+        for f in self.data.export_formats:
+            if export_format in (f.name.lower(), f.mimetype.lower()):
+                mimetype = f.mimetype
+
+        if mimetype is None:
+            raise ValueError(
+                f"Export format {export_format} is not supported by this item. Refer supported formats using : itm.data.export_formats"
+            )
+
+        logger.debug(f"Resolved export format: {mimetype} from {export_format}")
+        return mimetype

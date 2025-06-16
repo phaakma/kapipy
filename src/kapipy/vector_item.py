@@ -364,49 +364,7 @@ class VectorItem(BaseItem):
             return geojson_to_gdf(result, out_sr=out_sr, fields=self.data.fields)
         return result
 
-    def export(
-        self,
-        export_format: str,
-        out_sr: int = None,
-        extent: Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"] = None,
-        poll_interval: int = None,
-        timeout: int = None,
-        **kwargs: Any,
-    ) -> JobResult:
-        """
-        Exports the item in the specified format.
 
-        Parameters:
-            export_format (str): The format to export the item in.
-            out_sr (int, optional): The coordinate reference system code to use for the export.
-            extent (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The extent to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
-            poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.
-            timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).
-            **kwargs: Additional parameters for the export request.
-
-        Returns:
-            JobResult: A JobResult instance containing the export job details.
-
-        Raises:
-            ValueError: If export validation fails.
-        """
-
-        logger.debug(f"!! Exporting item with id: {self.id} in format: {export_format}")
-
-        job_result = self._gis.content.export(
-            itm=self,
-            export_format=export_format,
-            out_sr=out_sr,
-            extent=extent,
-            poll_interval=poll_interval,
-            timeout=timeout,
-            **kwargs,
-        )
-
-        logger.debug(
-            f"Export job created for item with id: {self.id}, job id: {job_result.id}"
-        )
-        return job_result
 
     def __str__(self) -> None:
         """
