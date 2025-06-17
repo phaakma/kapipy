@@ -85,11 +85,12 @@ class GISK:
         )  # ensure trailing slash
         self._api_version = api_version
         self._content_manager = None
+        self._audit_manager = None
         self._api_key = api_key
         if not self._api_key:
             raise ValueError("API key must be provided.")
         logger.debug(f"GISK initialized with URL: {self.url}")
-
+        
     @property
     def _service_url(self) -> str:
         """
@@ -137,6 +138,20 @@ class GISK:
             from .content_manager import ContentManager
             self._content_manager = ContentManager(self)
         return self._content_manager
+
+    @property
+    def audit(self) -> "AuditManager":
+        """
+        Returns the AuditManager instance for this GISK.
+
+        Returns:
+            AuditManager: The audit manager associated with this GISK.
+        """
+
+        if self._audit_manager is None:
+            from .audit_manager import AuditManager
+            self._audit_manager = AuditManager(gis=self)
+        return self._audit_manager
 
     def get(self, url: str, params: dict = None) -> dict:
         """

@@ -31,10 +31,11 @@ def test_download_linz_wfs_data_live(id: str = rail_station_layer_id):
     url = "https://data.linz.govt.nz/services/wfs"
     srsName = "EPSG:2193"
     typeNames = f"layer-{rail_station_layer_id}"
-    result = download_wfs_data(
+    response = download_wfs_data(
         url=url, typeNames=typeNames, api_key=api_key, srsName=srsName
     ) 
-    assert isinstance(result, dict), "Result should be a dictionary"
+    assert isinstance(response, dict), "Result should be a dictionary"
+    result = response.get("result")
     features = result.get("features")
     assert isinstance(features, list)
     logger.info(f"Number of features downloaded: {len(features)}")

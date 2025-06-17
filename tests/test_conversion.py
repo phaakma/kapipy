@@ -24,6 +24,9 @@ from kapipy.conversion import (
     has_arcgis,
     has_geopandas,
 )
+from kapipy.data_classes import (
+    FieldDef
+)
 
 def test_map_field_type():
     assert map_field_type("integer") == "esriFieldTypeInteger"
@@ -128,6 +131,10 @@ def test_geojson_to_gdf():
 
 @pytest.mark.skipif(not has_arcgis, reason="arcgis module not installed")
 def test_geojson_to_sdf():
+    
+    from arcgis.features import GeoAccessor
+    from arcgis.features import FeatureSet
+    # Create a dummy SEDF using FeatureSet
     geojson = {
         "type": "FeatureCollection",
         "features": [
@@ -138,6 +145,12 @@ def test_geojson_to_sdf():
             }
         ],
     }
+    from dataclasses import dataclass
+    @dataclass
+    class FieldDef:
+        name: str
+        type_: str
+    fields = [FieldDef(name="id", type_="integer"), FieldDef(name="name", type_="string")]
     sdf = geojson_to_sdf(geojson, out_sr=4326, geometry_type="esriGeometryPoint")
     assert not sdf.empty
     assert "id" in sdf.columns
@@ -229,13 +242,13 @@ def test_sdf_to_single_geometry():
     assert hasattr(geom, "JSON")
 
 def test_esri_json_to_geojson_point():
-    esri_json = {"x": 1.0, "y": 2.0}
+    esri_json = {"x": 1.0, "y": 2.0, "spatialReference": {"wkid": 4326}}
     geojson = esri_json_to_geojson(esri_json, "point")
     assert geojson["type"] == "Point"
     assert geojson["coordinates"] == [1.0, 2.0]
 
 def test_esri_json_to_geojson_polygon():
-    esri_json = {"rings": [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]}
+    esri_json = {"rings": [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]], "spatialReference": {"wkid": 4326}}
     geojson = esri_json_to_geojson(esri_json, "polygon")
     assert geojson["type"] == "Polygon"
     assert isinstance(geojson["coordinates"], list)

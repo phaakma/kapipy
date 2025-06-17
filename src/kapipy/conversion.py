@@ -69,7 +69,7 @@ def is_valid_date(val):
 
 
 def geojson_to_featureset(
-    geojson: dict | list, geometry_type: str, fields, out_sr: int = 4326
+    geojson: dict | list, geometry_type: str, fields: list["FieldDef"], out_sr: int = 4326
 ) -> "arcgis.features.FeatureSet":
     """
     Converts a GeoJSON FeatureCollection or list of features into an ArcGIS FeatureSet.
@@ -100,7 +100,7 @@ def geojson_to_featureset(
 
     # validate that any date fields can be parsed
     # If any value is not parseable, set the field type to string
-    for field in fields:
+    for field in fields:        
         if field.type_.lower() == "date":
             for feature in features:
                 val = feature.get("properties", {}).get(field.name)
@@ -231,7 +231,7 @@ def geojson_to_sdf(
     geojson: dict[str, Any] | list[dict[str, Any]],
     out_sr: int,
     geometry_type: str,
-    fields: list[dict[str, str]] | None = None,
+    fields: list["FieldDef"] | None = None,
 ) -> "arcgis.features.GeoAccessor":
     """
     Convert GeoJSON features to a Spatially Enabled DataFrame (SEDF) with enforced data types.
@@ -239,7 +239,7 @@ def geojson_to_sdf(
     Parameters:
         geojson (dict or list): A GeoJSON FeatureCollection (dict) or a list of GeoJSON feature dicts.
         out_sr (int): The EPSG code for the coordinate reference system (e.g., 4326).
-        fields (list[dict], optional): A list of dictionaries specifying field names and their desired data types.
+        fields (list[FieldDef], optional): A list of dictionaries specifying field names and their desired data types.
 
     Returns:
         arcgis.features.GeoAccessor: A Spatially Enabled DataFrame with the specified CRS and column types.
@@ -260,6 +260,23 @@ def geojson_to_sdf(
     import pandas as pd
     from arcgis.features import GeoAccessor, GeoSeriesAccessor
     from arcgis.geometry import SpatialReference
+    from .data_classes import FieldDef
+
+    # If fields is None, infer fields from geojson properties
+    if fields is None:
+        # Normalize input to a list of features
+        if isinstance(geojson, dict) and "features" in geojson:
+            features = geojson["features"]
+        elif isinstance(geojson, list):
+            features = geojson
+        else:
+            raise ValueError("geojson must be a FeatureCollection or list of features.")
+        # Collect all property keys and infer types as string (or improve as needed)
+        if features:
+            sample_props = features[0].get("properties", {})
+            fields = [FieldDef(name=k, type_="string") for k in sample_props.keys()]
+        else:
+            fields = []
 
     logger.debug(f"{out_sr=}")
     feature_set = geojson_to_featureset(
