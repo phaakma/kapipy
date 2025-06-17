@@ -171,7 +171,7 @@ def request_export(
 
     headers = {"Authorization": f"key {api_key}"}
 
-    request_datetime = datetime.utcnow().isoformat()
+    request_datetime = datetime.utcnow()
     try:
         response = httpx.post(export_url, headers=headers, json=data)
         response.raise_for_status()
@@ -186,4 +186,13 @@ def request_export(
         logger.debug(err)
         logger.debug(e)
         raise ExportError(err)
-    return json_response
+    
+    headers.pop('Authorization', None)
+    return {
+        "request_url": export_url,
+        "request_method": "POST",
+        "request_time": request_datetime,
+        "request_headers": headers,
+        "request_params": data,
+        "response": json_response
+    }

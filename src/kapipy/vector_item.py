@@ -107,7 +107,7 @@ class VectorItem(BaseItem):
                     spatial_rel=spatial_rel,              
                 )
 
-        result = download_wfs_data(
+        query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._gis._api_key,
             typeNames=f"{self.type_}-{self.id}",
@@ -119,7 +119,17 @@ class VectorItem(BaseItem):
             **kwargs,
         )
 
-        return result
+        self._gis.audit.add_request_record(
+            item_id=self.id,
+            request_type="wfs-query",
+            request_url=query_details.get("request_url", ""),
+            request_method=query_details.get("request_method", ""),
+            request_time=query_details.get("request_time", ""),
+            request_headers=query_details.get("request_headers", ""),
+            request_params=query_details.get("request_params", ""),
+        )
+
+        return query_details.get("result")
 
     def query(
         self,
@@ -281,7 +291,7 @@ class VectorItem(BaseItem):
                     spatial_rel=spatial_rel,              
                 )
 
-        result = download_wfs_data(
+        query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._gis._api_key,
             typeNames=f"{self.type_}-{self.id}-changeset",
@@ -293,7 +303,18 @@ class VectorItem(BaseItem):
             result_record_count=result_record_count,
             **kwargs,
         )
-        return result
+
+        self._gis.audit.add_request_record(
+            item_id=self.id,
+            request_type="wfs-changeset",
+            request_url=query_details.get("request_url", ""),
+            request_method=query_details.get("request_method", ""),
+            request_time=query_details.get("request_time", ""),
+            request_headers=query_details.get("request_headers", ""),
+            request_params=query_details.get("request_params", ""),
+        )
+
+        return query_details.get("result")
 
     def changeset(
         self,

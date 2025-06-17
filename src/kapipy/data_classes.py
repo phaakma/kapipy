@@ -231,6 +231,7 @@ class ExportFormat:
     name: str
     mimetype: str
 
+
 @dataclass
 class ItemData:
     storage: Optional[str]
@@ -256,12 +257,14 @@ class ItemData:
     has_z: bool
     export_formats: List[ExportFormat]
 
+
 @dataclass
-class VectorItemData (ItemData):
+class VectorItemData(ItemData):
     crs: CRS
     geometry_field: str
-    geometry_type: str 
+    geometry_type: str
     extent: Dict[str, Any]
+
 
 @dataclass
 class ServiceTemplateUrl:
@@ -333,6 +336,7 @@ class BaseItem(ABC):
     Base class for Items. Should not be created directly. Instead, use the ContentManager
     to return an Item.
     """
+
     id: int
     url: str
     type_: str
@@ -360,7 +364,7 @@ class BaseItem(ABC):
         User friendly string of a base item.
         """
 
-        return f'Item id: {self.id}, type_: {self.type_}, title: {self.title}'
+        return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
 
     @property
     def supports_changesets(self) -> bool:
@@ -397,18 +401,19 @@ class BaseItem(ABC):
             self._supports_wfs = any(
                 service.get("key") == "wfs" for service in self.services_list
             )
-        
+
         if self._supports_wfs is False:
-            return None 
+            return None
 
         return f"{self._gis._service_url}wfs/"
-
 
     def export(
         self,
         export_format: str,
         out_sr: int = None,
-        filter_geometry: Optional[Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"]] = None,
+        filter_geometry: Optional[
+            Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"]
+        ] = None,
         poll_interval: int = None,
         timeout: int = None,
         **kwargs: Any,
@@ -439,7 +444,7 @@ class BaseItem(ABC):
             crs = f"EPSG:{out_sr}"
             data_type = get_data_type(filter_geometry)
             if data_type == "unknown":
-                filter_geometry=None
+                filter_geometry = None
             elif data_type == "sdf":
                 filter_geometry = sdf_to_single_polygon_geojson(filter_geometry)
             elif data_type == "gdf":
@@ -455,9 +460,11 @@ class BaseItem(ABC):
         )
 
         if not validate_export_request:
-            raise ValueError(f"Export validation failed for item with id: {self.id} in format: {export_format}")
+            raise ValueError(
+                f"Export validation failed for item with id: {self.id} in format: {export_format}"
+            )
 
-        export_request = request_export(
+        export_details = request_export(
             self._gis._api_url,
             self._gis._api_key,
             self.id,
@@ -470,16 +477,28 @@ class BaseItem(ABC):
         )
 
         job_result = JobResult(
-            export_request, self._gis, poll_interval=poll_interval, timeout=timeout
+            export_details.get("response"),
+            self._gis,
+            poll_interval=poll_interval,
+            timeout=timeout,
         )
         self._gis.content.jobs.append(job_result)
+        self._gis.audit.add_request_record(
+            item_id=self.id,
+            request_type="export",
+            request_url=export_details.get("request_url", ""),
+            request_method=export_details.get("request_method", ""),
+            request_time=export_details.get("request_time", ""),
+            request_headers=export_details.get("request_headers", ""),
+            request_params=export_details.get("request_params", ""),
+        )
         logger.debug(
             f"Export job created for item with id: {self.id}, job id: {job_result.id}"
         )
         return job_result
 
     def _validate_export_request(
-        self,        
+        self,
         export_format: str,
         crs: str = None,
         filter_geometry: dict = None,

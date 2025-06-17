@@ -1,5 +1,6 @@
 import httpx
 import os
+from datetime import datetime
 from typing import Any
 from tenacity import (
     retry,
@@ -152,6 +153,8 @@ def download_wfs_data(
         logger.debug(f"{out_fields=}")
         wfs_request_params["PropertyName"] = out_fields
 
+    request_datetime = datetime.utcnow()
+
     pages_fetched = 0
     while pages_fetched < MAX_PAGE_FETCHES:
         logger.debug(f"Pages fetched: {pages_fetched} of max: {MAX_PAGE_FETCHES}")
@@ -226,4 +229,18 @@ def download_wfs_data(
     logger.debug(
         f"Finished WFS data download for '{typeNames}'. Total features retrieved: {len(all_features)}."
     )
-    return result
+
+    headers.pop('Authorization', None)
+    wfs_request_params.pop('startIndex', None)
+    wfs_request_params.pop('count', None)
+
+    return {
+        "request_url": url,
+        "request_method": "POST",
+        "request_time": request_datetime,
+        "request_headers": headers,
+        "request_params": wfs_request_params,
+        "result": result
+    }
+
+
