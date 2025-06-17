@@ -29,7 +29,7 @@ class TableItem(BaseItem):
         """
         logger.debug(f"Executing WFS query for item with id: {self.id}")
 
-        result = download_wfs_data(
+        query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._gis._api_key,
             typeNames=f"{self.type_}-{self.id}",
@@ -37,7 +37,17 @@ class TableItem(BaseItem):
             **kwargs,
         )
 
-        return result
+        self._gis.audit.add_request_record(
+            item_id=self.id,
+            request_type="wfs-query",
+            request_url=query_details.get("request_url", ""),
+            request_method=query_details.get("request_method", ""),
+            request_time=query_details.get("request_time", ""),
+            request_headers=query_details.get("request_headers", ""),
+            request_params=query_details.get("request_params", ""),
+        )
+
+        return query_details.get("result")
 
     def query(self, cql_filter: str = None, **kwargs: Any) -> dict:
         """
@@ -88,7 +98,7 @@ class TableItem(BaseItem):
 
         viewparams = f"from:{from_time};to:{to_time}"
 
-        result = download_wfs_data(
+        query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._gis._api_key,
             typeNames=f"{self.type_}-{self.id}-changeset",
@@ -97,7 +107,17 @@ class TableItem(BaseItem):
             **kwargs,
         )
 
-        return result
+        self._gis.audit.add_request_record(
+            item_id=self.id,
+            request_type="wfs-changeset",
+            request_url=query_details.get("request_url", ""),
+            request_method=query_details.get("request_method", ""),
+            request_time=query_details.get("request_time", ""),
+            request_headers=query_details.get("request_headers", ""),
+            request_params=query_details.get("request_params", ""),
+        )
+
+        return query_details.get("result")
 
     def get_changeset(
         self, from_time: str, to_time: str = None, cql_filter: str = None, **kwargs: Any
