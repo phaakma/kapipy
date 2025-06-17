@@ -39,6 +39,8 @@ class TableItem(BaseItem):
 
         self._gis.audit.add_request_record(
             item_id=self.id,
+            item_kind=self.kind,
+            item_type=self.type_,
             request_type="wfs-query",
             request_url=query_details.get("request_url", ""),
             request_method=query_details.get("request_method", ""),
@@ -109,6 +111,8 @@ class TableItem(BaseItem):
 
         self._gis.audit.add_request_record(
             item_id=self.id,
+            item_kind=self.kind,
+            item_type=self.type_,
             request_type="wfs-changeset",
             request_url=query_details.get("request_url", ""),
             request_method=query_details.get("request_method", ""),

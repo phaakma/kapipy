@@ -55,6 +55,8 @@ class AuditManager:
         The audit table should have the following fields:
             - id (INTEGER PRIMARY KEY AUTOINCREMENT)
             - item_id (INTEGER)
+            - item_kind (TEXT)
+            - item_type (TEXT)
             - request_type (TEXT)
             - request_url (TEXT)
             - request_method (TEXT)
@@ -77,6 +79,8 @@ class AuditManager:
                 CREATE TABLE IF NOT EXISTS {self.requests_table_name} (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     item_id INTEGER,
+                    item_kind TEXT,
+                    item_type TEXT,
                     request_type TEXT,
                     request_url TEXT,
                     request_method TEXT,
@@ -109,6 +113,8 @@ class AuditManager:
     def add_request_record(
         self,
         item_id: int,
+        item_kind: str,
+        item_type: str,
         request_type: str,
         request_url: str,
         request_method: str,
@@ -150,6 +156,8 @@ class AuditManager:
                 f"""
                 INSERT INTO {self.requests_table_name} (
                     item_id,
+                    item_kind,
+                    item_type,
                     request_type,
                     request_url,
                     request_method,
@@ -160,10 +168,12 @@ class AuditManager:
                     adds,
                     updates,
                     deletes
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     item_id,
+                    item_kind,
+                    item_type,
                     request_type,
                     request_url,
                     request_method,

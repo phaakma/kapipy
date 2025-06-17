@@ -485,6 +485,8 @@ class BaseItem(ABC):
         self._gis.content.jobs.append(job_result)
         self._gis.audit.add_request_record(
             item_id=self.id,
+            item_kind=self.kind,
+            item_type=self.type_,
             request_type="export",
             request_url=export_details.get("request_url", ""),
             request_method=export_details.get("request_method", ""),
