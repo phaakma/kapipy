@@ -144,7 +144,8 @@ class AuditManager:
                 request_time_utc = request_time.replace(tzinfo=timezone.utc)
             else:
                 request_time_utc = request_time.astimezone(timezone.utc)
-            request_time_str = request_time_utc.isoformat()
+            # Format as ISO string without timezone info
+            request_time_str = request_time_utc.strftime("%Y-%m-%dT%H:%M:%S")
         else:
             request_time_str = str(request_time)
 
@@ -190,6 +191,76 @@ class AuditManager:
         finally:
             conn.close()
 
+    # def get_latest_request_for_item(self, item_id: int) -> dict | None:
+    #     """
+    #     Returns the most recent audit record for the given item_id, based on request_time.
+    #     Returns None if no record is found.
+    #     """
+    #     import sqlite3
+
+    #     db_path = os.path.join(self.folder, self.db_name)
+    #     conn = sqlite3.connect(db_path)
+    #     try:
+    #         cursor = conn.cursor()
+    #         cursor.execute(
+    #             f"""
+    #             SELECT *
+    #             FROM {self.requests_table_name}
+    #             WHERE item_id = ?
+    #             ORDER BY request_time DESC
+    #             LIMIT 1
+    #             """,
+    #             (item_id,),
+    #         )
+    #         row = cursor.fetchone()
+    #         if row is None:
+    #             return None
+    #         # Get column names for dict conversion
+    #         col_names = [desc[0] for desc in cursor.description]
+    #         return dict(zip(col_names, row))
+    #     finally:
+    #         conn.close()
+
+    def get_latest_request_for_item(self, item_id: int, request_type: str = None) -> dict | None:
+        """
+        Returns the most recent audit record for the given item_id, optionally filtered by request_type,
+        based on request_time. Returns None if no record is found.
+        """
+        import sqlite3
+
+        db_path = os.path.join(self.folder, self.db_name)
+        conn = sqlite3.connect(db_path)
+        try:
+            cursor = conn.cursor()
+            if request_type is not None:
+                cursor.execute(
+                    f"""
+                    SELECT *
+                    FROM {self.requests_table_name}
+                    WHERE item_id = ? AND request_type = ?
+                    ORDER BY request_time DESC
+                    LIMIT 1
+                    """,
+                    (item_id, request_type),
+                )
+            else:
+                cursor.execute(
+                    f"""
+                    SELECT *
+                    FROM {self.requests_table_name}
+                    WHERE item_id = ?
+                    ORDER BY request_time DESC
+                    LIMIT 1
+                    """,
+                    (item_id,),
+                )
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            col_names = [desc[0] for desc in cursor.description]
+            return dict(zip(col_names, row))
+        finally:
+            conn.close()
 
     def __repr__(self) -> str:
         """
