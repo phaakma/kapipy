@@ -73,6 +73,12 @@ class ContentManager:
         response = self._gis.get(url)
         return response
 
+    def _get_item_details(self, url: str) -> dict:
+        """
+        Fetch the item details using the item url.
+        """
+        return self._gis.get(url)
+
     def get(self, id: str) -> dict:
         """
         Retrieves and instantiates a content item by ID from the GISK.
@@ -99,7 +105,7 @@ class ContentManager:
             )
 
         # Assume the first item is the desired content
-        itm_properties_json = self._gis.get(search_result[0]["url"])
+        itm_properties_json = self._get_item_details(search_result[0]["url"])
         # Based on the kind of item, return the appropriate item class.
         if itm_properties_json.get("kind") == "vector":
             item = from_dict(

@@ -1,7 +1,4 @@
 # gis.py
-
-
-
 import os
 from urllib.parse import urljoin
 import logging
