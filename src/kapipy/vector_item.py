@@ -173,6 +173,9 @@ class VectorItem(BaseItem):
         if output_format not in ("sdf", "gdf", "geodataframe", "json", "geojson"):
             raise ValueError(f"Unknown output format: {output_format}")
 
+        if bbox is not None and not isinstance(bbox, str):
+            raise ValueError(f"bbox should be a string. Use bbox_geometry for dataframes.")
+
         out_sr = out_sr if out_sr is not None else self.data.crs.srid
 
         result = self.query_to_json(
