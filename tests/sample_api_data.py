@@ -1,4 +1,25 @@
-layer_json = {
+SEARCH_LAYER_JSON = [
+    {
+        "id": 50787,
+        "url": "https://data.linz.govt.nz/services/api/v1.x/layers/50787/",
+        "type": "layer",
+        "title": "NZ Geodetic Marks",
+        "first_published_at": "2011-05-22T06:05:15.135161Z",
+        "thumbnail_url": "https://tiles-cdn.koordinates.com/services/tiles/v4/thumbnail/layer=50787.423103,style=2088.1516910372/1200x630.png",
+        "published_at": "2025-06-15T02:31:54.486371Z",
+        "featured_at": None,
+        "services": "https://data.linz.govt.nz/services/api/v1.x/layers/50787/services/",
+        "user_capabilities": [
+            "can-star",
+            "can-export",
+            "can-spatial-query",
+            "can-view-data-table",
+        ],
+        "user_permissions": ["find", "view", "download"],
+    }
+]
+
+LAYER_JSON = {
     "id": 50787,
     "url": "https://data.linz.govt.nz/services/api/v1.x/layers/50787/",
     "type": "layer",
@@ -188,7 +209,7 @@ layer_json = {
     },
 }
 
-table_json = {
+TABLE_JSON = {
     "id": 113761,
     "url": "https://data.linz.govt.nz/services/api/v1.x/tables/113761/",
     "type": "table",
