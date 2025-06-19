@@ -37,19 +37,7 @@ class TableItem(BaseItem):
             **kwargs,
         )
 
-        self._gis.audit.add_request_record(
-            item_id=self.id,
-            item_kind=self.kind,
-            item_type=self.type_,
-            request_type="wfs-query",
-            request_url=query_details.get("request_url", ""),
-            request_method=query_details.get("request_method", ""),
-            request_time=query_details.get("request_time", ""),
-            request_headers=query_details.get("request_headers", ""),
-            request_params=query_details.get("request_params", ""),
-        )
-
-        return query_details.get("result")
+        return query_details
 
     def query(self, cql_filter: str = None, **kwargs: Any) -> dict:
         """
@@ -64,9 +52,24 @@ class TableItem(BaseItem):
         """
         logger.debug(f"Executing WFS query for item with id: {self.id}")
 
-        result = self.query_json(cql_filter=cql_filter, **kwargs)
+        query_details = self.query_json(cql_filter=cql_filter, **kwargs)
+        df = json_to_df(query_details.get("result"), fields=self.data.fields)
 
-        df = json_to_df(result, fields=self.data.fields)
+        total_features = df.shape[0]
+
+        self._gis.audit.add_request_record(
+            item_id=self.id,
+            item_kind=self.kind,
+            item_type=self.type_,
+            request_type="wfs-query",
+            request_url=query_details.get("request_url", ""),
+            request_method=query_details.get("request_method", ""),
+            request_time=query_details.get("request_time", ""),
+            request_headers=query_details.get("request_headers", ""),
+            request_params=query_details.get("request_params", ""),
+            total_features=total_features,
+        )
+        
         return df
 
     def get_changeset_json(
@@ -109,19 +112,7 @@ class TableItem(BaseItem):
             **kwargs,
         )
 
-        self._gis.audit.add_request_record(
-            item_id=self.id,
-            item_kind=self.kind,
-            item_type=self.type_,
-            request_type="wfs-changeset",
-            request_url=query_details.get("request_url", ""),
-            request_method=query_details.get("request_method", ""),
-            request_time=query_details.get("request_time", ""),
-            request_headers=query_details.get("request_headers", ""),
-            request_params=query_details.get("request_params", ""),
-        )
-
-        return query_details.get("result")
+        return query_details
 
     def get_changeset(
         self, from_time: str, to_time: str = None, cql_filter: str = None, **kwargs: Any
@@ -139,11 +130,41 @@ class TableItem(BaseItem):
             pandas.DataFrame: The changeset data as a DataFrame.
         """
 
-        result = self.get_changeset_json(
+        query_details = self.get_changeset_json(
             from_time=from_time, to_time=to_time, cql_filter=cql_filter, **kwargs
         )
 
-        df = json_to_df(result, fields=self.data.fields)
+        df = json_to_df(query_details.get("result"), fields=self.data.fields)
+
+        total_features = df.shape[0]
+        if total_features > 0:
+            counts = df["__change__"].value_counts()
+            updates = int(counts.get("UPDATE", 0) )
+            adds = int(counts.get("INSERT", 0) )
+            deletes = int(counts.get("DELETE", 0) )
+        else:
+            updates=0
+            adds=0
+            deletes=0
+        
+        logger.debug(f'{total_features=}, {updates=}, {adds=}, {deletes=}')
+
+        self._gis.audit.add_request_record(
+            item_id=self.id,
+            item_kind=self.kind,
+            item_type=self.type_,
+            request_type="wfs-changeset",
+            request_url=query_details.get("request_url", ""),
+            request_method=query_details.get("request_method", ""),
+            request_time=query_details.get("request_time", ""),
+            request_headers=query_details.get("request_headers", ""),
+            request_params=query_details.get("request_params", ""),
+            total_features=total_features,
+            adds=adds,
+            updates=updates,
+            deletes=deletes,
+        )
+        
         return df
 
     def __str__(self) -> None:

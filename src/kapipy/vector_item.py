@@ -13,7 +13,7 @@ from .conversion import (
     geom_sdf_into_cql_filter,
     bbox_gdf_into_cql_filter,
     geom_gdf_into_cql_filter,
-    get_data_type
+    get_data_type,
 )
 from .wfs_utils import download_wfs_data
 
@@ -61,7 +61,9 @@ class VectorItem(BaseItem):
                 f"Cannot process both bbox string and cql_filter together."
             )
 
-        if bbox is not None and (bbox_geometry is not None or filter_geometry is not None):
+        if bbox is not None and (
+            bbox_geometry is not None or filter_geometry is not None
+        ):
             raise ValueError(
                 f"Cannot process both a bbox string and a geometry together."
             )
@@ -78,14 +80,14 @@ class VectorItem(BaseItem):
                     sdf=bbox_geometry,
                     geometry_field=self.data.geometry_field,
                     srid=self.data.crs.srid,
-                    cql_filter=cql_filter,                
+                    cql_filter=cql_filter,
                 )
-            elif data_type == "gdf":                
+            elif data_type == "gdf":
                 cql_filter = bbox_gdf_into_cql_filter(
                     gdf=bbox_geometry,
                     geometry_field=self.data.geometry_field,
                     srid=self.data.crs.srid,
-                    cql_filter=cql_filter,                
+                    cql_filter=cql_filter,
                 )
 
         if filter_geometry is not None:
@@ -96,7 +98,7 @@ class VectorItem(BaseItem):
                     geometry_field=self.data.geometry_field,
                     srid=self.data.crs.srid,
                     cql_filter=cql_filter,
-                    spatial_rel=spatial_rel,              
+                    spatial_rel=spatial_rel,
                 )
             elif data_type == "gdf":
                 cql_filter = geom_gdf_into_cql_filter(
@@ -104,7 +106,7 @@ class VectorItem(BaseItem):
                     geometry_field=self.data.geometry_field,
                     srid=self.data.crs.srid,
                     cql_filter=cql_filter,
-                    spatial_rel=spatial_rel,              
+                    spatial_rel=spatial_rel,
                 )
 
         query_details = download_wfs_data(
@@ -119,19 +121,7 @@ class VectorItem(BaseItem):
             **kwargs,
         )
 
-        self._gis.audit.add_request_record(
-            item_id=self.id,
-            item_kind=self.kind,
-            item_type=self.type_,
-            request_type="wfs-query",
-            request_url=query_details.get("request_url", ""),
-            request_method=query_details.get("request_method", ""),
-            request_time=query_details.get("request_time", ""),
-            request_headers=query_details.get("request_headers", ""),
-            request_params=query_details.get("request_params", ""),
-        )
-
-        return query_details.get("result")
+        return query_details
 
     def query(
         self,
@@ -174,11 +164,13 @@ class VectorItem(BaseItem):
             raise ValueError(f"Unknown output format: {output_format}")
 
         if bbox is not None and not isinstance(bbox, str):
-            raise ValueError(f"bbox should be a string. Use bbox_geometry for dataframes.")
+            raise ValueError(
+                f"bbox should be a string. Use bbox_geometry for dataframes."
+            )
 
         out_sr = out_sr if out_sr is not None else self.data.crs.srid
 
-        result = self.query_to_json(
+        query_details = self.query_to_json(
             cql_filter=cql_filter,
             out_sr=out_sr,
             out_fields=out_fields,
@@ -191,14 +183,32 @@ class VectorItem(BaseItem):
         )
 
         if output_format == "sdf":
-            return geojson_to_sdf(
-                result,
+            result = geojson_to_sdf(
+                query_details.get("result"),
                 out_sr=out_sr,
                 geometry_type=self.data.geometry_type,
                 fields=self.data.fields,
             )
         elif output_format in ("gdf", "geodataframe"):
-            return geojson_to_gdf(result, out_sr=out_sr, fields=self.data.fields)
+            result = geojson_to_gdf(
+                query_details.get("result"), out_sr=out_sr, fields=self.data.fields
+            )
+
+        total_features = result.shape[0]
+
+        self._gis.audit.add_request_record(
+            item_id=self.id,
+            item_kind=self.kind,
+            item_type=self.type_,
+            request_type="wfs-query",
+            request_url=query_details.get("request_url", ""),
+            request_method=query_details.get("request_method", ""),
+            request_time=query_details.get("request_time", ""),
+            request_headers=query_details.get("request_headers", ""),
+            request_params=query_details.get("request_params", ""),
+            total_features=total_features,
+        )
+
         return result
 
     def changeset_to_json(
@@ -250,7 +260,9 @@ class VectorItem(BaseItem):
                 f"Cannot process both bbox string and cql_filter together."
             )
 
-        if bbox is not None and (bbox_geometry is not None or filter_geometry is not None):
+        if bbox is not None and (
+            bbox_geometry is not None or filter_geometry is not None
+        ):
             raise ValueError(
                 f"Cannot process both a bbox string and a geometry together."
             )
@@ -267,14 +279,14 @@ class VectorItem(BaseItem):
                     sdf=bbox_geometry,
                     geometry_field=self.data.geometry_field,
                     srid=self.data.crs.srid,
-                    cql_filter=cql_filter,                
+                    cql_filter=cql_filter,
                 )
-            elif data_type == "gdf":                
+            elif data_type == "gdf":
                 cql_filter = bbox_gdf_into_cql_filter(
                     gdf=bbox_geometry,
                     geometry_field=self.data.geometry_field,
                     srid=self.data.crs.srid,
-                    cql_filter=cql_filter,                
+                    cql_filter=cql_filter,
                 )
 
         if filter_geometry is not None:
@@ -285,7 +297,7 @@ class VectorItem(BaseItem):
                     geometry_field=self.data.geometry_field,
                     srid=self.data.crs.srid,
                     cql_filter=cql_filter,
-                    spatial_rel=spatial_rel,              
+                    spatial_rel=spatial_rel,
                 )
             elif data_type == "gdf":
                 cql_filter = geom_gdf_into_cql_filter(
@@ -293,7 +305,7 @@ class VectorItem(BaseItem):
                     geometry_field=self.data.geometry_field,
                     srid=self.data.crs.srid,
                     cql_filter=cql_filter,
-                    spatial_rel=spatial_rel,              
+                    spatial_rel=spatial_rel,
                 )
 
         query_details = download_wfs_data(
@@ -309,19 +321,7 @@ class VectorItem(BaseItem):
             **kwargs,
         )
 
-        self._gis.audit.add_request_record(
-            item_id=self.id,
-            item_kind=self.kind,
-            item_type=self.type_,
-            request_type="wfs-changeset",
-            request_url=query_details.get("request_url", ""),
-            request_method=query_details.get("request_method", ""),
-            request_time=query_details.get("request_time", ""),
-            request_headers=query_details.get("request_headers", ""),
-            request_params=query_details.get("request_params", ""),
-        )
-
-        return query_details.get("result")
+        return query_details
 
     def changeset(
         self,
@@ -367,7 +367,7 @@ class VectorItem(BaseItem):
         if output_format not in ("sdf", "gdf", "geodataframe", "json", "geojson"):
             raise ValueError(f"Unknown output format: {output_format}")
 
-        result = self.changeset_to_json(
+        query_details = self.changeset_to_json(
             from_time=from_time,
             to_time=to_time,
             out_sr=out_sr,
@@ -382,17 +382,45 @@ class VectorItem(BaseItem):
         )
 
         if output_format == "sdf":
-            return geojson_to_sdf(
-                result,
+            result = geojson_to_sdf(
+                query_details.get("result"),
                 out_sr=out_sr,
                 geometry_type=self.data.geometry_type,
                 fields=self.data.fields,
             )
         elif output_format in ("gdf", "geodataframe"):
-            return geojson_to_gdf(result, out_sr=out_sr, fields=self.data.fields)
+            result = geojson_to_gdf(query_details.get("result"), out_sr=out_sr, fields=self.data.fields)
+
+        total_features = result.shape[0]
+        if total_features > 0:
+            counts = result["__change__"].value_counts()
+            updates = int(counts.get("UPDATE", 0) )
+            adds = int(counts.get("INSERT", 0) )
+            deletes = int(counts.get("DELETE", 0) )
+        else:
+            updates=0
+            adds=0
+            deletes=0
+        
+        logger.debug(f'{total_features=}, {updates=}, {adds=}, {deletes=}')
+        
+        self._gis.audit.add_request_record(
+            item_id=self.id,
+            item_kind=self.kind,
+            item_type=self.type_,
+            request_type="wfs-changeset",
+            request_url=query_details.get("request_url", ""),
+            request_method=query_details.get("request_method", ""),
+            request_time=query_details.get("request_time", ""),
+            request_headers=query_details.get("request_headers", ""),
+            request_params=query_details.get("request_params", ""),
+            total_features=total_features,
+            adds=adds,
+            updates=updates,
+            deletes=deletes,
+        )
+
         return result
-
-
 
     def __str__(self) -> None:
         """
@@ -400,4 +428,3 @@ class VectorItem(BaseItem):
         """
 
         return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
-
