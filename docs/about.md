@@ -4,7 +4,7 @@ In New Zealand, where I am based, we are extremely lucky to have a wide range of
 
 I work a lot with local councils and other organisations wanting to use data from LINZ within ETL processes using python. Over the years, I have seen (and written!) various implementations of python scripts that query the LINZ data API's and download data. Usually these are some variation of sending requests to the WFS endpoint. A common use case is to download changeset data to keep local data up to date. The local data is then mashed up with internal datasets, such as rating information, to create various derived outputs.  
 
-My role as a GIS Advisor is primarily within the ArcGIS eco-system, and as such I work a lot with the ArcGIS API for Python. This is a comprehensive python package provided by Esri to interact with the ArcGIS data portals: **ArcGIS Online** and **ArcGIS Enterprise**.  
+My role as a GIS Advisor is primarily within the ArcGIS eco-system, and as such I work a lot with the **ArcGIS API for Python**. This is a comprehensive python package provided by Esri to interact with the ArcGIS data portals: **ArcGIS Online** and **ArcGIS Enterprise**.  
 
 I wrote and re-wrote several LINZ export helper scripts, and eventually I realised that I wanted to provide a familiar experience for extracting data from LINZ, with similarities to how the ArcGIS API for Python package allows to browse ArcGIS portal content.  
 

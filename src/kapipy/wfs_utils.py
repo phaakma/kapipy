@@ -143,7 +143,7 @@ def download_wfs_data(
     if cql_filter is not None:
         logger.debug(f"{cql_filter=}")
         wfs_request_params["cql_filter"] = cql_filter
-    if bbox:
+    if bbox is not None:
         logger.debug(f"{bbox=}")
         wfs_request_params["bbox"] = bbox
     if out_fields is not None:
@@ -240,7 +240,7 @@ def download_wfs_data(
         "request_time": request_datetime,
         "request_headers": headers,
         "request_params": wfs_request_params,
-        "result": result
+        "response": result
     }
 
 

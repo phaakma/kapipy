@@ -31,17 +31,17 @@ def test_download_linz_wfs_data_live(id: str = rail_station_layer_id):
     url = "https://data.linz.govt.nz/services/wfs"
     srsName = "EPSG:2193"
     typeNames = f"layer-{rail_station_layer_id}"
-    response = download_wfs_data(
+    query_result = download_wfs_data(
         url=url, typeNames=typeNames, api_key=api_key, srsName=srsName
     ) 
-    assert isinstance(response, dict), "Result should be a dictionary"
-    result = response.get("result")
-    features = result.get("features")
+    assert isinstance(query_result, dict), "Result should be a dictionary"
+    response = query_result.get("response")
+    features = response.get("features")
     assert isinstance(features, list)
-    logger.info(f"Number of features downloaded: {len(features)}")
-    # log all result properties except features
+    logger.info(f"Number of features downloaded: {len(response)}")
+    # log all response properties except features
     logger.debug("Result properties::::::::::::::::::")
-    for key, value in result.items():
+    for key, value in response.items():
         if key != "features":
             logger.debug(f"{key}: {value}")
     assert len(features) > 0, "Should return at least one feature"

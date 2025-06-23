@@ -8,13 +8,13 @@ from dacite import from_dict, Config
 safe_keys = {"type_": "type"}
 field_config = Config(strict=False, convert_key=lambda k: safe_keys.get(k, k))
 
-from sample_api_data import layer_json
+from sample_api_data import LAYER_JSON
 
 
 @pytest.fixture
 def sample_vectoritem_data():
     return from_dict(
-        data_class=VectorItem, data=layer_json, config=field_config
+        data_class=VectorItem, data=LAYER_JSON, config=field_config
     )
 
 

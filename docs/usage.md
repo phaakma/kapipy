@@ -123,7 +123,7 @@ Exporting data creates an asynchronous task on the data portal server that retur
 Again, it is recommended to always specify the **out_sr**.  
 
 ### Export formats  
-You can check the available export formats by using the **data.export_formats** property.  
+You can check the available export formats by using the **data.export_formats** property of an item.  
 
 ```python
 print(itm.data.export_formats)
@@ -139,7 +139,7 @@ job = itm.export("geodatabase", out_sr=2193)
 print(job.status)
 ```
 Download the job data once it is ready. If this method is called before the job **state** is **'complete'**, it will poll the status of the job until it is ready and then downloads it.  
-Calling the download method of a JobResult object gives you the flexibility of specifying a specific folders for that download.
+Calling the download method of a JobResult object gives you the flexibility of specifying a specific folder for that download.  
 ```python
 job.download(folder=r"c:/temp")
 ```
@@ -202,3 +202,41 @@ Use the 'force_all' parameter to force a download of all jobs in the list, regar
 ```python
 linz.content.download(force_all=True)
 ```
+
+## Audit Manager  
+
+The Audit Manager is optional. If enabled, it:  
+- Records details of every query and export in a sqlite database.  
+- Saves a copy of every query response as a file.  
+
+```python
+from kapipy.gis import GISK
+
+# create gis object
+linz = GISK(name="linz", api_key="your-linz-api-key")
+
+# enable audit logging
+linz.audit.enable_auditing(folder=r"c:/temp/audit")
+
+# get item object
+rail_station_layer_id = "50318" #rail station 175 points
+itm = linz.content.get(rail_station_layer_id)
+
+# Any query will now automatically populate a record in the audit database
+df = itm.query()
+```  
+
+A copy of each response is saved as a json file. You can optionally disable this by passing in retain_data=False when enabling the audit manager.  
+
+```python
+linz.audit.enable_auditing(folder=r"c:/temp/audit", retain_data=False)
+```  
+
+The .export() method does not record the total_features count. This is because the data is returned as a zip file in any one of several formats, and to compute the counts would require the overhead of unzipping, handling reading in any format then computing the actual counts. Doing this, for example, on the NZ Parcels layer with ~2.7 million records is non-trivial and therefore not undertaken.  
+
+The most recent record for a given id can be retrieved.  
+
+```python
+# returns record of the most recent query recorded.  
+latest = linz.audit.get_latest_request_for_item(rail_station_layer_id)
+```  

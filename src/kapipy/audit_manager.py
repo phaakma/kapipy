@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import json
 from datetime import datetime, timezone
 
 
@@ -16,10 +17,10 @@ class AuditManager:
 
     def __init__(self, gis: "GISK") -> None:
         """
-        Initializes the ContentManager with a GISK instance.
+        Initializes the AuditManager with a GISK instance.
 
         Parameters:
-            gis (GISK): The GISK instance to manage content for.
+            gis (GISK): The GISK instance to manage auditing for.
         """
         self._gis = gis
         self.enabled = False
@@ -30,7 +31,11 @@ class AuditManager:
 
     def enable_auditing(self, folder: str, retain_data: bool = True) -> None:
         """
-        Enable auditing.
+        Enable auditing and create the audit database if it does not exist.
+
+        Parameters:
+            folder (str): The directory where the audit database will be stored.
+            retain_data (bool, optional): Whether to retain audit data. Defaults to True.
         """
         self.enabled = True
         self.folder = folder
@@ -64,9 +69,7 @@ class AuditManager:
             - request_headers (TEXT)
             - request_params (TEXT)
             - total_features (TEXT)
-            - adds (INTEGER)
-            - updates (INTEGER)
-            - deletes (INTEGER)
+
         Creates an index on item_id and request_time.
         """
         db_path = os.path.join(self.folder, self.db_name)
@@ -87,10 +90,7 @@ class AuditManager:
                     request_time TEXT,
                     request_headers TEXT,
                     request_params TEXT,
-                    total_features INTEGER,
-                    adds INTEGER,
-                    updates INTEGER,
-                    deletes INTEGER
+                    total_features INTEGER
                 )
             """
             )
@@ -121,22 +121,32 @@ class AuditManager:
         request_time: datetime,
         request_headers: dict,
         request_params: dict,
-        total_features: int = None,
-        adds: int = None,
-        updates: int = None,
-        deletes: int = None,
+        response: dict = None,
     ) -> None:
         """
         Adds a request record to the audit database.
+
         Converts request_headers and request_params dicts to JSON strings for storage.
+
+        Parameters:
+            item_id (int): The ID of the item involved in the request.
+            item_kind (str): The kind of the item (e.g., 'vector', 'table').
+            item_type (str): The type of the item.
+            request_type (str): The type of request (e.g., 'GET', 'POST').
+            request_url (str): The URL of the request.
+            request_method (str): The HTTP method used for the request.
+            request_time (datetime): The time the request was made.
+            request_headers (dict): The headers sent with the request.
+            request_params (dict): The parameters sent with the request.
+            response (dict, optional): The response received from the request.
+
+        Returns:
+            None
         """
 
         # Silently return without doing anything if auditing is not enabled.
         if self.enabled is False:
-            return False 
-
-        import sqlite3
-        import json
+            return False
 
         if isinstance(request_time, datetime):
             # Convert to UTC if not already
@@ -148,6 +158,8 @@ class AuditManager:
             request_time_str = request_time_utc.strftime("%Y-%m-%dT%H:%M:%S")
         else:
             request_time_str = str(request_time)
+
+        total_features = response.get("totalFeatures") if response else None
 
         db_path = os.path.join(self.folder, self.db_name)
         conn = sqlite3.connect(db_path)
@@ -165,11 +177,8 @@ class AuditManager:
                     request_time,
                     request_headers,
                     request_params,
-                    total_features,
-                    adds,
-                    updates,
-                    deletes
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    total_features
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     item_id,
@@ -179,54 +188,40 @@ class AuditManager:
                     request_url,
                     request_method,
                     request_time_str,
-                    json.dumps(request_headers) if isinstance(request_headers, dict) else str(request_headers),
-                    json.dumps(request_params) if isinstance(request_params, dict) else str(request_params),
+                    (
+                        json.dumps(request_headers)
+                        if isinstance(request_headers, dict)
+                        else str(request_headers)
+                    ),
+                    (
+                        json.dumps(request_params)
+                        if isinstance(request_params, dict)
+                        else str(request_params)
+                    ),
                     total_features,
-                    adds,
-                    updates,
-                    deletes,
                 ),
             )
             conn.commit()
         finally:
             conn.close()
 
-    # def get_latest_request_for_item(self, item_id: int) -> dict | None:
-    #     """
-    #     Returns the most recent audit record for the given item_id, based on request_time.
-    #     Returns None if no record is found.
-    #     """
-    #     import sqlite3
+        if response:
+            self.save_data(item_id, request_type, request_time, response)
 
-    #     db_path = os.path.join(self.folder, self.db_name)
-    #     conn = sqlite3.connect(db_path)
-    #     try:
-    #         cursor = conn.cursor()
-    #         cursor.execute(
-    #             f"""
-    #             SELECT *
-    #             FROM {self.requests_table_name}
-    #             WHERE item_id = ?
-    #             ORDER BY request_time DESC
-    #             LIMIT 1
-    #             """,
-    #             (item_id,),
-    #         )
-    #         row = cursor.fetchone()
-    #         if row is None:
-    #             return None
-    #         # Get column names for dict conversion
-    #         col_names = [desc[0] for desc in cursor.description]
-    #         return dict(zip(col_names, row))
-    #     finally:
-    #         conn.close()
-
-    def get_latest_request_for_item(self, item_id: int, request_type: str = None) -> dict | None:
+    def get_latest_request_for_item(
+        self, item_id: int, request_type: str = None
+    ) -> dict | None:
         """
         Returns the most recent audit record for the given item_id, optionally filtered by request_type,
-        based on request_time. Returns None if no record is found.
+        based on request_time.
+
+        Parameters:
+            item_id (int): The ID of the item to search for.
+            request_type (str, optional): The type of request to filter by.
+
+        Returns:
+            dict or None: The most recent audit record as a dictionary, or None if no record is found.
         """
-        import sqlite3
 
         db_path = os.path.join(self.folder, self.db_name)
         conn = sqlite3.connect(db_path)
@@ -261,6 +256,37 @@ class AuditManager:
             return dict(zip(col_names, row))
         finally:
             conn.close()
+
+    def save_data(
+        self, item_id: int, request_type: str, request_time: datetime, data: dict
+    ) -> None:
+        """
+        Save the audit data to a local JSON file.
+
+        The file will be saved in a 'data' subfolder within the audit folder, with a filename
+        formatted as '{request_type}_{item_id}_{request_time}.json'.
+
+        Parameters:
+            item_id (int): The ID of the item related to the data.
+            request_type (str): The type of request (e.g., 'GET', 'POST').
+            request_time (str): The time the request was made, used in the filename.
+            data (dict): The data to be saved as JSON.
+
+        Returns:
+            None
+
+        Raises:
+            OSError: If the file or directory cannot be created or written.
+            TypeError: If the data cannot be serialized to JSON.
+        """
+        data_folder = os.path.join(self.folder, "data")
+        os.makedirs(data_folder, exist_ok=True)
+        request_time_str = request_time.strftime("%Y%m%d_%H%M%S")
+        filepath = os.path.join(
+            data_folder, f"{request_type}_{item_id}_{request_time_str}.json"
+        )
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=None, separators=(",", ":"))
 
     def __repr__(self) -> str:
         """

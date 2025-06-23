@@ -47,9 +47,10 @@ class TableItem(BaseItem):
             request_time=query_details.get("request_time", ""),
             request_headers=query_details.get("request_headers", ""),
             request_params=query_details.get("request_params", ""),
+            response=query_details.get("response", ""),
         )
 
-        return query_details.get("result")
+        return query_details
 
     def query(self, cql_filter: str = None, **kwargs: Any) -> dict:
         """
@@ -64,9 +65,9 @@ class TableItem(BaseItem):
         """
         logger.debug(f"Executing WFS query for item with id: {self.id}")
 
-        result = self.query_json(cql_filter=cql_filter, **kwargs)
-
-        df = json_to_df(result, fields=self.data.fields)
+        query_details = self.query_json(cql_filter=cql_filter, **kwargs)
+        df = json_to_df(query_details.get("response"), fields=self.data.fields)
+        
         return df
 
     def get_changeset_json(
@@ -119,9 +120,10 @@ class TableItem(BaseItem):
             request_time=query_details.get("request_time", ""),
             request_headers=query_details.get("request_headers", ""),
             request_params=query_details.get("request_params", ""),
+            response=query_details.get("response", ""),
         )
 
-        return query_details.get("result")
+        return query_details
 
     def get_changeset(
         self, from_time: str, to_time: str = None, cql_filter: str = None, **kwargs: Any
@@ -139,11 +141,12 @@ class TableItem(BaseItem):
             pandas.DataFrame: The changeset data as a DataFrame.
         """
 
-        result = self.get_changeset_json(
+        query_details = self.get_changeset_json(
             from_time=from_time, to_time=to_time, cql_filter=cql_filter, **kwargs
         )
 
-        df = json_to_df(result, fields=self.data.fields)
+        df = json_to_df(query_details.get("response"), fields=self.data.fields)
+
         return df
 
     def __str__(self) -> None:
