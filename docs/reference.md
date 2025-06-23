@@ -16,6 +16,8 @@
 
 ::: kapipy.data_classes.VectorItemData  
 
+::: kapipy.wfs_response.WFSResponse  
+
 ::: kapipy.data_classes.ExportFormat  
 
 ::: kapipy.job_result.JobResult  
