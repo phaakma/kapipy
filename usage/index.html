@@ -919,8 +919,8 @@
 </code></pre></div>
 
 <h2 id="wfs-queries">WFS queries<a class="headerlink" href="#wfs-queries" title="Permanent link">&para;</a></h2>
-<p>Items with WFS endpoints can be queried using the <strong>query</strong> and <strong>get_changeset</strong> methods of the itm.</p>
-<p>For spatial items, it is recommended to provide a desired spatial reference via the <strong>out_sr</strong> parameter.  </p>
+<p>Items with WFS endpoints can be queried using the <strong>query</strong> and, if the item supports changesets, <strong>changeset</strong> methods of the item .</p>
+<p>For spatial items, it is recommended to specify a desired spatial reference via the <strong>out_sr</strong> parameter.  </p>
 <h3 id="query">Query<a class="headerlink" href="#query" title="Permanent link">&para;</a></h3>
 <p>Get all data  </p>
 <div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
@@ -930,40 +930,45 @@
 <div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
 </code></pre></div>
 
-<p>Spatial data is returned as either a geopandas GeoDataFrame or an ArcGIS Spatially Enabled DataFrame. The attribute types are set according to the item's field list.<br />
-Tabular data is returned as a pandas DataFrame.  </p>
-<div class="codehilite"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtypes</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+<p>Data is returned as a WFSResponse object. This has four attributes that can be used to access the data:<br />
+- <strong>.json</strong>: this provides the raw json response returned from the WFS service.<br />
+- <strong>.df</strong>: this provides a Pandas DataFrame of the data.<br />
+- <strong>.gdf</strong>: if geopandas is installed, this will return a GeoDataFrame of the data.<br />
+- <strong>.sdf</strong>: if arcgis is installed, this will return a Spatially Enabled DataFrame of the data.  </p>
+<p>The attribute types of the dataframes are set according to the item's field list.  </p>
+<div class="codehilite"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">sdf</span><span class="o">.</span><span class="n">dtypes</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">sdf</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </code></pre></div>
 
-<p>Only fetch specified attribute fields. Remember to include the geometry field if you want that in the data.  </p>
-<div class="codehilite"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+<p>Only fetch specified attribute fields. Remember to include the geometry field if you want that in the tabular data.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
     <span class="n">out_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;geodetic_code&#39;</span><span class="p">,</span> <span class="n">itm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">geometry_field</span><span class="p">],</span>
     <span class="n">out_sr</span> <span class="o">=</span> <span class="mi">2193</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
 <h3 id="changeset">Changeset<a class="headerlink" href="#changeset" title="Permanent link">&para;</a></h3>
-<p>Also returned as a data frame with the same logic as the <strong>query</strong> method.<br />
+<p>Also returned as a WFSResponse object with the same logic as the <strong>query</strong> method.<br />
 The datetime parameters should be provided in ISO 8601 format.  </p>
 <p>The <strong>from_time</strong> parameter is the time from which the changeset data will be generated.<br />
 The <strong>to_time</strong> parameter is optional, and is the time up to which the changeset data will be generated. If this parameter is not provided then it defaults to now.  </p>
-<div class="codehilite"><pre><span></span><code><span class="n">changeset</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">get_changeset</span><span class="p">(</span><span class="n">from_time</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00Z&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">changeset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+<div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">changeset</span><span class="p">(</span><span class="n">from_time</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00Z&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">gdf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
 </code></pre></div>
 
 <h3 id="query-with-a-spatial-filter">Query with a spatial filter<a class="headerlink" href="#query-with-a-spatial-filter" title="Permanent link">&para;</a></h3>
 <p>The <strong>filter_geometry</strong> argument can be passed in as a gdf, sdf or geojson.  </p>
 <p>It is recommended to only have one polygon geometry in the dataframe, and avoid complex geometries with lots of vertices. If there is more than one record in the dataframe, the records will be unioned into one geometry.  </p>
 <p>The following example will only return features that intersect the <strong>filter_geometry</strong> object.  </p>
-<div class="codehilite"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">changeset</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">changeset</span><span class="p">(</span>
     <span class="n">from_time</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00Z&quot;</span><span class="p">,</span> 
     <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span>
     <span class="n">filter_geometry</span><span class="o">=</span><span class="n">matamata_gdf</span>
     <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">sdf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">sdf</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
 
 <h2 id="export-data">Export data<a class="headerlink" href="#export-data" title="Permanent link">&para;</a></h2>
@@ -1049,7 +1054,7 @@ Use the 'force_all' parameter to force a download of all jobs in the list, regar
 <span class="n">itm</span> <span class="o">=</span> <span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rail_station_layer_id</span><span class="p">)</span>
 
 <span class="c1"># Any query will now automatically populate a record in the audit database</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
 </code></pre></div>
 
 <p>A copy of each response is saved as a json file. You can optionally disable this by passing in retain_data=False when enabling the audit manager.  </p>
