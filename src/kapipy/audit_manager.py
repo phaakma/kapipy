@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import json
 from datetime import datetime, timezone
 
 
@@ -135,9 +136,6 @@ class AuditManager:
         if self.enabled is False:
             return False 
 
-        import sqlite3
-        import json
-
         if isinstance(request_time, datetime):
             # Convert to UTC if not already
             if request_time.tzinfo is None:
@@ -195,8 +193,7 @@ class AuditManager:
         """
         Returns the most recent audit record for the given item_id, optionally filtered by request_type,
         based on request_time. Returns None if no record is found.
-        """
-        import sqlite3
+        """        
 
         db_path = os.path.join(self.folder, self.db_name)
         conn = sqlite3.connect(db_path)
