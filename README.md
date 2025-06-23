@@ -26,7 +26,7 @@ linz = GISK(name="linz", api_key="my-linz-api-key")
 rail_station_layer_id = "50318"
 itm = linz.content.get(rail_station_layer_id)
 data = itm.query()
-data.head()
+data.df.head()
 ```
 
 ## Disclaimer  
