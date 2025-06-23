@@ -55,9 +55,9 @@ print(itm)
 ```
 
 ## WFS queries  
-Items with WFS endpoints can be queried using the **query** and **get_changeset** methods of the itm.
+Items with WFS endpoints can be queried using the **query** and, if the item supports changesets, **changeset** methods of the item .
 
-For spatial items, it is recommended to provide a desired spatial reference via the **out_sr** parameter.  
+For spatial items, it is recommended to specify a desired spatial reference via the **out_sr** parameter.  
 
 ### Query  
 Get all data  
@@ -71,34 +71,40 @@ Get first 5 records.
 data = itm.query(count=5, out_sr=2193)
 ```
 
-Spatial data is returned as either a geopandas GeoDataFrame or an ArcGIS Spatially Enabled DataFrame. The attribute types are set according to the item's field list.  
-Tabular data is returned as a pandas DataFrame.  
+Data is returned as a WFSResponse object. This has four attributes that can be used to access the data:  
+- **.json**: this provides the raw json response returned from the WFS service.  
+- **.df**: this provides a Pandas DataFrame of the data.  
+- **.gdf**: if geopandas is installed, this will return a GeoDataFrame of the data.  
+- **.sdf**: if arcgis is installed, this will return a Spatially Enabled DataFrame of the data.  
+
+The attribute types of the dataframes are set according to the item's field list.  
 
 ```python
-print(data.dtypes())
-print(data.head())
+print(data.item.data.fields)
+print(data.sdf.dtypes())
+print(data.sdf.head())
 ```
 
-Only fetch specified attribute fields. Remember to include the geometry field if you want that in the data.  
+Only fetch specified attribute fields. Remember to include the geometry field if you want that in the tabular data.  
 ```python
-df = itm.query(
+data = itm.query(
     out_fields=['id', 'geodetic_code', itm.data.geometry_field],
     out_sr = 2193)
-print(f"Total records returned {itm.title}: {df.shape[0]}")
-df.head()
+print(f"Total records returned {itm.title}: {data.df.shape[0]}")
+data.df.head()
 ```
 
 ### Changeset    
 
-Also returned as a data frame with the same logic as the **query** method.  
+Also returned as a WFSResponse object with the same logic as the **query** method.  
 The datetime parameters should be provided in ISO 8601 format.  
 
 The **from_time** parameter is the time from which the changeset data will be generated.  
 The **to_time** parameter is optional, and is the time up to which the changeset data will be generated. If this parameter is not provided then it defaults to now.  
 
 ```python
-changeset = itm.get_changeset(from_time="2024-01-01T00:00:00Z", out_sr=2193)
-print((f"Total records returned {itm.title}: {changeset.shape[0]}"))
+data = itm.changeset(from_time="2024-01-01T00:00:00Z", out_sr=2193)
+print((f"Total records returned {itm.title}: {data.gdf.shape[0]}"))
 ```
 
 ### Query with a spatial filter  
@@ -108,13 +114,13 @@ It is recommended to only have one polygon geometry in the dataframe, and avoid 
 
 The following example will only return features that intersect the **filter_geometry** object.  
 ```python
-df = itm.changeset(
+data = itm.changeset(
     from_time="2024-01-01T00:00:00Z", 
     out_sr=2193,
     filter_geometry=matamata_gdf
     )
-print(f"Total records returned {itm.title}: {df.shape[0]}")
-df.head()
+print(f"Total records returned {itm.title}: {data.sdf.shape[0]}")
+data.sdf.head()
 ```
 
 ## Export data    
@@ -223,7 +229,7 @@ rail_station_layer_id = "50318" #rail station 175 points
 itm = linz.content.get(rail_station_layer_id)
 
 # Any query will now automatically populate a record in the audit database
-df = itm.query()
+data = itm.query()
 ```  
 
 A copy of each response is saved as a json file. You can optionally disable this by passing in retain_data=False when enabling the audit manager.  
