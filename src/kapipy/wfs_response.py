@@ -43,7 +43,7 @@ class WFSResponse:
         self.total_features = len(geojson["features"])
 
     @property
-    def json(self):
+    def json(self) -> dict:
         """
         Get the raw GeoJSON data.
 
@@ -53,7 +53,7 @@ class WFSResponse:
         return self._json
 
     @property
-    def df(self):
+    def df(self) -> "pd.DataFrame":
         """
         Convert the GeoJSON to a Pandas DataFrame.
 
@@ -68,7 +68,7 @@ class WFSResponse:
         return self._df
 
     @property
-    def sdf(self):
+    def sdf(self) -> "pd.DataFrame":
         """
         Convert the GeoJSON to a Spatially Enabled DataFrame (ArcGIS SEDF).
 
@@ -95,7 +95,7 @@ class WFSResponse:
         return self._sdf
 
     @property
-    def gdf(self):
+    def gdf(self) -> "gpd.GeoDataFrame":
         """
         Convert the GeoJSON to a GeoPandas DataFrame.
 
