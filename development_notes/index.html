@@ -701,6 +701,15 @@ I'm not sure if the LINZ WFS endpoint is strictly equivalent with all other Koor
 </code></pre></div>
 
 <p>There is currently very limited test coverage. Any live tests require a "LINZ_API_KEY" entry to exist in a .env file in the root project folder.  </p>
+<p>To manually test the current build in a conda ArcGIS environment, need to manually install the current build into that environment.<br />
+- Open the ArcGIS python command prompt.<br />
+- Activate the desired environment.<br />
+- Change directory into the local kapipy development folder.<br />
+- If necessary, uninstall any existing install of kapipy.<br />
+- Run the following pip command.  </p>
+<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
+
 <h2 id="build-guidelines-and-processes">Build: Guidelines and Processes<a class="headerlink" href="#build-guidelines-and-processes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Do all development work on the develop branch.  </li>
@@ -724,6 +733,16 @@ I'm not sure if the LINZ WFS endpoint is strictly equivalent with all other Koor
 <li>This will trigger Github action which will build and publish to PyPi.  </li>
 </ul>
 <p>Pushing commits to develop branch in Github should trigger Github action to run pytest tests.  </p>
+<p>Uv commands to manually build and publish.  </p>
+<div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>build<span class="w"> </span>--no-sources
+
+<span class="c1"># testpypi</span>
+uv<span class="w"> </span>publish<span class="w"> </span>--index<span class="w"> </span>testpypi
+
+<span class="c1"># or PyPi</span>
+uv<span class="w"> </span>publish<span class="w"> </span>--index<span class="w"> </span>pypi
+</code></pre></div>
+
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <p>Documentation uses MkDocs to generate and publish documentation website using Github Pages.  </p>
 <p>Locally, run <code>mkdocs build</code>  then <code>mkdocs gh-deploy --clean</code>  </p>

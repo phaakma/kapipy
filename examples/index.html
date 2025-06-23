@@ -554,13 +554,13 @@ The approach here is split into two parts:
 <p>The Koordinates export API applies a clip, which is not always ideal when retrieving something like cadastral geometries. A simple workaround here is to buffer your input extent and download a bit extra, then drop features that don't intersect the original extent geometry.  </p>
 </blockquote>
 <h3 id="download-data-for-district">Download data for district<a class="headerlink" href="#download-data-for-district" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>  
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GISK</span>  
 <span class="kn">import</span><span class="w"> </span><span class="nn">zipfile</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arcgis.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoAccessor</span><span class="p">,</span> <span class="n">GeoSeriesAccessor</span>
 
 <span class="c1"># Connect to LINZ   </span>
-<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
+<span class="n">linz</span> <span class="o">=</span> <span class="n">GISK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
 
 <span class="c1"># Load in extent shape file  </span>
 <span class="n">district_extent</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;c:/data/matamata_piako.shp&quot;</span>

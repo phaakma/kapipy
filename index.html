@@ -649,13 +649,13 @@
 <h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Import kapipy.  </li>
-<li>Create a GIS object, passing in an api key.  </li>
+<li>Create a GISK object, passing in an api key.  </li>
 <li>Get a reference to an item using {gis}.content.get({layer_id})</li>
 <li>Perform actions on the item.  </li>
 </ul>
 <p>Basic example:  </p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
-<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;my-linz-api-key&quot;</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GISK</span>
+<span class="n">linz</span> <span class="o">=</span> <span class="n">GISK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;my-linz-api-key&quot;</span><span class="p">)</span>
 <span class="n">rail_station_layer_id</span> <span class="o">=</span> <span class="s2">&quot;50318&quot;</span>
 <span class="n">itm</span> <span class="o">=</span> <span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rail_station_layer_id</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
@@ -663,10 +663,9 @@
 </code></pre></div>
 
 <h2 id="disclaimer">Disclaimer<a class="headerlink" href="#disclaimer" title="Permanent link">&para;</a></h2>
-<p>This is a hobby project and the modules are provided as-is on a best-effort basis.<br />
-The author has no affiliation with either Koordinates nor LINZ, Stats NZ or LRIS. As such, the underlying API's and services may change at any time without warning and break these modules.  </p>
+<p>Kapipy is provided as-is. The author has no affiliation with either Koordinates nor LINZ, Stats NZ or LRIS. As such, the underlying API's and services may change at any time without warning and break these modules.  </p>
 <p>This project does not cover the full spectrum of the Koordinates API and probably never will. It focuses currently on basic workflows such as connecting using an api key, getting references to datasets and downloading them.  </p>
-<p>Suggestions and code contributions can be made by submitting issues via the GitHub page. </p>
+<p>Suggestions and bug reports can be made by submitting issues via the GitHub page.  </p>
 
 
 

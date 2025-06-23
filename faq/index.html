@@ -662,15 +662,17 @@
 <h2 id="is-this-a-comprehensive-python-wrapper-for-the-koordinates-api">Is this a comprehensive python wrapper for the Koordinates API?<a class="headerlink" href="#is-this-a-comprehensive-python-wrapper-for-the-koordinates-api" title="Permanent link">&para;</a></h2>
 <p>No. The focus here is primarily on extracting data easily, and it is unlikely to ever move beyond data exploration and export. The project is young, and even within the that narrow scope there is more can be done. At the time of writing, only Vector and Table datasets are implemented, as it felt like those are the core datasets that might require regular downloading.</p>
 <h2 id="how-do-i-get-an-api-key">How do I get an API key?<a class="headerlink" href="#how-do-i-get-an-api-key" title="Permanent link">&para;</a></h2>
-<p>LINZ, Stats NZ and LRIS all have sign up pages. They should be a common Koordinates login, but you need to generate separate API keys from each site separately.  </p>
+<p>LINZ, Stats NZ and LRIS all have sign up pages. They should be a common Koordinates login, but you need to generate separate API keys from each site separately.<br />
+Remember to manually grant the necessary scopes to the api key to perform the various functions.  </p>
 <h2 id="how-do-i-report-bugs-or-provide-feedback">How do I report bugs or provide feedback?<a class="headerlink" href="#how-do-i-report-bugs-or-provide-feedback" title="Permanent link">&para;</a></h2>
 <p>The recommended way is via the <a href="https://github.com/phaakma/kapipy/issues">GitHub issues page</a>.  .  </p>
 <h2 id="will-it-work-with-other-koordinates-data-portals">Will it work with other Koordinates data portals?<a class="headerlink" href="#will-it-work-with-other-koordinates-data-portals" title="Permanent link">&para;</a></h2>
 <p>Probably? Maybe? Not sure. Try it and provide feedback if it doesn't! The focus during development is purely on LINZ, Stats NZ and LRIS, so those are the only ones that have been tested.  </p>
 <h2 id="can-i-download-the-entire-nz-primary-parcels-layer-using-the-query-method">Can I download the entire NZ Primary Parcels layer using the query method?<a class="headerlink" href="#can-i-download-the-entire-nz-primary-parcels-layer-using-the-query-method" title="Permanent link">&para;</a></h2>
 <p>Never tried. And you probably shouldn't either. <br />
-For context, the NZ Primary Parcels layer is approx 2.7M polygons. The query method uses the WFS endpoint, and would have to page hundreds of thousands of requests to download the data. That seems to be just asking for a network or connection error of some sort to cut you off halfway through.<br />
-Use the <strong>export</strong> method to generate and download large datasets, and then use the <strong>changeset</strong> method to retrieve changes and then apply those.  </p>
+For context, the NZ Primary Parcels layer is approx 2.7M polygons. The query method uses the WFS endpoint, and would have to make over 250 large requests to download the data. That seems to be just asking for a network or connection error of some sort to cut you off halfway through.<br />
+Instead, use the <strong>export</strong> method to generate and download large datasets, and then use the <strong>changeset</strong> method to retrieve small changesets and apply those.  </p>
+<p>(Extra info: Buried in the kapipy code are a couple of variables: DEFAULT_FEATURES_PER_PAGE (10000) and MAX_PAGE_FETCHES (50). So by default kapipy will cut out at 500,000 features. That's a soft limit and you can override the number of features per page, but spare a thought for the servers and perhaps if you're downloading that much, use the export API instead.)  </p>
 
 
 

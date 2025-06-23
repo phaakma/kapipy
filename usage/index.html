@@ -528,6 +528,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#query-with-a-spatial-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query with a spatial filter
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -562,9 +571,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#generate-an-export-with-extent-geometry" class="md-nav__link">
+  <a href="#generate-an-export-using-a-spatial-filter" class="md-nav__link">
     <span class="md-ellipsis">
-      Generate an export with extent geometry
+      Generate an export using a spatial filter
     </span>
   </a>
   
@@ -581,6 +590,15 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audit-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      Audit Manager
+    </span>
+  </a>
   
 </li>
       
@@ -763,6 +781,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#query-with-a-spatial-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query with a spatial filter
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -797,9 +824,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#generate-an-export-with-extent-geometry" class="md-nav__link">
+  <a href="#generate-an-export-using-a-spatial-filter" class="md-nav__link">
     <span class="md-ellipsis">
-      Generate an export with extent geometry
+      Generate an export using a spatial filter
     </span>
   </a>
   
@@ -816,6 +843,15 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audit-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      Audit Manager
+    </span>
+  </a>
   
 </li>
       
@@ -855,25 +891,25 @@
 - comm  </p>
 <h2 id="connecting-to-the-various-open-data-portals">Connecting to the various open data portals<a class="headerlink" href="#connecting-to-the-various-open-data-portals" title="Permanent link">&para;</a></h2>
 <p>LINZ, Stats NZ and LRIS have built in names for convenience. Alternatively, pass in the base URL.  </p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GISK</span>
 
-<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
-<span class="n">statsnz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;statsnz&#39;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-stats-api-key&quot;</span><span class="p">)</span>
-<span class="n">lris</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;lris&#39;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-lris-api-key&quot;</span><span class="p">)</span>
+<span class="n">linz</span> <span class="o">=</span> <span class="n">GISK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
+<span class="n">statsnz</span> <span class="o">=</span> <span class="n">GISK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;statsnz&#39;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-stats-api-key&quot;</span><span class="p">)</span>
+<span class="n">lris</span> <span class="o">=</span> <span class="n">GISK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;lris&#39;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-lris-api-key&quot;</span><span class="p">)</span>
 </code></pre></div>
 
 <p>Passing in a base url:  </p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
 
-<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://data.linz.govt.nz/&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
+<span class="n">linz</span> <span class="o">=</span> <span class="n">GISK</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://data.linz.govt.nz/&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
 </code></pre></div>
 
 <h2 id="get-a-reference-to-an-item">Get a reference to an item<a class="headerlink" href="#get-a-reference-to-an-item" title="Permanent link">&para;</a></h2>
 <p>The gis object has a property called <strong>content</strong> which is a ContentManager. This allows you to get a reference to an item using it's id.  </p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GISK</span>
 
 <span class="c1">#create gis object</span>
-<span class="n">linz</span> <span class="o">=</span> <span class="n">GIS</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
+<span class="n">linz</span> <span class="o">=</span> <span class="n">GISK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
 
 <span class="c1">#get item object</span>
 <span class="n">rail_station_layer_id</span> <span class="o">=</span> <span class="s2">&quot;50318&quot;</span> <span class="c1">#rail station 175 points</span>
@@ -900,6 +936,14 @@ Tabular data is returned as a pandas DataFrame.  </p>
 <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </code></pre></div>
 
+<p>Only fetch specified attribute fields. Remember to include the geometry field if you want that in the data.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+    <span class="n">out_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;geodetic_code&#39;</span><span class="p">,</span> <span class="n">itm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">geometry_field</span><span class="p">],</span>
+    <span class="n">out_sr</span> <span class="o">=</span> <span class="mi">2193</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+
 <h3 id="changeset">Changeset<a class="headerlink" href="#changeset" title="Permanent link">&para;</a></h3>
 <p>Also returned as a data frame with the same logic as the <strong>query</strong> method.<br />
 The datetime parameters should be provided in ISO 8601 format.  </p>
@@ -909,11 +953,24 @@ The <strong>to_time</strong> parameter is optional, and is the time up to which 
 <span class="nb">print</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">changeset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
 </code></pre></div>
 
+<h3 id="query-with-a-spatial-filter">Query with a spatial filter<a class="headerlink" href="#query-with-a-spatial-filter" title="Permanent link">&para;</a></h3>
+<p>The <strong>filter_geometry</strong> argument can be passed in as a gdf, sdf or geojson.  </p>
+<p>It is recommended to only have one polygon geometry in the dataframe, and avoid complex geometries with lots of vertices. If there is more than one record in the dataframe, the records will be unioned into one geometry.  </p>
+<p>The following example will only return features that intersect the <strong>filter_geometry</strong> object.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">changeset</span><span class="p">(</span>
+    <span class="n">from_time</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00Z&quot;</span><span class="p">,</span> 
+    <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span>
+    <span class="n">filter_geometry</span><span class="o">=</span><span class="n">matamata_gdf</span>
+    <span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+
 <h2 id="export-data">Export data<a class="headerlink" href="#export-data" title="Permanent link">&para;</a></h2>
 <p>Exporting data creates an asynchronous task on the data portal server that returns a job id. It is possible to create and manage individual downloads, or treat them collectively.  </p>
 <p>Again, it is recommended to always specify the <strong>out_sr</strong>.  </p>
 <h3 id="export-formats">Export formats<a class="headerlink" href="#export-formats" title="Permanent link">&para;</a></h3>
-<p>You can check the available export formats by using the <strong>data.export_formats</strong> property.  </p>
+<p>You can check the available export formats by using the <strong>data.export_formats</strong> property of an item.  </p>
 <div class="codehilite"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">itm</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">export_formats</span><span class="p">)</span>
 </code></pre></div>
 
@@ -925,18 +982,20 @@ The <strong>status</strong> returned is a <strong>JobStatus</strong> object that
 </code></pre></div>
 
 <p>Download the job data once it is ready. If this method is called before the job <strong>state</strong> is <strong>'complete'</strong>, it will poll the status of the job until it is ready and then downloads it.<br />
-Calling the download method of a JobResult object gives you the flexibility of specifying a specific folders for that download.</p>
+Calling the download method of a JobResult object gives you the flexibility of specifying a specific folder for that download.  </p>
 <div class="codehilite"><pre><span></span><code><span class="n">job</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;c:/temp&quot;</span><span class="p">)</span>
 </code></pre></div>
 
-<h3 id="generate-an-export-with-extent-geometry">Generate an export with extent geometry<a class="headerlink" href="#generate-an-export-with-extent-geometry" title="Permanent link">&para;</a></h3>
-<p>The <strong>extent</strong> argument can be passed in as a gdf or an sdf.  </p>
+<h3 id="generate-an-export-using-a-spatial-filter">Generate an export using a spatial filter<a class="headerlink" href="#generate-an-export-using-a-spatial-filter" title="Permanent link">&para;</a></h3>
+<p>The <strong>filter_geometry</strong> argument can be passed in as a gdf, sdf or geojson.  </p>
+<p>It is recommended to only have one polygon geometry in the dataframe, and avoid complex geometries with lots of vertices. If there is more than one record in the dataframe, the records will be unioned into one geometry.  </p>
+<p>The following example will only return features that intersect the <strong>filter_geometry</strong> object.  </p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># gdf</span>
 <span class="n">matamata_gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;../examples/matamata_piako.shp&quot;</span><span class="p">)</span>
 <span class="c1"># sdf</span>
 <span class="n">matamata_sdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">from_featureclass</span><span class="p">(</span><span class="s2">&quot;../examples/matamata_piako.shp&quot;</span><span class="p">)</span>
 
-<span class="n">job</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">filter_geometry</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
 </code></pre></div>
 
 <h3 id="export-and-download-multiple-items">Export and download multiple items<a class="headerlink" href="#export-and-download-multiple-items" title="Permanent link">&para;</a></h3>
@@ -971,6 +1030,36 @@ Calling the download method of a JobResult object gives you the flexibility of s
 <p>Once a job is downloaded, it's "downloaded" attribute will be set to True, and any future calls to the ContentManager's <strong>download</strong> method will not download it.<br />
 Use the 'force_all' parameter to force a download of all jobs in the list, regardless of their download status.  </p>
 <div class="codehilite"><pre><span></span><code><span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">force_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="audit-manager">Audit Manager<a class="headerlink" href="#audit-manager" title="Permanent link">&para;</a></h2>
+<p>The Audit Manager is optional. If enabled, it:<br />
+- Records details of every query and export in a sqlite database.<br />
+- Saves a copy of every query response as a file.  </p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GISK</span>
+
+<span class="c1"># create gis object</span>
+<span class="n">linz</span> <span class="o">=</span> <span class="n">GISK</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;linz&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
+
+<span class="c1"># enable audit logging</span>
+<span class="n">linz</span><span class="o">.</span><span class="n">audit</span><span class="o">.</span><span class="n">enable_auditing</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;c:/temp/audit&quot;</span><span class="p">)</span>
+
+<span class="c1"># get item object</span>
+<span class="n">rail_station_layer_id</span> <span class="o">=</span> <span class="s2">&quot;50318&quot;</span> <span class="c1">#rail station 175 points</span>
+<span class="n">itm</span> <span class="o">=</span> <span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rail_station_layer_id</span><span class="p">)</span>
+
+<span class="c1"># Any query will now automatically populate a record in the audit database</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
+</code></pre></div>
+
+<p>A copy of each response is saved as a json file. You can optionally disable this by passing in retain_data=False when enabling the audit manager.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">linz</span><span class="o">.</span><span class="n">audit</span><span class="o">.</span><span class="n">enable_auditing</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;c:/temp/audit&quot;</span><span class="p">,</span> <span class="n">retain_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+
+<p>The .export() method does not record the total_features count. This is because the data is returned as a zip file in any one of several formats, and to compute the counts would require the overhead of unzipping, handling reading in any format then computing the actual counts. Doing this, for example, on the NZ Parcels layer with ~2.7 million records is non-trivial and therefore not undertaken.  </p>
+<p>The most recent record for a given id can be retrieved.  </p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># returns record of the most recent query recorded.  </span>
+<span class="n">latest</span> <span class="o">=</span> <span class="n">linz</span><span class="o">.</span><span class="n">audit</span><span class="o">.</span><span class="n">get_latest_request_for_item</span><span class="p">(</span><span class="n">rail_station_layer_id</span><span class="p">)</span>
 </code></pre></div>
 
 
