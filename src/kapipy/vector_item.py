@@ -121,6 +121,19 @@ class VectorItem(BaseItem):
             **kwargs,
         )
 
+        self._gis.audit.add_request_record(
+            item_id=self.id,
+            item_kind=self.kind,
+            item_type=self.type_,
+            request_type="wfs-query",
+            request_url=query_details.get("request_url", ""),
+            request_method=query_details.get("request_method", ""),
+            request_time=query_details.get("request_time", ""),
+            request_headers=query_details.get("request_headers", ""),
+            request_params=query_details.get("request_params", ""),
+            response=query_details.get("response", ""),
+        )
+
         return query_details
 
     def query(
@@ -184,30 +197,15 @@ class VectorItem(BaseItem):
 
         if output_format == "sdf":
             result = geojson_to_sdf(
-                query_details.get("result"),
+                query_details.get("response"),
                 out_sr=out_sr,
                 geometry_type=self.data.geometry_type,
                 fields=self.data.fields,
             )
         elif output_format in ("gdf", "geodataframe"):
             result = geojson_to_gdf(
-                query_details.get("result"), out_sr=out_sr, fields=self.data.fields
+                query_details.get("response"), out_sr=out_sr, fields=self.data.fields
             )
-
-        total_features = result.shape[0]
-
-        self._gis.audit.add_request_record(
-            item_id=self.id,
-            item_kind=self.kind,
-            item_type=self.type_,
-            request_type="wfs-query",
-            request_url=query_details.get("request_url", ""),
-            request_method=query_details.get("request_method", ""),
-            request_time=query_details.get("request_time", ""),
-            request_headers=query_details.get("request_headers", ""),
-            request_params=query_details.get("request_params", ""),
-            total_features=total_features,
-        )
 
         return result
 
@@ -321,6 +319,19 @@ class VectorItem(BaseItem):
             **kwargs,
         )
 
+        self._gis.audit.add_request_record(
+            item_id=self.id,
+            item_kind=self.kind,
+            item_type=self.type_,
+            request_type="wfs-changeset",
+            request_url=query_details.get("request_url", ""),
+            request_method=query_details.get("request_method", ""),
+            request_time=query_details.get("request_time", ""),
+            request_headers=query_details.get("request_headers", ""),
+            request_params=query_details.get("request_params", ""),
+            response=query_details.get("response", ""),
+        )
+
         return query_details
 
     def changeset(
@@ -383,42 +394,13 @@ class VectorItem(BaseItem):
 
         if output_format == "sdf":
             result = geojson_to_sdf(
-                query_details.get("result"),
+                query_details.get("response"),
                 out_sr=out_sr,
                 geometry_type=self.data.geometry_type,
                 fields=self.data.fields,
             )
         elif output_format in ("gdf", "geodataframe"):
-            result = geojson_to_gdf(query_details.get("result"), out_sr=out_sr, fields=self.data.fields)
-
-        total_features = result.shape[0]
-        if total_features > 0:
-            counts = result["__change__"].value_counts()
-            updates = int(counts.get("UPDATE", 0) )
-            adds = int(counts.get("INSERT", 0) )
-            deletes = int(counts.get("DELETE", 0) )
-        else:
-            updates=0
-            adds=0
-            deletes=0
-        
-        logger.debug(f'{total_features=}, {updates=}, {adds=}, {deletes=}')
-        
-        self._gis.audit.add_request_record(
-            item_id=self.id,
-            item_kind=self.kind,
-            item_type=self.type_,
-            request_type="wfs-changeset",
-            request_url=query_details.get("request_url", ""),
-            request_method=query_details.get("request_method", ""),
-            request_time=query_details.get("request_time", ""),
-            request_headers=query_details.get("request_headers", ""),
-            request_params=query_details.get("request_params", ""),
-            total_features=total_features,
-            adds=adds,
-            updates=updates,
-            deletes=deletes,
-        )
+            result = geojson_to_gdf(query_details.get("response"), out_sr=out_sr, fields=self.data.fields)
 
         return result
 

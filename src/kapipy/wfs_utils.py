@@ -240,7 +240,7 @@ def download_wfs_data(
         "request_time": request_datetime,
         "request_headers": headers,
         "request_params": wfs_request_params,
-        "result": result
+        "response": result
     }
 
 

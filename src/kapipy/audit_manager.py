@@ -65,9 +65,7 @@ class AuditManager:
             - request_headers (TEXT)
             - request_params (TEXT)
             - total_features (TEXT)
-            - adds (INTEGER)
-            - updates (INTEGER)
-            - deletes (INTEGER)
+
         Creates an index on item_id and request_time.
         """
         db_path = os.path.join(self.folder, self.db_name)
@@ -88,10 +86,7 @@ class AuditManager:
                     request_time TEXT,
                     request_headers TEXT,
                     request_params TEXT,
-                    total_features INTEGER,
-                    adds INTEGER,
-                    updates INTEGER,
-                    deletes INTEGER
+                    total_features INTEGER
                 )
             """
             )
@@ -122,10 +117,7 @@ class AuditManager:
         request_time: datetime,
         request_headers: dict,
         request_params: dict,
-        total_features: int = None,
-        adds: int = None,
-        updates: int = None,
-        deletes: int = None,
+        response: dict = None,
     ) -> None:
         """
         Adds a request record to the audit database.
@@ -147,6 +139,8 @@ class AuditManager:
         else:
             request_time_str = str(request_time)
 
+        total_features = response.get("totalFeatures") if response else None
+
         db_path = os.path.join(self.folder, self.db_name)
         conn = sqlite3.connect(db_path)
         try:
@@ -163,11 +157,8 @@ class AuditManager:
                     request_time,
                     request_headers,
                     request_params,
-                    total_features,
-                    adds,
-                    updates,
-                    deletes
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    total_features
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     item_id,
@@ -180,9 +171,6 @@ class AuditManager:
                     json.dumps(request_headers) if isinstance(request_headers, dict) else str(request_headers),
                     json.dumps(request_params) if isinstance(request_params, dict) else str(request_params),
                     total_features,
-                    adds,
-                    updates,
-                    deletes,
                 ),
             )
             conn.commit()
@@ -228,6 +216,11 @@ class AuditManager:
             return dict(zip(col_names, row))
         finally:
             conn.close()
+
+    def save_data(self):
+        """
+        Save the data to a local file.
+        """
 
     def __repr__(self) -> str:
         """
