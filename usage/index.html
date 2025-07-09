@@ -927,7 +927,7 @@
 </code></pre></div>
 
 <p>Get first 5 records.  </p>
-<div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">result_record_count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
 </code></pre></div>
 
 <p>Data is returned as a WFSResponse object. This has four attributes that can be used to access the data:<br />
@@ -1012,7 +1012,7 @@ Calling the download method of a JobResult object gives you the flexibility of s
 <span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;c:/temp&quot;</span><span class="p">)</span>
 </code></pre></div>
 
-<p>The ContentManager also has an <strong>output_folder</strong> property. You can set this and it will be used as the default if no folder is provided.  </p>
+<p>The ContentManager also has a <strong>download_folder</strong> property. You can set this and it will be used as the default if no folder is provided.  </p>
 <div class="codehilite"><pre><span></span><code><span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">download_folder</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;c:/temp&quot;</span>
 
 <span class="n">itm1</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
@@ -1061,6 +1061,7 @@ Use the 'force_all' parameter to force a download of all jobs in the list, regar
 <div class="codehilite"><pre><span></span><code><span class="n">linz</span><span class="o">.</span><span class="n">audit</span><span class="o">.</span><span class="n">enable_auditing</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;c:/temp/audit&quot;</span><span class="p">,</span> <span class="n">retain_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
 
+<p>The Audit Manager does not perform any clean up actions. You may wish to periodically purge old records from the sqlite database and/or the json files.  </p>
 <p>The .export() method does not record the total_features count. This is because the data is returned as a zip file in any one of several formats, and to compute the counts would require the overhead of unzipping, handling reading in any format then computing the actual counts. Doing this, for example, on the NZ Parcels layer with ~2.7 million records is non-trivial and therefore not undertaken.  </p>
 <p>The most recent record for a given id can be retrieved.  </p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># returns record of the most recent query recorded.  </span>
