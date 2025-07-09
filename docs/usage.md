@@ -68,7 +68,7 @@ data = itm.query(out_sr=2193)
 Get first 5 records.  
 
 ```python
-data = itm.query(count=5, out_sr=2193)
+data = itm.query(result_record_count=5, out_sr=2193)
 ```
 
 Data is returned as a WFSResponse object. This has four attributes that can be used to access the data:  
@@ -180,7 +180,7 @@ itm2.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
 linz.content.download(folder=r"c:/temp")
 ```
 
-The ContentManager also has an **output_folder** property. You can set this and it will be used as the default if no folder is provided.  
+The ContentManager also has a **download_folder** property. You can set this and it will be used as the default if no folder is provided.  
 ```python
 linz.content.download_folder = r"c:/temp"
 
@@ -237,6 +237,8 @@ A copy of each response is saved as a json file. You can optionally disable this
 ```python
 linz.audit.enable_auditing(folder=r"c:/temp/audit", retain_data=False)
 ```  
+
+The Audit Manager does not perform any clean up actions. You may wish to periodically purge old records from the sqlite database and/or the json files.  
 
 The .export() method does not record the total_features count. This is because the data is returned as a zip file in any one of several formats, and to compute the counts would require the overhead of unzipping, handling reading in any format then computing the actual counts. Doing this, for example, on the NZ Parcels layer with ~2.7 million records is non-trivial and therefore not undertaken.  
 

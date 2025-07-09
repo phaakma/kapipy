@@ -4,7 +4,9 @@ A python client for accessing and querying datasets from geospatial open data po
 ## Overview  
 kapipy is a Python package that provides a python interface to the Koordinates geospatial content management system. It allows users to connect to a data portal, retrieve metadata, and query vector layers and tables. 
 
-Github repository: [https://github.com/phaakma/kapipy](https://github.com/phaakma/kapipy)
+Github repository: [https://github.com/phaakma/kapipy](https://github.com/phaakma/kapipy)  
+
+Documentation: [https://phaakma.github.io/kapipy/](https://phaakma.github.io/kapipy/)  
 
 ## Installation  
 
