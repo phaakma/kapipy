@@ -11,6 +11,7 @@ import zipfile
 from dotenv import load_dotenv, find_dotenv
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import argparse
 
 data_folder = r"c:/temp/data"
 log_folder = os.path.join(data_folder, "logs")
@@ -100,13 +101,13 @@ def apply_changes(changes_sdf, target_fc, id_field):
 
     if not inserts.empty:
         logger.info(f'Processing {len(inserts)} inserts.')
-
-        inserts_fc = inserts.to_featureset()
+        inserts_fc = inserts.spatial.to_featureclass(os.path.join("memory", "inserts"))
         arcpy.management.Append(
             inputs=inserts_fc,
             target=target_fc,
             schema_type="NO_TEST",
         )
+        arcpy.management.Delete(inserts_fc)
 
     if not updates.empty:
         logger.info(f'Processing {len(updates)} updates')
@@ -192,7 +193,7 @@ def processUpdates(changes_sdf, target_fc, id_field):
     arcpy.management.Delete(source_fc)
     return
 
-def main():
+def main(args):
 
     nz_primary_parcels_layer_id = "50772"
     nz_suburbs_and_localities_layer_id = "113764"    
@@ -209,14 +210,32 @@ def main():
 
     # This will delete any existing file geodatabase, then export, 
     # download and unzip a new one.
-    export(itm, crop_feature.url, target_fgb)
+    if args.export:
+        export(itm, crop_feature.url, target_fgb)
 
     # This will fetch any changes since the last download.
     # Then apply the changes to the target file geodatabase.
-    changes_sdf = get_changeset(itm, crop_feature)
-
-    apply_changes(changes_sdf, target_fc, id_field=id_field)
-
+    elif args.changeset:
+        changes_sdf = get_changeset(itm, crop_feature)
+        apply_changes(changes_sdf, target_fc, id_field=id_field)
 
 if __name__ == "__main__":
-    main()
+
+    parser = argparse.ArgumentParser(
+        prog="LINZ Download",
+        description="Python script to download LINZ datasets to ArcGIS feature class and keep updated using changesets.",
+    )
+    parser.add_argument(
+        "-e",
+        "--export",
+        action="store_true",
+        help="Flag to export and download a new file geodatabase",
+    )
+    parser.add_argument(
+        "-c",
+        "--changeset",
+        action="store_true",
+        help="Flag indicating to download the layer changeset.",
+    )
+    args = parser.parse_args()
+    main(args)
