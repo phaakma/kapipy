@@ -6,8 +6,6 @@ The approach here is split into two parts:
 - A manual step to download the initial data and prepare it as the target for the next step.  
 - An step that downloads and applies changesets, intended to be scheduled and run automatically.  
 
-> The Koordinates export API applies a clip, which is not always ideal when retrieving something like cadastral geometries. A simple workaround here is to buffer your input extent and download a bit extra, then drop features that don't intersect the original extent geometry.  
-
 ### Download data for district  
 
 ```python
