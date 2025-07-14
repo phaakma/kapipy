@@ -2,7 +2,7 @@
 # Then subsequently fetching changesets.
 
 from kapipy.gis import GISK
-import arcpy
+from kapipy.helpers import apply_changes
 import os
 import shutil
 import logging
@@ -28,7 +28,6 @@ rotatingFileHandler = RotatingFileHandler(
 )
 rotatingFileHandler.setLevel(logging.DEBUG)
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -36,7 +35,6 @@ logging.basicConfig(
     handlers=[console_handler, rotatingFileHandler],
 )
 logger = logging.getLogger(__name__)
-
 
 # find .env automagically by walking up directories until it's found
 dotenv_path = find_dotenv()
@@ -46,12 +44,6 @@ linz_api_key = os.getenv("LINZ_API_KEY")
 # Connect to LINZ
 linz = GISK(name="linz", api_key=linz_api_key)
 linz.audit.enable_auditing(folder=data_folder)
-
-
-def version():
-    import kapipy
-
-    logger.info(kapipy.__version__)
 
 
 def export(itm, crop_feature_url: str, target_fgb: str):
@@ -76,12 +68,6 @@ def get_changeset(itm, crop_feature):
     )
     last_request_time = last_download_record["request_time"]
 
-    ### For testing....
-    # dt = datetime.fromisoformat(last_request_time)
-    # from_time = dt - relativedelta(months=3)
-    # last_request_time = from_time.isoformat()
-    # logger.info(f'{last_request_time=}')
-
     changeset_data = itm.changeset(
         from_time=last_request_time, out_sr=2193, filter_geometry=crop_feature
     )
@@ -90,117 +76,16 @@ def get_changeset(itm, crop_feature):
 
     return changeset_data.sdf
 
-
-def apply_changes(changes_sdf, target_fc, id_field):
-    if changes_sdf.empty:
-        logger.info(f"No changes were returned.")
-        return
-
-    inserts = changes_sdf[changes_sdf["__change__"] == "INSERT"]
-    updates = changes_sdf[changes_sdf["__change__"] == "UPDATE"]
-    deletes = changes_sdf[changes_sdf["__change__"] == "DELETE"]
-
-    if not inserts.empty:
-        logger.info(f"Processing {len(inserts)} inserts.")
-        inserts_fc = inserts.spatial.to_featureclass(os.path.join("memory", "inserts"))
-        arcpy.management.Append(
-            inputs=inserts_fc,
-            target=target_fc,
-            schema_type="NO_TEST",
-        )
-        arcpy.management.Delete(inserts_fc)
-
-    if not updates.empty:
-        logger.info(f"Processing {len(updates)} updates")
-        #processUpdates(updates, target_fc, id_field)
-
-        source_fc = updates.spatial.to_featureclass(os.path.join("memory", "updates"))
-
-        source_desc = arcpy.da.Describe(source_fc)
-        target_desc = arcpy.da.Describe(target_fc)
-
-        source_fields = [field.name.lower() for field in source_desc.get("fields")]
-        target_fields = [field.name.lower() for field in target_desc.get("fields")]
-
-        # Exclude the GlobalID, OID and editor tracking fields
-        exclude_fields = [
-            source_desc.get("globalIDFieldName"),
-            source_desc.get("OIDFieldName"),
-            source_desc.get("createdAtFieldName"),
-            source_desc.get("creatorFieldName"),
-            source_desc.get("editedAtFieldName"),
-            source_desc.get("editorFieldName"),
-            target_desc.get("globalIDFieldName"),
-            target_desc.get("OIDFieldName"),
-            target_desc.get("createdAtFieldName"),
-            target_desc.get("creatorFieldName"),
-            target_desc.get("editedAtFieldName"),
-            target_desc.get("editorFieldName"),
-        ]
-
-        source_fields = [f for f in source_fields if f not in exclude_fields]
-        target_fields = [f for f in target_fields if f not in exclude_fields]
-
-        # Identify date and text fields
-        date_fields = [
-            f.name.lower() for f in target_desc.get("fields") if f.type == "Date"
-        ]
-        text_fields = [
-            f.name.lower() for f in target_desc.get("fields") if f.type == "String"
-        ]
-
-        # Store rows to be updated in a dictionary keyed by the record id
-        updates_dict = {}
-        with arcpy.da.SearchCursor(in_table=source_fc, field_names=source_fields) as cursor:
-            for row in cursor:
-                record_id = row[source_fields.index(id_field)]
-                updates_dict[record_id] = row
-        del cursor
-
-        # Use a single UpdateCursor to apply updates in bulk
-        with arcpy.da.UpdateCursor(
-            in_table=target_fc, field_names=target_fields
-        ) as updateCursor:
-            for r in updateCursor:
-                record_id = r[target_fields.index(id_field)]
-                if record_id in updates_dict:
-                    logger.info(f"FOUND! {record_id}")
-                    row = updates_dict[record_id]
-                    for field in target_fields:
-                        val = row[source_fields.index(field)]
-                        if field in date_fields:
-                            dt = datetime.strptime(val, "%Y-%m-%dT%H:%M:%SZ")
-                            r[target_fields.index(field)] = dt
-                        else:
-                            r[target_fields.index(field)] = val
-                    updateCursor.updateRow(r)
-        del updateCursor
-        arcpy.management.Delete(source_fc)
-
-    if not deletes.empty:
-        logger.info(f"Processing {len(deletes)} deletes")
-        delete_ids_string = ",".join(str(i) for i in deletes[id_field])
-        where_clause = f"id in ({delete_ids_string})"
-        logger.info(where_clause)
-        target_layer = arcpy.management.MakeFeatureLayer(
-            target_fc, "target_layer", where_clause=where_clause
-        )
-
-        arcpy.management.DeleteRows(target_layer)
-        arcpy.Delete_management(target_layer)
-
-    logger.info("Finished applying changes.")
-
 def main(args):
 
-    nz_primary_parcels_layer_id = "50772"
-    nz_suburbs_and_localities_layer_id = "113764"
+    # This is the Thames-Coromandel District Council crop feature
+    crop_feature = linz.content.crop_layers.get(3036).get(10870)
 
     layers = [
         {
             "id": "50772",
-            "fgb": "test",
-            "featureclass": "test",
+            "fgb": "nz-primary-parcels.gdb",
+            "featureclass": "NZ_Primary_Parcels",
         },
         {
             "id": "113764",
@@ -209,18 +94,11 @@ def main(args):
         },
     ]
 
-    # This is the Thames-Coromandel District Council crop feature
-    crop_feature = linz.content.crop_layers.get(3036).get(10870)
-
-    target_fgb = os.path.join(data_folder, "nz-suburbs-and-localities.gdb")
-    fc = "NZ_Suburbs_and_Localities"
-    target_fc = os.path.join(target_fgb, fc)
-
     for layer in layers:
         itm = linz.content.get(layer.get("id"))
         id_field = itm.data.primary_key_fields[0]
         target_fgb = os.path.join(data_folder, layer.get("fgb"))
-        fc = os.path.join(target_fgb, layer.get("featureclass"))
+        target_fc = os.path.join(target_fgb, layer.get("featureclass"))
 
         # This will delete any existing file geodatabase, then export,
         # download and unzip a new one.
