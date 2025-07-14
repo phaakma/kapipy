@@ -177,6 +177,7 @@ def geojson_to_gdf(
     elif isinstance(geojson, list):
         features = geojson
     else:
+        logger.debug(geojson)
         raise ValueError(
             "Invalid geojson input. Expected a FeatureCollection or list of features."
         )
@@ -368,6 +369,11 @@ def sdf_to_single_polygon_geojson(
     geo_json = geom.JSON  # this is Esri JSON
     return esri_json_to_geojson(geom.JSON, geom.geometry_type)
 
+def arcgis_polygon_to_geojson(geom):
+    geom = geom.project_as(4326)
+    geo_json = geom.JSON  # this is Esri JSON
+    return esri_json_to_geojson(geom.JSON, geom.geometry_type)
+
 def gdf_to_single_polygon_geojson(
     gdf: "gpd.GeoDataFrame",
 ) -> dict[str, Any] | None:
@@ -422,11 +428,14 @@ def get_data_type(obj: Any) -> str:
         try:
             import pandas as pd
             from arcgis.features import GeoAccessor
+            from arcgis.geometry import Polygon
 
             # SEDF is a pandas.DataFrame with a _spatial accessor
             # pandas.core.frame.DataFrame
             if isinstance(obj, pd.DataFrame) and hasattr(obj, "spatial"):
                 return "sdf"
+            if isinstance(obj, Polygon):
+                return "ARCGIS_POLYGON"
         except ImportError:
             pass
 

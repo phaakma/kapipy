@@ -109,7 +109,7 @@ class VectorItem(BaseItem):
 
         query_details = download_wfs_data(
             url=self._wfs_url,
-            api_key=self._gis._api_key,
+            api_key=self._session.api_key,
             typeNames=f"{self.type_}-{self.id}",
             cql_filter=cql_filter,
             srsName=f"EPSG:{out_sr}" or self.data.crs.srid,
@@ -119,7 +119,7 @@ class VectorItem(BaseItem):
             **kwargs,
         )
 
-        self._gis.audit.add_request_record(
+        self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
             item_type=self.type_,
@@ -234,7 +234,7 @@ class VectorItem(BaseItem):
 
         query_details = download_wfs_data(
             url=self._wfs_url,
-            api_key=self._gis._api_key,
+            api_key=self._session.api_key,
             typeNames=f"{self.type_}-{self.id}-changeset",
             viewparams=viewparams,
             cql_filter=cql_filter,
@@ -245,7 +245,7 @@ class VectorItem(BaseItem):
             **kwargs,
         )
 
-        self._gis.audit.add_request_record(
+        self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
             item_type=self.type_,

@@ -10,19 +10,12 @@ class AuditManager:
 
     Provides methods to record and retrieve information relating to interactions with the GISK.
     All data is stored in a SQLite database.
-
-    Attributes:
-        _gis (GISK): The GISK instance this manager is associated with.
     """
 
-    def __init__(self, gis: "GISK") -> None:
+    def __init__(self) -> None:
         """
-        Initializes the AuditManager with a GISK instance.
-
-        Parameters:
-            gis (GISK): The GISK instance to manage auditing for.
+        Initializes the AuditManager.
         """
-        self._gis = gis
         self.enabled = False
         self.folder = None
         self.retain_data = True
@@ -293,9 +286,9 @@ class AuditManager:
         Returns an unambiguous string representation of the AuditManager instance.
 
         Returns:
-            str: String representation of the ContentManager.
+            str: String representation of the AuditManager.
         """
-        return f"AuditManager(gis={repr(self._gis)})"
+        return f"AuditManager()"
 
     def __str__(self) -> str:
         """
@@ -304,4 +297,6 @@ class AuditManager:
         Returns:
             str: User-friendly string representation.
         """
-        return f"AuditManager for GISK: {getattr(self._gis, 'name', None) or getattr(self._gis, 'url', 'Unknown')}"
+        if self.enabled:
+            return f"AuditManager, enabled, {self.folder}, {self.db_name}"
+        return f"AuditManager"

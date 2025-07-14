@@ -5,6 +5,7 @@ import logging
 import importlib.util
 from .custom_errors import ServerError, BadRequest
 import httpx
+from .session_manager import SessionManager
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +87,12 @@ class GISK:
         self._api_key = api_key
         if not self._api_key:
             raise ValueError("API key must be provided.")
+        self.session = SessionManager(
+            api_key=self._api_key, 
+            api_url=self._api_url, 
+            service_url=self._service_url,
+            wfs_url=self._wfs_url
+            )
         logger.debug(f"GISK initialized with URL: {self.url}")
         
     @property
@@ -133,7 +140,7 @@ class GISK:
 
         if self._content_manager is None:
             from .content_manager import ContentManager
-            self._content_manager = ContentManager(self)
+            self._content_manager = ContentManager(self.session, self.audit)
         return self._content_manager
 
     @property
@@ -147,7 +154,7 @@ class GISK:
 
         if self._audit_manager is None:
             from .audit_manager import AuditManager
-            self._audit_manager = AuditManager(gis=self)
+            self._audit_manager = AuditManager()
         return self._audit_manager
 
     def get(self, url: str, params: dict = None) -> dict:
