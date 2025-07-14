@@ -64,6 +64,8 @@ class CropFeature:
         if not has_arcgis:
             raise ValueError("Arcgis is not installed")
 
+        logger.debug(self.geometry)
+
         if self._sdf is None:
             self._sdf = geojson_to_sdf(
                 [self.geojson],
@@ -90,7 +92,7 @@ class CropFeature:
         if not has_geopandas:
             raise ValueError(f"Geopandas is not installed")
 
-        logger.info(self.geometry)
+        logger.debug(self.geometry)
 
         if self._gdf is None:
             self._gdf = geojson_to_gdf(
@@ -197,7 +199,7 @@ class CropLayer:
     def _fetch_features(self):
         data = self._session.get(self.features)
 
-        logger.info(data)
+        logger.debug(data)
         for d in data:
             d["_session"] = self._session
 
