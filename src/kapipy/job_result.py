@@ -92,7 +92,7 @@ class JobResult:
     def __init__(
         self,
         payload: dict,
-        gis: "GISK",
+        session: "SessionManager",
         poll_interval: int = None,
         timeout: int = None,
     ) -> None:
@@ -113,7 +113,7 @@ class JobResult:
         self._poll_interval = poll_interval if poll_interval is not None else 10
         self._timeout = timeout if timeout is not None else 600
         self._last_response = payload
-        self._gis = gis
+        self._session = session
 
 
     @property
@@ -210,7 +210,7 @@ class JobResult:
         Returns:
             None
         """
-        self._last_response = self._gis.get(self._job_url)
+        self._last_response = self._session.get(self._job_url)
 
 
     def output(self) -> dict:
@@ -274,7 +274,7 @@ class JobResult:
         if not os.path.exists(folder):
             os.makedirs(folder, exist_ok=True)
 
-        headers = {"Authorization": f"key {self._gis._api_key}"}
+        headers = self._session.headers
 
         with httpx.Client(follow_redirects=True) as client:
             resp = client.get(self.download_url, headers=headers, follow_redirects=True)

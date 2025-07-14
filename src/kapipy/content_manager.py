@@ -43,19 +43,22 @@ class ContentManager:
     based on their IDs or URLs.
 
     Attributes:
-        _gis (GISK): The GISK instance this manager is associated with.
+        jobs (list): Export jobs list.
+        download_folder (str): Default folder for downloads.
     """
 
-    def __init__(self, gis: "GISK") -> None:
+    def __init__(self, session: "SessionManager", audit: "AuditManager") -> None:
         """
         Initializes the ContentManager with a GISK instance.
 
         Parameters:
             gis (GISK): The GISK instance to manage content for.
         """
-        self._gis = gis
+        self._session = session
+        self._audit=audit
         self.jobs = []
         self.download_folder = None
+        self._crop_layers_manager = None
 
     def _search_by_id(self, id: str) -> dict:
         """
@@ -69,15 +72,15 @@ class ContentManager:
         """
 
         # Example: https://data.linz.govt.nz/services/api/v1.x/data/?id=51571
-        url = urljoin(self._gis._api_url, f"data/?id={id}")
-        response = self._gis.get(url)
+        url = urljoin(self._session.api_url, f"data/?id={id}")
+        response = self._session.get(url)
         return response
 
     def _get_item_details(self, url: str) -> dict:
         """
         Fetch the item details using the item url.
         """
-        return self._gis.get(url)
+        return self._session.get(url)
 
     def get(self, id: str) -> dict:
         """
@@ -122,7 +125,7 @@ class ContentManager:
                 f"Unsupported item kind: {item_details.get('kind')}"
             )
 
-        item._gis = self._gis
+        item.attach_resources(session=self._session, audit=self._audit, content=self)
         item._raw_json = copy.deepcopy(itm_properties_json)
 
         return item
@@ -180,6 +183,13 @@ class ContentManager:
         logger.info("All jobs completed and downloaded.")
         return jobs
 
+    @property
+    def crop_layers(self) -> "CropLayersManager":
+        if self._crop_layers_manager is None:
+            from .crop_layers_manager import CropLayersManager
+            self._crop_layers_manager = CropLayersManager(self._session)
+        return self._crop_layers_manager
+
     def __repr__(self) -> str:
         """
         Returns an unambiguous string representation of the ContentManager instance.
@@ -187,7 +197,7 @@ class ContentManager:
         Returns:
             str: String representation of the ContentManager.
         """
-        return f"ContentManager(gis={repr(self._gis)})"
+        return f"ContentManager()"
 
     def __str__(self) -> str:
         """
@@ -196,7 +206,7 @@ class ContentManager:
         Returns:
             str: User-friendly string representation.
         """
-        return f"ContentManager for GISK: {getattr(self._gis, 'name', None) or getattr(self._gis, 'url', 'Unknown')}"
+        return f"ContentManager"
 
 
 @dataclass

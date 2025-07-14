@@ -8,6 +8,7 @@ from .conversion import (
     get_data_type,
     sdf_to_single_polygon_geojson,
     gdf_to_single_polygon_geojson,
+    arcgis_polygon_to_geojson,
 )
 
 logger = logging.getLogger(__name__)
@@ -354,9 +355,23 @@ class BaseItem(ABC):
     num_downloads: int
 
     def __post_init__(self):
-        self._supports_changesets = None
-        self.services_list = None
-        self._supports_wfs = None
+        self._session=None
+        self._audit=None
+        self._content=None
+        self._raw_json=None
+        self._supports_changesets=None
+        self.services_list=None
+        self._supports_wfs=None
+
+    def attach_resources(
+            self, 
+            session: "SessionManager"=None, 
+            audit: "AuditManager"=None,
+            content: "ContentManager"=None
+            ):
+        self._session = session
+        self._audit = audit
+        self._content = content
 
     @abstractmethod
     def __str__(self) -> None:
@@ -378,7 +393,7 @@ class BaseItem(ABC):
             logger.debug(f"Checking if item with id: {self.id} supports changesets")
 
             if self.services_list is None:
-                self.services_list = self._gis.get(self.services)
+                self.services_list = self._session.get(self.services)
 
             self._supports_changesets = any(
                 service.get("key") == "wfs-changesets" for service in self.services_list
@@ -397,7 +412,7 @@ class BaseItem(ABC):
 
         if self._supports_wfs is None:
             if self.services_list is None:
-                self.services_list = self._gis.get(self.services)
+                self.services_list = self._session.get(self.services)
             self._supports_wfs = any(
                 service.get("key") == "wfs" for service in self.services_list
             )
@@ -405,7 +420,7 @@ class BaseItem(ABC):
         if self._supports_wfs is False:
             return None
 
-        return f"{self._gis._service_url}wfs/"
+        return f"{self._session.service_url}wfs/"
 
     def export(
         self,
@@ -449,6 +464,8 @@ class BaseItem(ABC):
                 filter_geometry = sdf_to_single_polygon_geojson(filter_geometry)
             elif data_type == "gdf":
                 filter_geometry = gdf_to_single_polygon_geojson(filter_geometry)
+            elif data_type == "ARCGIS_POLYGON":
+                filter_geometry = arcgis_polygon_to_geojson(filter_geometry)
 
         export_format = self._resolve_export_format(export_format)
 
@@ -465,8 +482,8 @@ class BaseItem(ABC):
             )
 
         export_details = request_export(
-            self._gis._api_url,
-            self._gis._api_key,
+            self._session.api_url,
+            self._session.api_key,
             self.id,
             self.type_,
             self.kind,
@@ -478,12 +495,12 @@ class BaseItem(ABC):
 
         job_result = JobResult(
             export_details.get("response"),
-            self._gis,
+            self._session,
             poll_interval=poll_interval,
             timeout=timeout,
         )
-        self._gis.content.jobs.append(job_result)
-        self._gis.audit.add_request_record(
+        self._content.jobs.append(job_result)
+        self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
             item_type=self.type_,
@@ -527,8 +544,8 @@ class BaseItem(ABC):
         )
 
         return validate_export_params(
-            self._gis._api_url,
-            self._gis._api_key,
+            self._session.api_url,
+            self._session.api_key,
             self.id,
             self.type_,
             self.kind,

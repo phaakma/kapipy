@@ -9,7 +9,7 @@ from sample_api_data import SEARCH_LAYER_JSON, LAYER_JSON
 @pytest.fixture
 def content_manager():
     # Replace with actual initialization as needed
-    return ContentManager(None)
+    return ContentManager(None, None)
 
 @patch("kapipy.content_manager.ContentManager._get_item_details")
 @patch("kapipy.content_manager.ContentManager._search_by_id")
