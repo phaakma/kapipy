@@ -4,6 +4,14 @@ from typing import List, Optional, Dict, Any, Union
 from dacite import from_dict, Config
 import logging
 
+from .conversion import (
+    geojson_to_gdf,
+    geojson_to_sdf,
+    json_to_df,
+)
+
+from .gis import has_geopandas, has_arcgis
+
 logger = logging.getLogger(__name__)
 
 @dataclass
@@ -22,6 +30,76 @@ class CropFeature:
     name: str
     url: str
     geometry: dict
+
+    def __post_init__(self):
+        self._sdf = None
+        self._gdf = None
+
+    @property
+    def geojson(self):
+        return {
+            "properties": {
+                "id": self.id,
+                "name": self.name,
+                "url": self.url
+            },
+            "geometry": self.geometry
+        }
+        
+    @property
+    def sdf(self) -> "pd.DataFrame":
+        """
+        Convert the GeoJSON to a Spatially Enabled DataFrame (ArcGIS SEDF).
+
+        Requires the arcgis package to be installed.
+
+        Returns:
+            SpatialDataFrame: The features as a Spatially Enabled DataFrame.
+
+        Raises:
+            ValueError: If the arcgis package is not installed.
+            Exception: If conversion fails.
+        """
+
+        if not has_arcgis:
+            raise ValueError("Arcgis is not installed")
+
+        if self._sdf is None:
+            self._sdf = geojson_to_sdf(
+                [self.geojson],
+                out_sr=4326,
+                geometry_type=self.geometry.get("type")
+            )
+        return self._sdf
+
+    @property
+    def gdf(self) -> "gpd.GeoDataFrame":
+        """
+        Convert the GeoJSON to a GeoPandas DataFrame.
+
+        Requires the geopandas package to be installed.
+
+        Returns:
+            gpd.GeoDataFrame: The features as a GeoPandas DataFrame.
+
+        Raises:
+            ValueError: If the geopandas package is not installed.
+            Exception: If conversion fails.
+        """
+
+        if not has_geopandas:
+            raise ValueError(f"Geopandas is not installed")
+
+        logger.info(self.geometry)
+
+        if self._gdf is None:
+            self._gdf = geojson_to_gdf(
+                [self.geojson], out_sr=4326,
+            )
+        return self._gdf
+
+    def __repr__(self):
+        return f"<CropFeature id={self.id} name={self.name} url={self.url}>"
 
 @dataclass
 class CropFeaturesManager:
@@ -44,7 +122,7 @@ class CropFeaturesManager:
             for _data in data
         ]
 
-    def list(self):
+    def all(self):
         """
         Returns a list of all crop features.
         """
@@ -59,7 +137,7 @@ class CropFeaturesManager:
         data = self._session.get(self.url)
         return from_dict(data_class=CropFeature, data=data)
 
-    def find(self, name):
+    def find_item(self, name):
         """
         Find a crop feature by name (case-insensitive, exact match).
 
@@ -70,7 +148,7 @@ class CropFeaturesManager:
             CropFeature or None: The matching feature, or None if not found.
         """
         name = name.lower()
-        for feat in self.list():
+        for feat in self.all():
             if feat.name.lower() == name:
                 return feat
         return None
@@ -80,7 +158,7 @@ class CropFeaturesManager:
         Access a crop feature by ID (int) or name (str).
         """
         if isinstance(key, int):
-            for feat in self.list():
+            for feat in self.all():
                 if feat.id == key:
                     return feat
         elif isinstance(key, str):
@@ -95,7 +173,7 @@ class CropFeaturesManager:
         self._fetch_features()
 
     def __iter__(self):
-        return iter(self.list())
+        return iter(self.all())
 
     def __repr__(self):
         return f"<CropFeaturesManager id={self.id} name={self.name} url={self.url}>"
@@ -129,7 +207,7 @@ class CropLayer:
         ]
 
 
-    def list(self):
+    def all(self):
         """
         Returns a list of all crop features.
         """
@@ -141,7 +219,7 @@ class CropLayer:
         """
         Get a crop feature manager by id.
         """
-        for layer in self.list():
+        for layer in self.all():
             if layer.id == id:
                 return layer
         return None
@@ -157,23 +235,23 @@ class CropLayer:
             CropFeatureManager or None: The matching layer, or None if not found.
         """
         name = name.lower()
-        for layer in self.list():
+        for layer in self.all():
             if layer.name.lower() == name:
                 return layer
         return None
 
-    def filter(self, search: str) -> list[dict]:
+    def filter_items(self, search: str) -> list[dict]:
         """
         Filter the list of feature managers by name (case-insensitive).
         """
-        return [item for item in self.list() if search.lower() in item.name.lower()]
+        return [item for item in self.all() if search.lower() in item.name.lower()]
 
     def __getitem__(self, key):
         """
         Access a crop layer by ID (int) or name (str).
         """
         if isinstance(key, int):
-            for layer in self.list():
+            for layer in self.all():
                 if layer.id == key:
                     return layer
         elif isinstance(key, str):
@@ -188,7 +266,7 @@ class CropLayer:
         self._fetch_features()
 
     def __iter__(self):
-        return iter(self.list())
+        return iter(self.all())
 
 class CropLayersManager:
     """
@@ -211,7 +289,7 @@ class CropLayersManager:
             for _data in data
         ]
 
-    def list(self):
+    def all(self):
         """
         Returns a list of all crop layers.
         """
@@ -223,12 +301,12 @@ class CropLayersManager:
         """
         Get a crop layer by id.
         """
-        for layer in self.list():
+        for layer in self.all():
             if layer.id == id:
                 return layer
         return None
 
-    def find(self, name):
+    def find_item(self, name):
         """
         Find a crop layer by name (case-insensitive, exact match).
 
@@ -239,7 +317,7 @@ class CropLayersManager:
             CropLayer or None: The matching layer, or None if not found.
         """
         name = name.lower()
-        for layer in self.list():
+        for layer in self.all():
             if layer.name.lower() == name:
                 return layer
         return None
@@ -249,7 +327,7 @@ class CropLayersManager:
         Access a crop layer by ID (int) or name (str).
         """
         if isinstance(key, int):
-            for layer in self.list():
+            for layer in self.all():
                 if layer.id == key:
                     return layer
         elif isinstance(key, str):
@@ -264,7 +342,7 @@ class CropLayersManager:
         self._fetch_layers()
 
     def __iter__(self):
-        return iter(self.list())
+        return iter(self.all())
 
     def __repr__(self):
-        return f"<CropLayersManager url={self.base_url!r} count={len(self.list()) if self._layers else 0}>"
+        return f"<CropLayersManager url={self.base_url!r} count={len(self.all()) if self._layers else 0}>"

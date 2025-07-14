@@ -177,6 +177,7 @@ def geojson_to_gdf(
     elif isinstance(geojson, list):
         features = geojson
     else:
+        logger.debug(geojson)
         raise ValueError(
             "Invalid geojson input. Expected a FeatureCollection or list of features."
         )
