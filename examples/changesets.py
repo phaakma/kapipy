@@ -13,7 +13,9 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import argparse
 
-data_folder = r"c:/temp/data"
+#import layer config info from a config file
+from config import layers, data_folder
+
 log_folder = os.path.join(data_folder, "logs")
 os.makedirs(log_folder, exist_ok=True)
 log_file = os.path.join(log_folder, "linz.log")
@@ -45,6 +47,21 @@ linz_api_key = os.getenv("LINZ_API_KEY")
 linz = GISK(name="linz", api_key=linz_api_key)
 linz.audit.enable_auditing(folder=data_folder)
 
+def buildErrorMessage(e):
+    errorMessage = ""
+    # Build and show the error message
+    # If many arguments
+    if (e.args):
+        for i in range(len(e.args)):
+            if (i == 0):
+                errorMessage = str(e.args[i]).encode('utf-8').decode('utf-8')
+            else:
+                errorMessage = errorMessage + " " + \
+                    str(e.args[i]).encode('utf-8').decode('utf-8')
+    # Else just one argument
+    else:
+        errorMessage = str(e)
+    return errorMessage.strip().replace("\n", " ").replace("\r", "").replace("'", "")[:1000]
 
 def export(itm, crop_feature_url: str, target_fgb: str):
 
@@ -76,40 +93,32 @@ def get_changeset(itm, crop_feature):
 
     return changeset_data.sdf
 
-def main(args):
-
-    # This is the Thames-Coromandel District Council crop feature
-    crop_feature = linz.content.crop_layers.get(3036).get(10870)
-
-    layers = [
-        {
-            "id": "50772",
-            "fgb": "nz-primary-parcels.gdb",
-            "featureclass": "NZ_Primary_Parcels",
-        },
-        {
-            "id": "113764",
-            "fgb": "nz-suburbs-and-localities.gdb",
-            "featureclass": "NZ_Suburbs_and_Localities",
-        },
-    ]
+def main(args):    
 
     for layer in layers:
-        itm = linz.content.get(layer.get("id"))
-        id_field = itm.data.primary_key_fields[0]
-        target_fgb = os.path.join(data_folder, layer.get("fgb"))
-        target_fc = os.path.join(target_fgb, layer.get("featureclass"))
+        try:
+            crop_layer_id = layer.get("crop_layer_id")
+            crop_feature_id = layer.get("crop_feature_id")
+            crop_feature = linz.content.crop_layers.get(crop_layer_id).get(crop_feature_id)
+            itm = linz.content.get(layer.get("id"))
+            logger.info(f"Processing layer: {itm.id=}, {itm.title=}")
+            id_field = itm.data.primary_key_fields[0]
+            target_fgb = os.path.join(data_folder, layer.get("fgb"))
+            target_fc = os.path.join(target_fgb, layer.get("featureclass"))
 
-        # This will delete any existing file geodatabase, then export,
-        # download and unzip a new one.
-        if args.export:
-            export(itm, crop_feature.url, target_fgb)
+            # This will delete any existing file geodatabase, then export,
+            # download and unzip a new one.
+            if args.export:
+                export(itm, crop_feature.url, target_fgb)
 
-        # This will fetch any changes since the last download.
-        # Then apply the changes to the target file geodatabase.
-        elif args.changeset:
-            changes_sdf = get_changeset(itm, crop_feature)
-            apply_changes(changes_sdf, target_fc, id_field=id_field)
+            # This will fetch any changes since the last download.
+            # Then apply the changes to the target file geodatabase.
+            elif args.changeset:
+                changes_sdf = get_changeset(itm, crop_feature)
+                apply_changes(changes_sdf, target_fc, id_field=id_field)
+        except Exception as e:
+            err = buildErrorMessage(e)
+            logger.error(err)
 
 
 if __name__ == "__main__":
