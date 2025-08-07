@@ -2,6 +2,10 @@ import httpx
 import logging
 
 logger = logging.getLogger(__name__)
+# The default httpx logging level is INFO which spams the logs
+# when otherwise trying to log script messages.
+logger_httpx = logging.getLogger("httpx")
+logger_httpx.setLevel(logging.WARNING)
 
 class SessionManager:
     def __init__(self, api_key: str, api_url: str, service_url: str, wfs_url: str):

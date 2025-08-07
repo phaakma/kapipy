@@ -107,6 +107,9 @@ class VectorItem(BaseItem):
                     spatial_rel=spatial_rel,
                 )
 
+        if out_sr is None:
+            out_sr = self.data.crs.srid
+
         query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._session.api_key,
