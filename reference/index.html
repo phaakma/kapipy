@@ -593,9 +593,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kapipy.content_manager.ContentManager(gis)" class="md-nav__link">
+  <a href="#kapipy.content_manager.ContentManager(session)" class="md-nav__link">
     <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;gis
+      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kapipy.content_manager.ContentManager(audit)" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;audit
     </span>
   </a>
   
@@ -681,15 +690,6 @@
   
     <nav class="md-nav" aria-label=" AuditManager">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#kapipy.audit_manager.AuditManager(gis)" class="md-nav__link">
-    <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;gis
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#kapipy.audit_manager.AuditManager.add_request_record" class="md-nav__link">
@@ -1544,9 +1544,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#kapipy.job_result.JobResult(gis)" class="md-nav__link">
+  <a href="#kapipy.job_result.JobResult(session)" class="md-nav__link">
     <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;gis
+      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;session
     </span>
   </a>
   
@@ -1982,9 +1982,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kapipy.content_manager.ContentManager(gis)" class="md-nav__link">
+  <a href="#kapipy.content_manager.ContentManager(session)" class="md-nav__link">
     <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;gis
+      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kapipy.content_manager.ContentManager(audit)" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;audit
     </span>
   </a>
   
@@ -2070,15 +2079,6 @@
   
     <nav class="md-nav" aria-label=" AuditManager">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#kapipy.audit_manager.AuditManager(gis)" class="md-nav__link">
-    <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;gis
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#kapipy.audit_manager.AuditManager.add_request_record" class="md-nav__link">
@@ -2933,9 +2933,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#kapipy.job_result.JobResult(gis)" class="md-nav__link">
+  <a href="#kapipy.job_result.JobResult(session)" class="md-nav__link">
     <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;gis
+      <code class="doc-symbol doc-symbol-toc doc-symbol-parameter"></code>&nbsp;session
     </span>
   </a>
   
@@ -3561,7 +3561,9 @@ or other configurations change.</p>
 
 
 <a href="#kapipy.content_manager.ContentManager" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature codehilite"><pre><span></span><code><span class="nf">ContentManager</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="gis (kapipy.content_manager.ContentManager(gis))" href="#kapipy.content_manager.ContentManager(gis)">gis</a></span><span class="p">:</span> <span class="n"><span title="GISK">GISK</span></span><span class="p">)</span>
+<div class="doc-signature codehilite"><pre><span></span><code><span class="nf">ContentManager</span><span class="p">(</span>
+    <span class="n"><a class="autorefs autorefs-internal" title="session (kapipy.content_manager.ContentManager(session))" href="#kapipy.content_manager.ContentManager(session)">session</a></span><span class="p">:</span> <span class="n"><span title="SessionManager">SessionManager</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="audit (kapipy.content_manager.ContentManager(audit))" href="#kapipy.content_manager.ContentManager(audit)">audit</a></span><span class="p">:</span> <span class="n"><span title="AuditManager">AuditManager</span></span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3575,11 +3577,19 @@ based on their IDs or URLs.</p>
 <p><span class="doc-section-title">Attributes:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-          <b><code><span title="kapipy.content_manager.ContentManager._gis">_gis</span></code></b>
-              (<code><span title="GISK">GISK</span></code>)
+          <b><code><span title="kapipy.content_manager.ContentManager.jobs">jobs</span></code></b>
+              (<code><span title="list">list</span></code>)
           –
           <div class="doc-md-description">
-            <p>The GISK instance this manager is associated with.</p>
+            <p>Export jobs list.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="kapipy.content_manager.ContentManager.download_folder">download_folder</span></code></b>
+              (<code><span title="str">str</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Default folder for downloads.</p>
           </div>
         </li>
     </ul>
@@ -3589,11 +3599,19 @@ based on their IDs or URLs.</p>
 <p><span class="doc-section-title">Parameters:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-<h3 id="kapipy.content_manager.ContentManager(gis)" class="doc doc-heading doc-heading-parameter">              <b><code>gis</code></b>
-<a href="#kapipy.content_manager.ContentManager(gis)" class="headerlink" title="Permanent link">&para;</a></h3>              (<code><span title="GISK">GISK</span></code>)
+<h3 id="kapipy.content_manager.ContentManager(session)" class="doc doc-heading doc-heading-parameter">              <b><code>session</code></b>
+<a href="#kapipy.content_manager.ContentManager(session)" class="headerlink" title="Permanent link">&para;</a></h3>              (<code><span title="SessionManager">SessionManager</span></code>)
           –
           <div class="doc-md-description">
-            <p>The GISK instance to manage content for.</p>
+            <p>The GISK SessionManager.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+<h3 id="kapipy.content_manager.ContentManager(audit)" class="doc doc-heading doc-heading-parameter">              <b><code>audit</code></b>
+<a href="#kapipy.content_manager.ContentManager(audit)" class="headerlink" title="Permanent link">&para;</a></h3>              (<code><span title="AuditManager">AuditManager</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The GISK AuditManager.</p>
           </div>
         </li>
     </ul>
@@ -3802,7 +3820,7 @@ it pauses polling and downloads that file, then resumes polling the remainder.</
 
 
 <a href="#kapipy.audit_manager.AuditManager" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature codehilite"><pre><span></span><code><span class="nf">AuditManager</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="gis (kapipy.audit_manager.AuditManager(gis))" href="#kapipy.audit_manager.AuditManager(gis)">gis</a></span><span class="p">:</span> <span class="n"><span title="GISK">GISK</span></span><span class="p">)</span>
+<div class="doc-signature codehilite"><pre><span></span><code><span class="nf">AuditManager</span><span class="p">()</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3811,33 +3829,6 @@ it pauses polling and downloads that file, then resumes polling the remainder.</
         <p>Manages auditing for a GISK instance.</p>
 <p>Provides methods to record and retrieve information relating to interactions with the GISK.
 All data is stored in a SQLite database.</p>
-
-
-<p><span class="doc-section-title">Attributes:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-          <b><code><span title="kapipy.audit_manager.AuditManager._gis">_gis</span></code></b>
-              (<code><span title="GISK">GISK</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>The GISK instance this manager is associated with.</p>
-          </div>
-        </li>
-    </ul>
-
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-<h3 id="kapipy.audit_manager.AuditManager(gis)" class="doc doc-heading doc-heading-parameter">              <b><code>gis</code></b>
-<a href="#kapipy.audit_manager.AuditManager(gis)" class="headerlink" title="Permanent link">&para;</a></h3>              (<code><span title="GISK">GISK</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>The GISK instance to manage auditing for.</p>
-          </div>
-        </li>
-    </ul>
 
 
 
@@ -4108,7 +4099,7 @@ All data is stored in a SQLite database.</p>
 <a href="#kapipy.audit_manager.AuditManager.get_latest_request_for_item" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature codehilite"><pre><span></span><code><span class="nf">get_latest_request_for_item</span><span class="p">(</span>
     <span class="n"><a class="autorefs autorefs-internal" title="item_id (kapipy.audit_manager.AuditManager.get_latest_request_for_item(item_id))" href="#kapipy.audit_manager.AuditManager.get_latest_request_for_item(item_id)">item_id</a></span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="request_type (kapipy.audit_manager.AuditManager.get_latest_request_for_item(request_type))" href="#kapipy.audit_manager.AuditManager.get_latest_request_for_item(request_type)">request_type</a></span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="dict">dict</span></span> <span class="o">|</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="dict">dict</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4143,10 +4134,10 @@ based on request_time.</p>
 <p><span class="doc-section-title">Returns:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-              <code><span title="dict">dict</span> | None</code>
-          –
+<b><code>dict</code></b> (              <code><span title="dict">dict</span></code>
+)          –
           <div class="doc-md-description">
-            <p>dict or None: The most recent audit record as a dictionary, or None if no record is found.</p>
+            <p>The most recent audit record as a dictionary, or empty dictionary.</p>
           </div>
         </li>
     </ul>
@@ -6003,7 +5994,7 @@ the data into various dataframe formats (Pandas, GeoPandas, Spatially Enabled Da
 <a href="#kapipy.job_result.JobResult" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature codehilite"><pre><span></span><code><span class="nf">JobResult</span><span class="p">(</span>
     <span class="n"><a class="autorefs autorefs-internal" title="payload (kapipy.job_result.JobResult(payload))" href="#kapipy.job_result.JobResult(payload)">payload</a></span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">,</span>
-    <span class="n"><a class="autorefs autorefs-internal" title="gis (kapipy.job_result.JobResult(gis))" href="#kapipy.job_result.JobResult(gis)">gis</a></span><span class="p">:</span> <span class="n"><span title="GISK">GISK</span></span><span class="p">,</span>
+    <span class="n"><a class="autorefs autorefs-internal" title="session (kapipy.job_result.JobResult(session))" href="#kapipy.job_result.JobResult(session)">session</a></span><span class="p">:</span> <span class="n"><span title="SessionManager">SessionManager</span></span><span class="p">,</span>
     <span class="n"><a class="autorefs autorefs-internal" title="poll_interval (kapipy.job_result.JobResult(poll_interval))" href="#kapipy.job_result.JobResult(poll_interval)">poll_interval</a></span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n"><a class="autorefs autorefs-internal" title="timeout (kapipy.job_result.JobResult(timeout))" href="#kapipy.job_result.JobResult(timeout)">timeout</a></span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span>
@@ -6156,11 +6147,11 @@ attributes on the JobResult instance after a successful download.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-<h3 id="kapipy.job_result.JobResult(gis)" class="doc doc-heading doc-heading-parameter">              <b><code>gis</code></b>
-<a href="#kapipy.job_result.JobResult(gis)" class="headerlink" title="Permanent link">&para;</a></h3>              (<code><span title="GISK">GISK</span></code>)
+<h3 id="kapipy.job_result.JobResult(session)" class="doc doc-heading doc-heading-parameter">              <b><code>session</code></b>
+<a href="#kapipy.job_result.JobResult(session)" class="headerlink" title="Permanent link">&para;</a></h3>              (<code><span title="SessionManager">SessionManager</span></code>)
           –
           <div class="doc-md-description">
-            <p>The GISK instance associated with this job.</p>
+            <p>The GISK SessionManager.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">

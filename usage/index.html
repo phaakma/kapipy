@@ -537,6 +537,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#query-using-a-spatial-filter-extent-bbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query using a spatial filter extent - bbox
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -790,6 +799,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#query-using-a-spatial-filter-extent-bbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query using a spatial filter extent - bbox
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -959,13 +977,27 @@ The <strong>to_time</strong> parameter is optional, and is the time up to which 
 </code></pre></div>
 
 <h3 id="query-with-a-spatial-filter">Query with a spatial filter<a class="headerlink" href="#query-with-a-spatial-filter" title="Permanent link">&para;</a></h3>
-<p>The <strong>filter_geometry</strong> argument can be passed in as a gdf, sdf or geojson.  </p>
-<p>It is recommended to only have one polygon geometry in the dataframe, and avoid complex geometries with lots of vertices. If there is more than one record in the dataframe, the records will be unioned into one geometry.  </p>
+<p>The <strong>filter_geometry</strong> argument can be passed in as a gdf or sdf.  </p>
+<p>It is recommended to only have one polygon geometry in the dataframe, and avoid complex geometries with lots of vertices. If your use case requires a complex polygon geometry that the API can't handle, consider making the query using the bbox extent and then doing a local intersect on the data afterwards to drop the features you don't want.   </p>
+<p>If there is more than one record in the dataframe, the records will be unioned into one geometry. The more records, the longer this will take which is why it is recommended to only have one record or at least minimise the number.    </p>
 <p>The following example will only return features that intersect the <strong>filter_geometry</strong> object.  </p>
 <div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">changeset</span><span class="p">(</span>
     <span class="n">from_time</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00Z&quot;</span><span class="p">,</span> 
     <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span>
     <span class="n">filter_geometry</span><span class="o">=</span><span class="n">matamata_gdf</span>
+    <span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">sdf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">sdf</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+
+<h3 id="query-using-a-spatial-filter-extent-bbox">Query using a spatial filter extent - bbox<a class="headerlink" href="#query-using-a-spatial-filter-extent-bbox" title="Permanent link">&para;</a></h3>
+<p>The <strong>bbox_geometry</strong> argument can be passed in as a gdf or sdf.  </p>
+<p>If there is more than one record in the dataframe, the extent of all geometries is calculated. The more records, the longer this will take which is why it is recommended to only have one record or at least minimise the number.     </p>
+<p>The following example will only return features that intersect the bounding box extent of the <strong>bbox_geometry</strong> object.  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">changeset</span><span class="p">(</span>
+    <span class="n">from_time</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00Z&quot;</span><span class="p">,</span> 
+    <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span>
+    <span class="n">bbox_geometry</span><span class="o">=</span><span class="n">matamata_gdf</span>
     <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total records returned </span><span class="si">{</span><span class="n">itm</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">sdf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="n">data</span><span class="o">.</span><span class="n">sdf</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
