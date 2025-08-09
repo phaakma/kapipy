@@ -103,7 +103,7 @@ class JobResult:
             payload (dict): The job payload, typically from an API response.
             session (SessionManager): The GISK SessionManager.
             poll_interval (int, optional): Interval in seconds to poll the job status. Default is 10.
-            timeout (int, optional): Maximum time in seconds to wait for the job to complete. Default is 600.
+            timeout (int, optional): Maximum time in seconds to wait for the job to complete. Default is 1800 (30 min).
         """
 
         self._initial_payload = payload
@@ -111,7 +111,7 @@ class JobResult:
         self._id = payload["id"]
         self.downloaded = False
         self._poll_interval = poll_interval if poll_interval is not None else 10
-        self._timeout = timeout if timeout is not None else 600
+        self._timeout = timeout if timeout is not None else 1800
         self._last_response = payload
         self._session = session
 
