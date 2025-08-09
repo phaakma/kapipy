@@ -1,0 +1,15 @@
+data_folder: c:/temp/data/nz
+
+# No crop, instead process nz wide.
+defaults: {} 
+  #crop_layer_id: 3036
+  #crop_feature_id: 10870
+
+layers:
+  - id: 50772
+    fgb: nz-primary-parcels.gdb
+    featureclass: NZ_Primary_Parcels
+
+  - id: 113764
+    fgb: nz-suburbs-and-localities.gdb
+    featureclass: NZ_Suburbs_and_Localities

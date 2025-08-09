@@ -108,9 +108,11 @@ print((f"Total records returned {itm.title}: {data.gdf.shape[0]}"))
 ```
 
 ### Query with a spatial filter  
-The **filter_geometry** argument can be passed in as a gdf, sdf or geojson.  
+The **filter_geometry** argument can be passed in as a gdf or sdf.  
 
-It is recommended to only have one polygon geometry in the dataframe, and avoid complex geometries with lots of vertices. If there is more than one record in the dataframe, the records will be unioned into one geometry.  
+It is recommended to only have one polygon geometry in the dataframe, and avoid complex geometries with lots of vertices. If your use case requires a complex polygon geometry that the API can't handle, consider making the query using the bbox extent and then doing a local intersect on the data afterwards to drop the features you don't want.   
+
+If there is more than one record in the dataframe, the records will be unioned into one geometry. The more records, the longer this will take which is why it is recommended to only have one record or at least minimise the number.    
 
 The following example will only return features that intersect the **filter_geometry** object.  
 ```python
@@ -122,6 +124,24 @@ data = itm.changeset(
 print(f"Total records returned {itm.title}: {data.sdf.shape[0]}")
 data.sdf.head()
 ```
+
+### Query using a spatial filter extent - bbox  
+
+The **bbox_geometry** argument can be passed in as a gdf or sdf.  
+
+If there is more than one record in the dataframe, the extent of all geometries is calculated. The more records, the longer this will take which is why it is recommended to only have one record or at least minimise the number.     
+
+The following example will only return features that intersect the bounding box extent of the **bbox_geometry** object.  
+```python
+data = itm.changeset(
+    from_time="2024-01-01T00:00:00Z", 
+    out_sr=2193,
+    bbox_geometry=matamata_gdf
+    )
+print(f"Total records returned {itm.title}: {data.sdf.shape[0]}")
+data.sdf.head()
+```
+
 
 ## Export data    
 Exporting data creates an asynchronous task on the data portal server that returns a job id. It is possible to create and manage individual downloads, or treat them collectively.  

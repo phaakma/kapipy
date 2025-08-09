@@ -203,7 +203,7 @@ class AuditManager:
 
     def get_latest_request_for_item(
         self, item_id: int, request_type: str = None
-    ) -> dict | None:
+    ) -> dict:
         """
         Returns the most recent audit record for the given item_id, optionally filtered by request_type,
         based on request_time.
@@ -213,7 +213,7 @@ class AuditManager:
             request_type (str, optional): The type of request to filter by.
 
         Returns:
-            dict or None: The most recent audit record as a dictionary, or None if no record is found.
+            dict: The most recent audit record as a dictionary, or empty dictionary.
         """
 
         db_path = os.path.join(self.folder, self.db_name)
@@ -244,7 +244,7 @@ class AuditManager:
                 )
             row = cursor.fetchone()
             if row is None:
-                return None
+                return {}
             col_names = [desc[0] for desc in cursor.description]
             return dict(zip(col_names, row))
         finally:
