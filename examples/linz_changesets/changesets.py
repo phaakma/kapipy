@@ -145,11 +145,17 @@ def main(args):
     linz.audit.enable_auditing(folder=data_folder)
 
     for layer in layers:
-        try:            
+        try:
+            crop_feature_url = None 
+            crop_feature_sdf = None                     
             crop_layer_id = layer.get("crop_layer_id")
             crop_feature_id = layer.get("crop_feature_id")
-            crop_feature_item = linz.content.crop_layers.get(crop_layer_id).get(crop_feature_id)
-            crop_feature = crop_feature_item.get()
+            if crop_layer_id is not None and crop_feature_id is not None:
+                crop_feature_item = linz.content.crop_layers.get(crop_layer_id).get(crop_feature_id)
+                crop_feature = crop_feature_item.get()
+                crop_feature_url = crop_feature_item.url
+                crop_feature_sdf = crop_feature.sdf
+
             itm = linz.content.get(layer.get("id"))
             logger.info(f"Processing layer: {itm.id=}, {itm.title=}")
             id_field = itm.data.primary_key_fields[0]
@@ -159,14 +165,14 @@ def main(args):
             # This will delete any existing file geodatabase, then export,
             # download and unzip a new one.
             if args.export:
-                export(itm, crop_feature_item.url, target_fgb, data_folder)
+                export(itm, crop_feature_url, target_fgb, data_folder)
                 #editor tracking is optional but useful for future troubleshooting
                 enable_editor_tracking(target_fgb)
 
             # This will fetch any changes since the last download.
             # Then apply the changes to the target file geodatabase.
             elif args.changeset:
-                changes_sdf = get_changeset(itm, crop_feature.sdf, out_sr=2193, gisk=linz)
+                changes_sdf = get_changeset(itm, crop_feature_sdf, out_sr=2193, gisk=linz)
                 if changes_sdf is None:
                     raise Exception(f"A problem occured fetching changes.")
                 apply_changes(changes_sdf, target_fc, id_field=id_field)
