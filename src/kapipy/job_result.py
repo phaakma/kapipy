@@ -101,7 +101,7 @@ class JobResult:
 
         Parameters:
             payload (dict): The job payload, typically from an API response.
-            gis (GISK): The GISK instance associated with this job.
+            session (SessionManager): The GISK SessionManager.
             poll_interval (int, optional): Interval in seconds to poll the job status. Default is 10.
             timeout (int, optional): Maximum time in seconds to wait for the job to complete. Default is 600.
         """
