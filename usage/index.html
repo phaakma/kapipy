@@ -1038,6 +1038,7 @@ Calling the download method of a JobResult object gives you the flexibility of s
 <h3 id="export-and-download-multiple-items">Export and download multiple items<a class="headerlink" href="#export-and-download-multiple-items" title="Permanent link">&para;</a></h3>
 <p>Whenever the <strong>export</strong> method of an item is called, the <strong>JobResult</strong> object is added to a list belonging to the ContentManager called <strong>jobs</strong>. </p>
 <p>The ContentManager has a download method as well. Calling this method and passing in a folder will download to that folder any jobs in the content manager's job list that are not already downloaded.  </p>
+<p><strong>NOTE</strong> The download method of the ContentManager has no concept of a timeout period. It will just keep polling every job until they either finish or error.  </p>
 <div class="codehilite"><pre><span></span><code><span class="n">itm1</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
 <span class="n">itm2</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;geodatabase&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">matamata_sdf</span><span class="p">,)</span>
 
@@ -1067,6 +1068,11 @@ Calling the download method of a JobResult object gives you the flexibility of s
 <p>Once a job is downloaded, it's "downloaded" attribute will be set to True, and any future calls to the ContentManager's <strong>download</strong> method will not download it.<br />
 Use the 'force_all' parameter to force a download of all jobs in the list, regardless of their download status.  </p>
 <div class="codehilite"><pre><span></span><code><span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">force_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+<p>You can iterate over the jobs.  </p>
+<div class="codehilite"><pre><span></span><code><span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">linz</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">jobs</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">download_file_path</span><span class="p">)</span>
 </code></pre></div>
 
 <h2 id="audit-manager">Audit Manager<a class="headerlink" href="#audit-manager" title="Permanent link">&para;</a></h2>
