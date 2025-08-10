@@ -100,6 +100,7 @@ def process_exports(layers: dict, gisk, data_folder: str):
 
     # poll and download all items
     gisk.content.download(poll_interval=30)
+
     for job in gisk.content.jobs:
         unzip_fgb(file_path=job.download_file_path, data_folder=data_folder)
         os.remove(job.download_file_path)
@@ -167,13 +168,13 @@ def get_changeset(itm, crop_sdf, out_sr, gisk):
     changeset_data = itm.changeset(
         from_time=last_request_time, out_sr=out_sr, bbox_geometry=crop_sdf
     )
-
-    crop_sdf.spatial.project(spatial_reference=out_sr)
+    
     number_of_changes = len(changeset_data.sdf)
     logger.info(f"Returning changes: {number_of_changes}")
 
-    if number_of_changes > 0:
+    if number_of_changes > 0 and crop_sdf is not None:
         # The select method is used to return just the features that intersect the crop feature
+        crop_sdf.spatial.project(spatial_reference=out_sr)
         return changeset_data.sdf.spatial.select(crop_sdf)
     return changeset_data.sdf
 
