@@ -16,7 +16,7 @@ class DownloadResult:
     """
     Contains metadata about a completed file download from a Koordinates export job.
 
-    Returned by JobResult.download and JobResult.download_async, this class provides
+    Returned by JobResult.download, this class provides
     detailed information about the downloaded file and its context.
 
     Attributes:
@@ -77,7 +77,6 @@ class JobResult:
         _poll_interval (int): Polling interval in seconds.
         _timeout (int): Maximum time to wait for job completion in seconds.
         _last_response (dict): The most recent job status response.
-        _gis (GISK): The GISK instance associated with this job.
 
         # Populated after download:
         download_folder (str): The directory where the file was saved.
