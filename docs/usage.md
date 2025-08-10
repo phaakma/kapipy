@@ -193,6 +193,8 @@ Whenever the **export** method of an item is called, the **JobResult** object is
 
 The ContentManager has a download method as well. Calling this method and passing in a folder will download to that folder any jobs in the content manager's job list that are not already downloaded.  
 
+**NOTE** The download method of the ContentManager has no concept of a timeout period. It will just keep polling every job until they either finish or error.  
+
 ```python
 itm1.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
 itm2.export("geodatabase", out_sr=2193, extent=matamata_sdf,)
@@ -227,7 +229,13 @@ Use the 'force_all' parameter to force a download of all jobs in the list, regar
 
 ```python
 linz.content.download(force_all=True)
-```
+```  
+
+You can iterate over the jobs.  
+```python
+for job in linz.content.jobs:
+    print(job.download_file_path)
+```  
 
 ## Audit Manager  
 
