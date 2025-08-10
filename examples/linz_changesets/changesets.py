@@ -62,20 +62,81 @@ def buildErrorMessage(e):
         errorMessage = str(e)
     return errorMessage.strip().replace("\n", " ").replace("\r", "").replace("'", "")[:1000]
 
-def export(itm, crop_feature_url: str, target_fgb: str, data_folder: str):
-
+def delete_fgb(target_fgb: str):
     if os.path.exists(target_fgb):
         logger.info(f"Deleting existing fgb: {target_fgb}")
         shutil.rmtree(target_fgb)
 
-    job = itm.export(export_format="geodatabase", out_sr=2193, extent=crop_feature_url)
-    result = job.download(folder=data_folder)
-
-    with zipfile.ZipFile(result.file_path, "r") as zip_ref:
+def unzip_fgb(file_path: str, data_folder: str):
+    with zipfile.ZipFile(file_path, "r") as zip_ref:
         gdb_files = [f for f in zip_ref.namelist() if ".gdb/" in f]
         for file in gdb_files:
             zip_ref.extract(file, data_folder)
-    os.remove(result.file_path)
+
+def process_exports(layers: dict, gisk, data_folder: str):
+    fgb_list = []    
+    for layer in layers:
+        crop_feature_url = None 
+        crop_feature_sdf = None                     
+        crop_layer_id = layer.get("crop_layer_id")
+        crop_feature_id = layer.get("crop_feature_id")
+        if crop_layer_id is not None and crop_feature_id is not None:
+            crop_feature_item = gisk.content.crop_layers.get(crop_layer_id).get(crop_feature_id)
+            crop_feature = crop_feature_item.get()
+            crop_feature_url = crop_feature_item.url
+            crop_feature_sdf = crop_feature.sdf
+
+        itm = gisk.content.get(layer.get("id"))
+        logger.info(f"Processing layer: {itm.id=}, {itm.title=}")
+        id_field = itm.data.primary_key_fields[0]
+        target_fgb = os.path.join(data_folder, layer.get("fgb"))
+        fgb_list.append(target_fgb)
+        target_fc = os.path.join(target_fgb, layer.get("featureclass"))
+        out_sr = layer.get("out_sr", 2193)
+
+        delete_fgb(target_fgb)
+        #This initiates the export request from LINZ
+        itm.export(export_format="geodatabase", out_sr=out_sr, extent=crop_feature_url)
+
+    # poll and download all items
+    gisk.content.download(poll_interval=30)
+    for job in gisk.content.jobs:
+        unzip_fgb(file_path=job.download_file_path, data_folder=data_folder)
+        os.remove(job.download_file_path)
+
+    for target_fgb in fgb_list:
+        #editor tracking is optional but useful for future troubleshooting
+        enable_editor_tracking(target_fgb)
+
+
+def process_changesets(layers: dict, gisk, data_folder: str):
+    for layer in layers:
+        try:
+            crop_feature_url = None 
+            crop_feature_sdf = None                     
+            crop_layer_id = layer.get("crop_layer_id")
+            crop_feature_id = layer.get("crop_feature_id")
+            if crop_layer_id is not None and crop_feature_id is not None:
+                crop_feature_item = gisk.content.crop_layers.get(crop_layer_id).get(crop_feature_id)
+                crop_feature = crop_feature_item.get()
+                crop_feature_url = crop_feature_item.url
+                crop_feature_sdf = crop_feature.sdf
+
+            itm = gisk.content.get(layer.get("id"))
+            logger.info(f"Processing layer: {itm.id=}, {itm.title=}")
+            id_field = itm.data.primary_key_fields[0]
+            target_fgb = os.path.join(data_folder, layer.get("fgb"))
+            target_fc = os.path.join(target_fgb, layer.get("featureclass"))
+            out_sr = layer.get("out_sr", 2193)
+
+            changes_sdf = get_changeset(itm, crop_feature_sdf, out_sr=out_sr, gisk=gisk)
+            if changes_sdf is None:
+                raise Exception(f"A problem occured fetching changes.")
+            apply_changes(changes_sdf, target_fc, id_field=id_field)
+
+        except Exception as e:
+            err = buildErrorMessage(e)
+            logger.error(err, exc_info=True)
 
 def enable_editor_tracking(fgb):
     arcpy.env.workspace = fgb
@@ -143,42 +204,12 @@ def main(args):
     linz_api_key = keyring.get_password("kapipy", "linz")
     linz = GISK(name="linz", api_key=linz_api_key)
     linz.audit.enable_auditing(folder=data_folder)
+    linz.content.download_folder = data_folder
 
-    for layer in layers:
-        try:
-            crop_feature_url = None 
-            crop_feature_sdf = None                     
-            crop_layer_id = layer.get("crop_layer_id")
-            crop_feature_id = layer.get("crop_feature_id")
-            if crop_layer_id is not None and crop_feature_id is not None:
-                crop_feature_item = linz.content.crop_layers.get(crop_layer_id).get(crop_feature_id)
-                crop_feature = crop_feature_item.get()
-                crop_feature_url = crop_feature_item.url
-                crop_feature_sdf = crop_feature.sdf
-
-            itm = linz.content.get(layer.get("id"))
-            logger.info(f"Processing layer: {itm.id=}, {itm.title=}")
-            id_field = itm.data.primary_key_fields[0]
-            target_fgb = os.path.join(data_folder, layer.get("fgb"))
-            target_fc = os.path.join(target_fgb, layer.get("featureclass"))
-
-            # This will delete any existing file geodatabase, then export,
-            # download and unzip a new one.
-            if args.export:
-                export(itm, crop_feature_url, target_fgb, data_folder)
-                #editor tracking is optional but useful for future troubleshooting
-                enable_editor_tracking(target_fgb)
-
-            # This will fetch any changes since the last download.
-            # Then apply the changes to the target file geodatabase.
-            elif args.changeset:
-                changes_sdf = get_changeset(itm, crop_feature_sdf, out_sr=2193, gisk=linz)
-                if changes_sdf is None:
-                    raise Exception(f"A problem occured fetching changes.")
-                apply_changes(changes_sdf, target_fc, id_field=id_field)
-        except Exception as e:
-            err = buildErrorMessage(e)
-            logger.error(err, exc_info=True)
+    if args.export:
+        process_exports(layers=layers, gisk=linz, data_folder=data_folder)
+    elif args.changeset:
+        process_changesets(layers=layers, gisk=linz, data_folder=data_folder)
     
     logger.info(f"Finished processing all layers")
 
