@@ -16,7 +16,7 @@ class DownloadResult:
     """
     Contains metadata about a completed file download from a Koordinates export job.
 
-    Returned by JobResult.download and JobResult.download_async, this class provides
+    Returned by JobResult.download, this class provides
     detailed information about the downloaded file and its context.
 
     Attributes:
@@ -77,7 +77,6 @@ class JobResult:
         _poll_interval (int): Polling interval in seconds.
         _timeout (int): Maximum time to wait for job completion in seconds.
         _last_response (dict): The most recent job status response.
-        _gis (GISK): The GISK instance associated with this job.
 
         # Populated after download:
         download_folder (str): The directory where the file was saved.
@@ -101,9 +100,9 @@ class JobResult:
 
         Parameters:
             payload (dict): The job payload, typically from an API response.
-            gis (GISK): The GISK instance associated with this job.
+            session (SessionManager): The GISK SessionManager.
             poll_interval (int, optional): Interval in seconds to poll the job status. Default is 10.
-            timeout (int, optional): Maximum time in seconds to wait for the job to complete. Default is 600.
+            timeout (int, optional): Maximum time in seconds to wait for the job to complete. Default is 1800 (30 min).
         """
 
         self._initial_payload = payload
@@ -111,7 +110,7 @@ class JobResult:
         self._id = payload["id"]
         self.downloaded = False
         self._poll_interval = poll_interval if poll_interval is not None else 10
-        self._timeout = timeout if timeout is not None else 600
+        self._timeout = timeout if timeout is not None else 1800
         self._last_response = payload
         self._session = session
 

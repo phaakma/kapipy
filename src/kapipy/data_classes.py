@@ -441,7 +441,7 @@ class BaseItem(ABC):
             out_sr (int, optional): The coordinate reference system code to use for the export.
             filter_geometry (dict or gpd.GeoDataFrame or pd.DataFrame, optional): The filter_geometry to use for the export. Should be a GeoJSON dictionary, GeoDataFrame, or SEDF.
             poll_interval (int, optional): The interval in seconds to poll the export job status. Default is 10 seconds.
-            timeout (int, optional): The maximum time in seconds to wait for the export job to complete. Default is 600 seconds (10 minutes).
+            timeout (int, optional): The maximum time in seconds to wait for the export job to complete.
             **kwargs: Additional parameters for the export request.
 
         Returns:

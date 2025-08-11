@@ -133,6 +133,12 @@ Locally, run ```mkdocs build```  then ```mkdocs gh-deploy --clean```
 
 This could probably be set up as a Github action. If the gh-deploy was run from a Github workflow, need to figure out a way to use secrets.GITHUB_TOKEN. Or does it need authentication at all? Maybe it just works from there?    
 
+## Enhancements  
+
+Should there be a max days for the changesets? Or would that be up to the user to enforce? I'm leaning towards that being up to the user.  
+
+Is there a way to obtain from the API ahead of time what the file geodatabase and feature class names will be?  
+
 
 
 

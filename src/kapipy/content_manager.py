@@ -52,7 +52,8 @@ class ContentManager:
         Initializes the ContentManager with a GISK instance.
 
         Parameters:
-            gis (GISK): The GISK instance to manage content for.
+            session (SessionManager): The GISK SessionManager.
+            audit (AuditManager): The GISK AuditManager.
         """
         self._session = session
         self._audit=audit
