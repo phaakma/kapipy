@@ -9,31 +9,24 @@ defaults:
 
 layers:
   - id: 50772
-    temp_fgb: nz-primary-parcels.gdb
-    featureclass: NZ_Primary_Parcels
+    target_fc: NZ_Primary_Parcels
 
   - id: 113764
-    temp_fgb: nz-suburbs-and-localities.gdb
-    featureclass: NZ_Suburbs_and_Localities
+    target_fc: NZ_Suburbs_and_Localities
 
   - id: 105689
-    temp_fgb: nz-addresses.gdb
-    featureclass: NZ_Addresses
+    target_fc: NZ_Addresses
 
   - id: 50787
-    temp_fgb: nz-geodetic-marks.gdb
-    featureclass: NZ_Geodetic_Marks
+    target_fc: NZ_Geodetic_Marks
 
   - id: 50365
-    temp_fgb: nz-tree-points-topo-150k.gdb
-    featureclass: NZ_Tree_Points__Topo__1_50k_
+    target_fc: NZ_Tree_Points_Topo_150k
 
   - id: 51681
-    temp_fgb: nz-place-names-nzgb.gdb
-    featureclass: NZ_Place_Names__NZGB_
+    target_fc: NZ_Place_Names_NZGB
     out_sr: 4326 #for some reason LINZ doesn't want to export this as 2193
 
   - id: 50286 
-    temp_fgb: nz-historic-site-points-topo-150k.gdb 
-    featureclass: NZ_Historic_Site_Points__Topo__1_50k_  
+    target_fc: NZ_Historic_Site_Points_Topo_150k  
 
