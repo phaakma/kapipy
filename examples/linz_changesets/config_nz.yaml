@@ -1,15 +1,37 @@
-data_folder: c:/temp/data/nz
+audit_folder: D:/data/kapipy_downloads/data/nz
 
 # No crop, instead process nz wide.
-defaults: {} 
+defaults: 
   #crop_layer_id: 3036
   #crop_feature_id: 10870
+  target_db: D:/data/LINZ/linz_nz.gdb
 
 layers:
   - id: 50772
-    fgb: nz-primary-parcels.gdb
+    temp_fgb: nz-primary-parcels.gdb
     featureclass: NZ_Primary_Parcels
 
   - id: 113764
-    fgb: nz-suburbs-and-localities.gdb
+    temp_fgb: nz-suburbs-and-localities.gdb
     featureclass: NZ_Suburbs_and_Localities
+
+  - id: 105689
+    temp_fgb: nz-addresses.gdb
+    featureclass: NZ_Addresses
+
+  - id: 50787
+    temp_fgb: nz-geodetic-marks.gdb
+    featureclass: NZ_Geodetic_Marks
+
+  - id: 50365
+    temp_fgb: nz-tree-points-topo-150k.gdb
+    featureclass: NZ_Tree_Points__Topo__1_50k_
+
+  - id: 51681
+    temp_fgb: nz-place-names-nzgb.gdb
+    featureclass: NZ_Place_Names__NZGB_
+    out_sr: 4326 #for some reason LINZ doesn't want to export this as 2193
+
+  - id: 50286 
+    temp_fgb: nz-historic-site-points-topo-150k.gdb 
+    featureclass: NZ_Historic_Site_Points__Topo__1_50k_  
