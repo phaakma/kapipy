@@ -1,16 +1,18 @@
 # kapipy changesets example  
 
-This is an example for setting up a very basic workflow to download some LINZ data locally and keep it updated via the changesets. The example script just targets the downloaded file geodatabases, in practice you will likely have another target in mind, such as an enterprise geodatabase. So you will need to update the script to get the data into your final target accordingly. But the example should allow you to download and run immediately for a simple example.    
+This is an example for setting up a basic workflow to download some LINZ data locally and keep it updated via the changesets. The example script takes command line parameters and requires set up of a configuration file. This script assumes use of ArcGIS where the target database is either a file or enterprise geodatabase.     
 
 The changesets.py file has command line arguments:
-- **--file**: a required parameter of a configuration yaml file.  
-- **--export** or **--changeset**: whether to generate a full export or query the changesets.  
+- **--file** / **-f**  a required parameter of a configuration yaml file.  
+- **--export** / **-e** or **--changeset** / **-c**  whether to generate a full export or query the changesets.  
 
 ## Configuration file  
 
-YAML is a form of JSON, often used for configuration files. The layout is structured and easy to follow, and can include comments.  
+YAML is a form of JSON, often used for configuration files. The layout is structured and easy to follow, and can include comments. A small helper function in the script combines the defaults section into each layer section.  
 
-A configuration yaml file for the changesets.py looks like the following.
+It is assumed that the config file is in the same directory as the changesets.py file.  
+
+An example configuration yaml file for the changesets.py looks like the following.
 
 ```yaml
 data_folder: c:/temp/data/tcdc
@@ -18,23 +20,32 @@ data_folder: c:/temp/data/tcdc
 defaults:  
   crop_layer_id: 3036
   crop_feature_id: 10870
+  out_sr: 2193
 
 layers:
   - id: 50772
-    fgb: nz-primary-parcels.gdb
-    featureclass: NZ_Primary_Parcels
+    target_fc: NZ_Primary_Parcels
 
   - id: 51681
-    fgb: nz-place-names-nzgb.gdb
-    featureclass: NZ_Place_Names__NZGB_
+    target_fc: NZ_Place_Names__NZGB_
     out_sr: 4326 #for some reason LINZ API doesn't want to export this as 2193
 ```  
 
 The **data_folder** is a root folder for the logs and downloaded data.  
 The **defaults** are applied to each layer, but can be over-ridden at the layer level if desired.  
-The **layers** is a list, requiring the layer id, the name of the file geodatabase and featureclass that gets downloaded from LINZ.  
+The **layers** is a list, requiring the layer id and the name of the target featureclass.  
 
-Unfortunately, I haven't yet figured out how to obtain via the API what the file geodatabase and feature class names will be, so for now you will need to manually download some data, unzip it and check. The examples above are correct for those layers.  
+The crop feature is a convenience thing from the LINZ API. Alternatively, in the script you could load in a polygon boundary from a local file and use that instead. If there are no defaults, still include the defaults section but set it to an empty dictionary.  
+
+For example:  
+```yaml
+data_folder: c:/temp/data/tcdc
+defaults: {}
+
+layers:
+  - id: 50772
+    target_fc: NZ_Primary_Parcels
+```
 
 ## Keyring  
 
@@ -48,10 +59,18 @@ Otherwise, substitute your own method for storing and loading the API key.
 
 ## Command line examples  
 
-Run the following to export, download and unzip file geodatabases with the data. This needs to be done at least once. Any subsequent run of this will delete and replace with a new full set of data.  
+Run the following to export, download, unzip file geodatabases with the data and copy the data into your target.  
+
+- If the target is a file geodatabase and it does not exist, it will be created.  
+- If the target is an enterprise geodatabase and it does not exist, an error will be raised.  
+- If the target feature classes do not exist, they will be created by the **--export** option.  
+- If the target is an enterprise geodatabase, ensure the credentials for the connection are the appropriate ones to create the feature classes. Otherwise, create the feature classes manually, and ensure the credentials have permissions to delete and add features.  
+- The script will enable editor tracking on the target feature classes if it is not already enabled.
+- On subsequent runs of **--export**, the target feature classes will be truncated and new data fully appended again.  
+- Subsequent runs of **-changeset** will apply the changes only.  
 
 - The yaml file is assumed to be in the same directory as *changesets.py*.  
-- Update the path to the desired python.exe and to *changesets.py* as necessary.  
+- Use the path to the desired python.exe and to *changesets.py* as necessary.  
 
 ```bash
 path/to/python.exe path/to/changesets.py --export --file config_tcdc.yaml
@@ -67,3 +86,13 @@ path/to/python.exe path/to/changesets.py --changeset --file config_tcdc.yaml
 
 You might run the full export manually, and then schedule the changeset.  
 Alternatively, you could also schedule the full export, perhaps just on a longer interval. E.g. changesets once a week, and full every 3 months.  
+
+There is an included PowerShell script that can be used to set up Windows Task Scheduler tasks: *run-changesets.ps1*. 
+
+- In the *run-changesets.ps1* file, update the python path if necessary to point to the appropriate python environment.  
+- Create a new task.  
+- For the action, set the command to ```powershell.exe```  
+- Use the following arguments, substituting the appropriate paths and parameters:  
+```-ExecutionPolicy Bypass -File "D:\data\kapipy_downloads\run-changesets.ps1" -f config_filename.yaml -c```  
+- Set the "start in" directory to be the directory where the *changesets.py* script is.  
+

@@ -282,7 +282,7 @@ class JobResult:
 
             with client.stream("GET", final_url) as r, open(file_path, "wb") as f:
                 r.raise_for_status()
-                for chunk in r.iter_bytes():
+                for chunk in r.iter_bytes(chunk_size=65536):
                     f.write(chunk)
 
         file_size_bytes = os.path.getsize(file_path)

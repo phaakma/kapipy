@@ -11,6 +11,7 @@ Date: August 2025
 from kapipy.gis import GISK
 from kapipy.helpers import apply_changes
 import os
+import psutil
 import shutil
 import logging
 from logging.handlers import RotatingFileHandler
@@ -19,10 +20,11 @@ from pathlib import Path
 import argparse
 import yaml
 import keyring
+import re
 import arcpy
 
-def configure_logging(data_folder):
-    log_folder = os.path.join(data_folder, "logs")
+def configure_logging(audit_folder):
+    log_folder = os.path.join(audit_folder, "logs")
     os.makedirs(log_folder, exist_ok=True)
     log_file = os.path.join(log_folder, "linz.log")
 
@@ -46,6 +48,35 @@ def configure_logging(data_folder):
     return logger
 
 
+def log_machine_stats():
+    cpu_percent = psutil.cpu_percent(interval=1)  # avg over 1 second
+    mem = psutil.virtual_memory()
+    logging.info(
+        f" | CPU {cpu_percent}% | RAM: {mem.percent}% used "
+        f"({mem.used / (1024**3):.2f} GB of {mem.total / (1024**3):.2f} GB)"
+    )
+
+
+def convert_title_to_fc(text):
+    # Replace any non-alphanumeric characters with underscore
+    # This seems to be the Koordinates method for setting the feature class names
+    return re.sub(r'[^0-9A-Za-z]', '_', text)
+
+
+def convert_title_to_fgb(text):
+    # Remove parentheses and commas completely
+    cleaned = re.sub(r"[(),]", "", text)
+    
+    # Convert scale "1:50k" to "150k" by removing colon
+    cleaned = re.sub(r"(\d):(\d+k)", r"\1\2", cleaned)
+    
+    # Replace any remaining non-alphanumeric characters (including spaces) with dash
+    cleaned = re.sub(r"[^0-9a-zA-Z]+", "-", cleaned)
+    
+    # Remove leading/trailing dashes and lowercase
+    return f"{cleaned.strip('-').lower()}.gdb"
+
+
 def buildErrorMessage(e):
     errorMessage = ""
     # Build and show the error message
@@ -62,39 +93,103 @@ def buildErrorMessage(e):
         errorMessage = str(e)
     return errorMessage.strip().replace("\n", " ").replace("\r", "").replace("'", "")[:1000]
 
-def delete_fgb(target_fgb: str):
-    if os.path.exists(target_fgb):
-        logger.info(f"Deleting existing fgb: {target_fgb}")
-        shutil.rmtree(target_fgb)
+def delete_fgb(target_db: str):
+    if os.path.exists(target_db):
+        logger.info(f"Deleting existing fgb: {target_db}")
+        shutil.rmtree(target_db)
 
-def unzip_fgb(file_path: str, data_folder: str):
+def unzip_fgb(file_path: str, audit_folder: str):
     with zipfile.ZipFile(file_path, "r") as zip_ref:
         gdb_files = [f for f in zip_ref.namelist() if ".gdb/" in f]
         for file in gdb_files:
-            zip_ref.extract(file, data_folder)
+            zip_ref.extract(file, audit_folder)
 
-def process_exports(layers: dict, gisk, data_folder: str):
-    fgb_list = []    
+def copy_feature_class(source_fgb, source_fc, target_db, target_fc): 
+
+    # disable writing gp tool to feature class metadata
+    if arcpy.GetLogMetadata():
+        arcpy.SetLogMetadata(False)
+
+    src = os.path.join(source_fgb, source_fc)
+    tgt = os.path.join(target_db, target_fc)
+    if not arcpy.Exists(tgt):
+        desc = arcpy.Describe(src)
+        geometry_type = desc.shapeType
+        spatial_ref = desc.spatialReference
+        arcpy.management.CreateFeatureclass(
+            target_db, 
+            target_fc, 
+            geometry_type=geometry_type,
+            template=src,
+            spatial_reference=spatial_ref
+            ) 
+    if not arcpy.Describe(tgt).editorTrackingEnabled:
+        #editor tracking is optional but useful for future troubleshooting 
+        arcpy.management.EnableEditorTracking(
+            in_dataset=tgt,
+            creator_field="created_user",
+            creation_date_field="created_date",
+            last_editor_field="last_edited_user",
+            last_edit_date_field="last_edited_date",
+            add_fields="ADD_FIELDS",
+            record_dates_in="UTC"
+        )
+        logger.info(f"Editor tracking enabled on: {tgt}")
+    
+
+    arcpy.management.TruncateTable(tgt)
+    # This append copies fields that match and ignores those that don't
+    arcpy.management.Append(src, tgt, schema_type="NO_TEST")
+
+
+
+def target_db_exists(target_db):
+    # ensure target geodatabase exists.
+    # If it's a file geodatabase and doesn't exist, create it.
+    # If it's an enterprise geodatabase and doesn't exist, throw an error.
+
+    logger.debug(f"Checking existance of: {target_db}")
+    if arcpy.Exists(target_db):
+        return True
+    elif target_db.split('.').pop().lower() == "gdb":
+        t = Path(target_db)
+        out_folder_path = str(t.parent)
+        out_name = t.stem
+        t.parent.mkdir(parents=True, exist_ok=True)
+        arcpy.management.CreateFileGDB(out_folder_path, out_name)
+        logger.info(f"Target file geodatabase created.")
+        return True
+    elif target_db.split('.').pop().lower() == "sde":
+        logger.error(f'Target enterprise geodatabase does not exist: {target_db}')
+    else:
+         logger.error(f'Invalid target geodatabase: {target_db}')
+    return False 
+
+
+def process_exports(layers: dict, gisk, audit_folder: str):
+ 
     for layer in layers:
-        crop_feature_url = None 
-        crop_feature_sdf = None                     
+        log_machine_stats()
+        # If the target doesn't exist, no point in processing this layer any further.
+        target_db = os.path.join(audit_folder, layer.get("target_db"))
+        if not target_db_exists(target_db):
+            logger.error(f"Skipping layer {layer.get('id')}")
+            continue
+
+        crop_feature_url = None                    
         crop_layer_id = layer.get("crop_layer_id")
         crop_feature_id = layer.get("crop_feature_id")
         if crop_layer_id is not None and crop_feature_id is not None:
             crop_feature_item = gisk.content.crop_layers.get(crop_layer_id).get(crop_feature_id)
-            crop_feature = crop_feature_item.get()
             crop_feature_url = crop_feature_item.url
-            crop_feature_sdf = crop_feature.sdf
 
         itm = gisk.content.get(layer.get("id"))
         logger.info(f"Processing layer: {itm.id=}, {itm.title=}")
-        id_field = itm.data.primary_key_fields[0]
-        target_fgb = os.path.join(data_folder, layer.get("fgb"))
-        fgb_list.append(target_fgb)
-        target_fc = os.path.join(target_fgb, layer.get("featureclass"))
+        layer["source_fc"] = convert_title_to_fc(itm.title)
+        layer["temp_fgb"] = convert_title_to_fgb(itm.title)
         out_sr = layer.get("out_sr", 2193)
-
-        delete_fgb(target_fgb)
+        logger.info(layer.get("temp_fgb"))
+        delete_fgb(layer.get("temp_fgb"))
         #This initiates the export request from LINZ
         itm.export(export_format="geodatabase", out_sr=out_sr, extent=crop_feature_url)
 
@@ -102,32 +197,39 @@ def process_exports(layers: dict, gisk, data_folder: str):
     gisk.content.download(poll_interval=30)
 
     for job in gisk.content.jobs:
-        unzip_fgb(file_path=job.download_file_path, data_folder=data_folder)
+        logger.info(f'Unzipping temp file geodatabases')
+        log_machine_stats()
+        unzip_fgb(file_path=job.download_file_path, audit_folder=audit_folder)
         os.remove(job.download_file_path)
 
-    for target_fgb in fgb_list:
-        #editor tracking is optional but useful for future troubleshooting
-        enable_editor_tracking(target_fgb)
-
-
-def process_changesets(layers: dict, gisk, data_folder: str):
+    # copy everything to final target database  
     for layer in layers:
+        logger.info(f'Copying data to target database')
+        log_machine_stats()
+        temp_fgb = os.path.join(audit_folder, layer.get("temp_fgb"))               
+        target_db = os.path.join(audit_folder, layer.get("target_db"))
+        source_fc = layer.get("source_fc")
+        target_fc = layer.get("target_fc")
+        copy_feature_class(temp_fgb, source_fc, target_db, target_fc)        
+
+
+def process_changesets(layers: dict, gisk, audit_folder: str):
+    for layer in layers:
+        log_machine_stats()
         try:
-            crop_feature_url = None 
             crop_feature_sdf = None                     
             crop_layer_id = layer.get("crop_layer_id")
             crop_feature_id = layer.get("crop_feature_id")
             if crop_layer_id is not None and crop_feature_id is not None:
                 crop_feature_item = gisk.content.crop_layers.get(crop_layer_id).get(crop_feature_id)
                 crop_feature = crop_feature_item.get()
-                crop_feature_url = crop_feature_item.url
                 crop_feature_sdf = crop_feature.sdf
 
             itm = gisk.content.get(layer.get("id"))
             logger.info(f"Processing layer: {itm.id=}, {itm.title=}")
             id_field = itm.data.primary_key_fields[0]
-            target_fgb = os.path.join(data_folder, layer.get("fgb"))
-            target_fc = os.path.join(target_fgb, layer.get("featureclass"))
+            target_db = os.path.join(audit_folder, layer.get("target_db"))
+            target_fc = os.path.join(target_db, layer.get("target_fc"))
             out_sr = layer.get("out_sr", 2193)
 
             changes_sdf = get_changeset(itm, crop_feature_sdf, out_sr=out_sr, gisk=gisk)
@@ -138,20 +240,6 @@ def process_changesets(layers: dict, gisk, data_folder: str):
         except Exception as e:
             err = buildErrorMessage(e)
             logger.error(err, exc_info=True)
-
-def enable_editor_tracking(fgb):
-    arcpy.env.workspace = fgb
-    for fc in arcpy.ListFeatureClasses():        
-        arcpy.management.EnableEditorTracking(
-            in_dataset=fc,
-            creator_field="created_user",
-            creation_date_field="created_date",
-            last_editor_field="last_edited_user",
-            last_edit_date_field="last_edited_date",
-            add_fields="ADD_FIELDS",
-            record_dates_in="UTC"
-        )
-        logger.info(f"Editor tracking enabled on: {fc}")
 
 def get_changeset(itm, crop_sdf, out_sr, gisk):
     last_download_record = gisk.audit.get_latest_request_for_item(
@@ -187,7 +275,7 @@ def configure_layers(config):
         layers.append(layer)
     return layers
 
-def main(args):
+def main(args):    
     
     script_dir = Path(__file__).parent.resolve()
     config_path = script_dir / args.file
@@ -195,22 +283,22 @@ def main(args):
     with open(config_path) as f:
         config = yaml.safe_load(f)
     
-    data_folder = config["data_folder"]
+    audit_folder = config["audit_folder"]
     global logger # global so we can use it all through the script
-    logger = configure_logging(data_folder)
+    logger = configure_logging(audit_folder)
     layers = configure_layers(config) 
 
     # Connect to LINZ
     # assumes api key previously stored using keyring
     linz_api_key = keyring.get_password("kapipy", "linz")
     linz = GISK(name="linz", api_key=linz_api_key)
-    linz.audit.enable_auditing(folder=data_folder)
-    linz.content.download_folder = data_folder
+    linz.audit.enable_auditing(folder=audit_folder)
+    linz.content.download_folder = audit_folder
 
     if args.export:
-        process_exports(layers=layers, gisk=linz, data_folder=data_folder)
+        process_exports(layers=layers, gisk=linz, audit_folder=audit_folder)
     elif args.changeset:
-        process_changesets(layers=layers, gisk=linz, data_folder=data_folder)
+        process_changesets(layers=layers, gisk=linz, audit_folder=audit_folder)
     
     logger.info(f"Finished processing all layers")
 
