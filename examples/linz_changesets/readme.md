@@ -15,12 +15,13 @@ It is assumed that the config file is in the same directory as the changesets.py
 An example configuration yaml file for the changesets.py looks like the following.
 
 ```yaml
-data_folder: c:/temp/data/tcdc
+audit_folder: d:/audit/tcdc
 
 defaults:  
   crop_layer_id: 3036
   crop_feature_id: 10870
   out_sr: 2193
+  target_db: D:/data/LINZ/linz_tcdc.gdb
 
 layers:
   - id: 50772
@@ -31,21 +32,12 @@ layers:
     out_sr: 4326 #for some reason LINZ API doesn't want to export this as 2193
 ```  
 
-The **data_folder** is a root folder for the logs and downloaded data.  
+The **audit_folder** is a root folder for the logs and a temporary location for downloaded data.  
 The **defaults** are applied to each layer, but can be over-ridden at the layer level if desired.  
 The **layers** is a list, requiring the layer id and the name of the target featureclass.  
+The **target_db** is either a file geodatabase or sde connection file for an enterprise geodatabase. The target feature classes for each layer will end up in this database.  
 
-The crop feature is a convenience thing from the LINZ API. Alternatively, in the script you could load in a polygon boundary from a local file and use that instead. If there are no defaults, still include the defaults section but set it to an empty dictionary.  
-
-For example:  
-```yaml
-data_folder: c:/temp/data/tcdc
-defaults: {}
-
-layers:
-  - id: 50772
-    target_fc: NZ_Primary_Parcels
-```
+The crop feature is a convenience thing from the LINZ API, where the ids in this example correspond to the district boundary for Thames-Coromandel District Council. Alternatively, in the script you could load in a polygon boundary from a local file and use that instead.   
 
 ## Keyring  
 
@@ -67,10 +59,9 @@ Run the following to export, download, unzip file geodatabases with the data and
 - If the target is an enterprise geodatabase, ensure the credentials for the connection are the appropriate ones to create the feature classes. Otherwise, create the feature classes manually, and ensure the credentials have permissions to delete and add features.  
 - The script will enable editor tracking on the target feature classes if it is not already enabled.
 - On subsequent runs of **--export**, the target feature classes will be truncated and new data fully appended again.  
-- Subsequent runs of **-changeset** will apply the changes only.  
-
+- Subsequent runs of **--changeset** will apply the changes only.  
 - The yaml file is assumed to be in the same directory as *changesets.py*.  
-- Use the path to the desired python.exe and to *changesets.py* as necessary.  
+- Update the path to the desired python.exe and to *changesets.py* as specific to your environment.  
 
 ```bash
 path/to/python.exe path/to/changesets.py --export --file config_tcdc.yaml
@@ -84,15 +75,15 @@ path/to/python.exe path/to/changesets.py --changeset --file config_tcdc.yaml
 
 ## Scheduling  
 
-You might run the full export manually, and then schedule the changeset.  
+Typically, you would run the full export manually, and then schedule the changeset to run after that.  
 Alternatively, you could also schedule the full export, perhaps just on a longer interval. E.g. changesets once a week, and full every 3 months.  
 
-There is an included PowerShell script that can be used to set up Windows Task Scheduler tasks: *run-changesets.ps1*. 
+There is an included PowerShell script that can be used to set up Windows Task Scheduler tasks: **run-changesets.ps1**. 
 
-- In the *run-changesets.ps1* file, update the python path if necessary to point to the appropriate python environment.  
+- In the **run-changesets.ps1** file, update the python path if necessary to point to the appropriate python environment.  
 - Create a new task.  
 - For the action, set the command to ```powershell.exe```  
 - Use the following arguments, substituting the appropriate paths and parameters:  
 ```-ExecutionPolicy Bypass -File "D:\data\kapipy_downloads\run-changesets.ps1" -f config_filename.yaml -c```  
-- Set the "start in" directory to be the directory where the *changesets.py* script is.  
+- Set the **start in** directory to be the directory where the **changesets.py** script is.  
 
