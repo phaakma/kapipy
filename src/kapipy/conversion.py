@@ -3,9 +3,8 @@ import json
 import re
 from dateutil.parser import parse as date_parse
 from dataclasses import asdict
-from shapely.geometry import shape
+from shapely.geometry import shape, box, mapping
 from shapely.ops import unary_union
-from shapely.geometry import mapping
 from typing import Any, TYPE_CHECKING, Union
 import logging
 from .gis import has_geopandas, has_arcgis, has_arcpy
@@ -397,6 +396,45 @@ def gdf_to_single_polygon_geojson(
     gdf_single = gpd.GeoDataFrame(geometry=[single_geometry], crs=gdf.crs)
     geojson_str = gdf_single.to_json(to_wgs84=True)
     return json.loads(geojson_str)['features'][0]['geometry']
+
+
+def gdf_to_single_extent_geojson(
+    gdf: "gpd.GeoDataFrame",
+) -> dict[str, Any] | None:
+    if gdf.empty:
+        raise ValueError("GeoDataFrame must contain at least one geometry.")
+
+    # Ensure CRS is EPSG:4326
+    if gdf.crs is None:
+        gdf.set_crs(epsg=4326, inplace=True)
+    elif gdf.crs.to_epsg() != 4326:
+        gdf = gdf.to_crs(epsg=4326)
+
+    # Union all geometries into a single geometry
+    single_geometry = gdf.union_all()
+    if single_geometry.is_empty:
+        raise ValueError("Resulting geometry is empty after union.")
+
+    # Get bounding box coordinates
+    minx, miny, maxx, maxy = single_geometry.bounds
+
+    # Check if extent is valid (non-zero area)
+    if minx == maxx or miny == maxy:
+        raise ValueError("Geometry does not have a valid extent (zero width or height).")
+
+    # Create bounding box polygon
+    bbox_polygon = box(minx, miny, maxx, maxy)
+    
+    if not has_geopandas:
+        raise ImportError("geopandas is not installed.")
+    import geopandas as gpd
+    # Convert to GeoDataFrame
+    gdf_bbox = gpd.GeoDataFrame(geometry=[bbox_polygon], crs=gdf.crs)
+
+    # Convert to GeoJSON geometry
+    geojson_str = gdf_bbox.to_json()
+    return json.loads(geojson_str)['features'][0]['geometry']
+
 
 def get_data_type(obj: Any) -> str:
     """
