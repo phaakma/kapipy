@@ -40,10 +40,12 @@ class VectorItem(BaseItem):
         Parameters:
             cql_filter (str, optional): The CQL filter to apply to the query.
             out_sr (int, optional): The spatial reference system code to use for the query.
-            out_fields (str, list of strings, optional): Attribute fields to include in the response. NOT IMPLEMENTED YET...
+            out_fields (str, list of strings, optional): Attribute fields to include in the response.
             result_record_count (int, optional): Restricts the maximum number of results to return.
             bbox (str or gpd.GeoDataFrame or pd.DataFrame, optional): The bounding box to apply to the query.
                 If a GeoDataFrame or SEDF is provided, it will be converted to a bounding box string in WGS84.
+            bbox_geometry (gdf or sdf): A dataframe that is converted to a bounding box and used to spatially filter the response.  
+            filter_geometry (gdf or sdf): A dataframe that is used to spatially filter the response.  
             **kwargs: Additional parameters for the WFS query.
 
         Returns:
