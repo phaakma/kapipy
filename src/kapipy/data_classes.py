@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Union
 from abc import ABC, abstractmethod
+import re
 from .export import validate_export_params, request_export
 from .job_result import JobResult
 from .conversion import (
@@ -381,6 +382,44 @@ class BaseItem(ABC):
         """
 
         return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
+
+
+    @property
+    def feature_class_name(self) -> str:
+        """
+        Return the feature class name that would be used in an export to file geodatabase request.
+        
+        Replace any non-alphanumeric characters with underscore
+        This seems to be the Koordinates method for setting the feature class names
+
+        NOTE: This logic is observed from running exports only and does not appear to be documented
+        anywhere by Koordinates.  
+        """
+
+        return re.sub(r'[^0-9A-Za-z]', '_', self.title)
+
+    @property 
+    def fgb_name(self) -> str:
+        """
+        Return the file geodatabase name that would be used in an export to file geodatabase request.
+
+        NOTE: This logic is observed from running exports only and does not appear to be documented
+        anywhere by Koordinates.
+
+        """
+
+        # Remove parentheses and commas completely
+        cleaned = re.sub(r"[(),]", "", self.title)
+        
+        # Convert scale "1:50k" to "150k" by removing colon
+        cleaned = re.sub(r"(\d):(\d+k)", r"\1\2", cleaned)
+        
+        # Replace any remaining non-alphanumeric characters (including spaces) with dash
+        cleaned = re.sub(r"[^0-9a-zA-Z]+", "-", cleaned)
+        
+        # Remove leading/trailing dashes and lowercase
+        return f"{cleaned.strip('-').lower()}.gdb"
+
 
     @property
     def supports_changesets(self) -> bool:
