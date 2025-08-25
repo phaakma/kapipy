@@ -16,8 +16,6 @@ This means you need to manually install one of either **geopandas** or **arcgis*
 ### Jupyter Notebooks  
 If you are starting with a clean Python environment and want to use Jupyter Notebooks (e.g. inside Visual Studio Code), then manually install these packages:  
 - ipykernel  
-- ptyprocess  
-- comm  
 
 ## Connecting to the various open data portals  
 
@@ -69,7 +67,13 @@ Get first 5 records.
 
 ```python
 data = itm.query(result_record_count=5, out_sr=2193)
-```
+```  
+
+Use a CQL Filter query to filter by attribute information  
+```python
+data = itm.query(cql_filter="name='Matamata Station'", out_sr=2193)
+```  
+
 
 Data is returned as a WFSResponse object. This has four attributes that can be used to access the data:  
 - **.json**: this provides the raw json response returned from the WFS service.  
