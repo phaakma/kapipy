@@ -9,6 +9,7 @@ from .conversion import (
     sdf_to_single_polygon_geojson,
     gdf_to_single_polygon_geojson,
     arcgis_polygon_to_geojson,
+    gdf_to_single_extent_geojson,
 )
 
 logger = logging.getLogger(__name__)
@@ -426,6 +427,7 @@ class BaseItem(ABC):
         self,
         export_format: str,
         out_sr: int = None,
+        bbox_geometry: Union["gpd.GeoDataFrame", "pd.DataFrame"] = None,
         filter_geometry: Optional[
             Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"]
         ] = None,
@@ -455,17 +457,39 @@ class BaseItem(ABC):
 
         crs = None
         if self.kind in ["vector"]:
+            if bbox_geometry is not None and filter_geometry is not None:
+                raise ValueError(
+                    f"Cannot process both a bbox_geometry and filter_geometry together."
+                )
+
             out_sr = out_sr if out_sr is not None else self.data.crs.srid
             crs = f"EPSG:{out_sr}"
-            data_type = get_data_type(filter_geometry)
-            if data_type == "unknown":
-                filter_geometry = None
-            elif data_type == "sdf":
-                filter_geometry = sdf_to_single_polygon_geojson(filter_geometry)
-            elif data_type == "gdf":
-                filter_geometry = gdf_to_single_polygon_geojson(filter_geometry)
-            elif data_type == "ARCGIS_POLYGON":
-                filter_geometry = arcgis_polygon_to_geojson(filter_geometry)
+
+            ## Since a bbox_geometry ends up as a Polygon with four points anyway, we can just convert  
+            ## the bbox_geometry to the necessary format and assign to the filter_geometry variable
+            ## and it will get processed exactly the same.  
+
+            if bbox_geometry is not None:
+                data_type = get_data_type(bbox_geometry)
+                if data_type == "unknown":
+                    filter_geometry = None              
+                elif data_type == "sdf":
+                    filter_geometry = arcgis_polygon_to_geojson(bbox_geometry.spatial.bbox)
+                elif data_type == "gdf":
+                    filter_geometry = gdf_to_single_extent_geojson(bbox_geometry)
+                elif data_type == "ARCGIS_POLYGON":
+                    filter_geometry = arcgis_polygon_to_geojson(bbox_geometry)
+
+            elif filter_geometry is not None:
+                data_type = get_data_type(filter_geometry)
+                if data_type == "unknown":
+                    filter_geometry = None
+                elif data_type == "sdf":
+                    filter_geometry = sdf_to_single_polygon_geojson(filter_geometry)
+                elif data_type == "gdf":
+                    filter_geometry = gdf_to_single_polygon_geojson(filter_geometry)
+                elif data_type == "ARCGIS_POLYGON":
+                    filter_geometry = arcgis_polygon_to_geojson(filter_geometry)
 
         export_format = self._resolve_export_format(export_format)
 
