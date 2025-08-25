@@ -234,7 +234,7 @@ def process_changesets(layers: dict, gisk, audit_folder: str):
 
             changes_sdf = get_changeset(itm, crop_feature_sdf, out_sr=out_sr, gisk=gisk)
             if changes_sdf is None:
-                raise Exception(f"A problem occured fetching changes.")
+                raise Exception(f"A problem occurred fetching changes.")
             apply_changes(changes_sdf, target_fc, id_field=id_field)
 
         except Exception as e:

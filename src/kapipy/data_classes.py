@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Union
 from abc import ABC, abstractmethod
+import re
 from .export import validate_export_params, request_export
 from .job_result import JobResult
 from .conversion import (
@@ -9,6 +10,7 @@ from .conversion import (
     sdf_to_single_polygon_geojson,
     gdf_to_single_polygon_geojson,
     arcgis_polygon_to_geojson,
+    gdf_to_single_extent_geojson,
 )
 
 logger = logging.getLogger(__name__)
@@ -381,6 +383,44 @@ class BaseItem(ABC):
 
         return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
 
+
+    @property
+    def feature_class_name(self) -> str:
+        """
+        Return the feature class name that would be used in an export to file geodatabase request.
+        
+        Replace any non-alphanumeric characters with underscore
+        This seems to be the Koordinates method for setting the feature class names
+
+        NOTE: This logic is observed from running exports only and does not appear to be documented
+        anywhere by Koordinates.  
+        """
+
+        return re.sub(r'[^0-9A-Za-z]', '_', self.title)
+
+    @property 
+    def fgb_name(self) -> str:
+        """
+        Return the file geodatabase name that would be used in an export to file geodatabase request.
+
+        NOTE: This logic is observed from running exports only and does not appear to be documented
+        anywhere by Koordinates.
+
+        """
+
+        # Remove parentheses and commas completely
+        cleaned = re.sub(r"[(),]", "", self.title)
+        
+        # Convert scale "1:50k" to "150k" by removing colon
+        cleaned = re.sub(r"(\d):(\d+k)", r"\1\2", cleaned)
+        
+        # Replace any remaining non-alphanumeric characters (including spaces) with dash
+        cleaned = re.sub(r"[^0-9a-zA-Z]+", "-", cleaned)
+        
+        # Remove leading/trailing dashes and lowercase
+        return f"{cleaned.strip('-').lower()}.gdb"
+
+
     @property
     def supports_changesets(self) -> bool:
         """
@@ -426,6 +466,7 @@ class BaseItem(ABC):
         self,
         export_format: str,
         out_sr: int = None,
+        bbox_geometry: Union["gpd.GeoDataFrame", "pd.DataFrame"] = None,
         filter_geometry: Optional[
             Union[dict, "gpd.GeoDataFrame", "pd.DataFrame"]
         ] = None,
@@ -455,17 +496,39 @@ class BaseItem(ABC):
 
         crs = None
         if self.kind in ["vector"]:
+            if bbox_geometry is not None and filter_geometry is not None:
+                raise ValueError(
+                    f"Cannot process both a bbox_geometry and filter_geometry together."
+                )
+
             out_sr = out_sr if out_sr is not None else self.data.crs.srid
             crs = f"EPSG:{out_sr}"
-            data_type = get_data_type(filter_geometry)
-            if data_type == "unknown":
-                filter_geometry = None
-            elif data_type == "sdf":
-                filter_geometry = sdf_to_single_polygon_geojson(filter_geometry)
-            elif data_type == "gdf":
-                filter_geometry = gdf_to_single_polygon_geojson(filter_geometry)
-            elif data_type == "ARCGIS_POLYGON":
-                filter_geometry = arcgis_polygon_to_geojson(filter_geometry)
+
+            ## Since a bbox_geometry ends up as a Polygon with four points anyway, we can just convert  
+            ## the bbox_geometry to the necessary format and assign to the filter_geometry variable
+            ## and it will get processed exactly the same.  
+
+            if bbox_geometry is not None:
+                data_type = get_data_type(bbox_geometry)
+                if data_type == "unknown":
+                    filter_geometry = None              
+                elif data_type == "sdf":
+                    filter_geometry = arcgis_polygon_to_geojson(bbox_geometry.spatial.bbox)
+                elif data_type == "gdf":
+                    filter_geometry = gdf_to_single_extent_geojson(bbox_geometry)
+                elif data_type == "ARCGIS_POLYGON":
+                    filter_geometry = arcgis_polygon_to_geojson(bbox_geometry)
+
+            elif filter_geometry is not None:
+                data_type = get_data_type(filter_geometry)
+                if data_type == "unknown":
+                    filter_geometry = None
+                elif data_type == "sdf":
+                    filter_geometry = sdf_to_single_polygon_geojson(filter_geometry)
+                elif data_type == "gdf":
+                    filter_geometry = gdf_to_single_polygon_geojson(filter_geometry)
+                elif data_type == "ARCGIS_POLYGON":
+                    filter_geometry = arcgis_polygon_to_geojson(filter_geometry)
 
         export_format = self._resolve_export_format(export_format)
 
