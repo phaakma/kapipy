@@ -906,6 +906,7 @@
 <p>If you are starting with a clean Python environment and want to use Jupyter Notebooks (e.g. inside Visual Studio Code), then manually install these packages:<br />
 - ipykernel  </p>
 <h2 id="connecting-to-the-various-open-data-portals">Connecting to the various open data portals<a class="headerlink" href="#connecting-to-the-various-open-data-portals" title="Permanent link">&para;</a></h2>
+<p>Import the GISK class and then create a connection.  </p>
 <p>LINZ, Stats NZ and LRIS have built in names for convenience. Alternatively, pass in the base URL.  </p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GISK</span>
 
@@ -915,9 +916,7 @@
 </code></pre></div>
 
 <p>Passing in a base url:  </p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GIS</span>
-
-<span class="n">linz</span> <span class="o">=</span> <span class="n">GISK</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://data.linz.govt.nz/&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="n">linz</span> <span class="o">=</span> <span class="n">GISK</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://data.linz.govt.nz/&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-linz-api-key&quot;</span><span class="p">)</span>
 </code></pre></div>
 
 <h2 id="get-a-reference-to-an-item">Get a reference to an item<a class="headerlink" href="#get-a-reference-to-an-item" title="Permanent link">&para;</a></h2>
