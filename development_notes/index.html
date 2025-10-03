@@ -754,7 +754,7 @@ uv<span class="w"> </span>publish<span class="w"> </span>--index<span class="w">
 
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <p>Documentation uses MkDocs to generate and publish documentation website using Github Pages.  </p>
-<p>Locally, run <code>mkdocs build</code>  then <code>mkdocs gh-deploy --clean</code>  </p>
+<p>Locally, run <code>uv mkdocs build</code>  then <code>uv mkdocs gh-deploy --clean</code>  </p>
 <p>This could probably be set up as a Github action. If the gh-deploy was run from a Github workflow, need to figure out a way to use secrets.GITHUB_TOKEN. Or does it need authentication at all? Maybe it just works from there?    </p>
 <h2 id="enhancements">Enhancements<a class="headerlink" href="#enhancements" title="Permanent link">&para;</a></h2>
 <p>Should there be a max days for the changesets? Or would that be up to the user to enforce? I'm leaning towards that being up to the user.  </p>
