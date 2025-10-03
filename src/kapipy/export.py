@@ -1,4 +1,10 @@
 # export.py
+"""
+Functions for validating and requesting exports from the Koordinates API.
+
+Includes parameter validation and export job submission with error handling.
+"""
+
 import httpx
 import os
 import json

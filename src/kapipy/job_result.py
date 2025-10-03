@@ -41,9 +41,20 @@ class DownloadResult:
     completed_at: float
     checksum: str | None = None
 
+    def __repr__(self):
+        return (
+            f"DownloadResult(folder={self.folder!r}, filename={self.filename!r}, "
+            f"file_path={self.file_path!r}, file_size_bytes={self.file_size_bytes!r}, "
+            f"download_url={self.download_url!r}, final_url={self.final_url!r}, "
+            f"job_id={self.job_id!r}, completed_at={self.completed_at!r}, checksum={self.checksum!r})"
+        )
+
     def __str__(self):
         """
-        Return a user friendly string of the DownloadResult
+        Returns a user-friendly string representation of the DownloadResult.
+
+        Returns:
+            str: User-friendly string representation.
         """
 
         return f"DownloadResult: job id: {self.job_id}, file path: {self.file_path}"
@@ -60,6 +71,9 @@ class JobStatus:
 
     state: str
     progress: float
+
+    def __repr__(self):
+        return f"JobStatus(state={self.state!r}, progress={self.progress!r})"
 
 class JobResult:
     """
@@ -103,6 +117,9 @@ class JobResult:
             session (SessionManager): The GISK SessionManager.
             poll_interval (int, optional): Interval in seconds to poll the job status. Default is 10.
             timeout (int, optional): Maximum time in seconds to wait for the job to complete. Default is 1800 (30 min).
+
+        Returns:
+            None
         """
 
         self._initial_payload = payload
@@ -204,7 +221,7 @@ class JobResult:
 
     def _refresh_sync(self) -> None:
         """
-        Refreshes the job status using synchronous HTTP via the GISK instance.
+        Refreshes the job status by making a synchronous HTTP request via the session manager.
 
         Returns:
             None
@@ -314,4 +331,10 @@ class JobResult:
             job_id=self._id,
             completed_at=completed_at,
             checksum=checksum,
+        )
+
+    def __repr__(self):
+        return (
+            f"JobResult(id={self.id!r}, name={self.name!r}, state={self.state!r}, "
+            f"progress={self.progress!r}, downloaded={self.downloaded!r})"
         )

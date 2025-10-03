@@ -35,22 +35,20 @@ class AuditManager:
         self.retain_data = retain_data
         self.__create_database()
 
-    def disable_auditing(self):
+    def disable_auditing(self) -> None:
         """
-        Disable auditing.
+        Disables auditing by setting the enabled flag to False.
+
+        Returns:
+            None
         """
         self.enabled = False
 
-    def __create_database(self):
+    def __create_database(self) -> None:
         """
         Creates the SQLite database and the audit table if they do not already exist.
 
-        Uses:
-            self.db_name: Name of the database file.
-            self.filepath: Directory where the database file is stored.
-            self.requests_table_name: Name of the audit table.
-
-        The audit table should have the following fields:
+        The audit table has the following fields:
             - id (INTEGER PRIMARY KEY AUTOINCREMENT)
             - item_id (INTEGER)
             - item_kind (TEXT)
@@ -61,9 +59,12 @@ class AuditManager:
             - request_time (TEXT)
             - request_headers (TEXT)
             - request_params (TEXT)
-            - total_features (TEXT)
+            - total_features (INTEGER)
 
-        Creates an index on item_id and request_time.
+        Also creates indexes on item_id and request_time.
+
+        Returns:
+            None
         """
         db_path = os.path.join(self.folder, self.db_name)
         os.makedirs(self.folder, exist_ok=True)
@@ -288,7 +289,10 @@ class AuditManager:
         Returns:
             str: String representation of the AuditManager.
         """
-        return f"AuditManager()"
+        return (
+            f"AuditManager(enabled={self.enabled!r}, folder={self.folder!r}, "
+            f"db_name={self.db_name!r}, requests_table_name={self.requests_table_name!r})"
+        )
 
     def __str__(self) -> str:
         """
@@ -297,6 +301,7 @@ class AuditManager:
         Returns:
             str: User-friendly string representation.
         """
-        if self.enabled:
-            return f"AuditManager, enabled, {self.folder}, {self.db_name}"
-        return f"AuditManager"
+        status = "enabled" if self.enabled else "disabled"
+        return (
+            f"AuditManager ({status}) - folder: {self.folder}, db: {self.db_name}, table: {self.requests_table_name}"
+        )

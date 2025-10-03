@@ -13,6 +13,11 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class TableItem(BaseItem):
+    """
+    Represents a table item in the GISK content system.
+
+    Inherits from BaseItem and provides methods for querying and retrieving changesets via WFS.
+    """
 
     def query(self, cql_filter: str = None, **kwargs: Any) -> dict:
         """
@@ -106,9 +111,16 @@ class TableItem(BaseItem):
 
         return WFSResponse(query_details.get("response", {}), self)
 
-    def __str__(self) -> None:
-        """
-        User friendly string of a base item.
-        """
+    def __repr__(self) -> str:
+        return (
+            f"TableItem(id={self.id!r}, type_={self.type_!r}, title={self.title!r}, kind={self.kind!r})"
+        )
 
+    def __str__(self) -> str:
+        """
+        Returns a user-friendly string representation of the table item.
+
+        Returns:
+            str: A string describing the table item.
+        """
         return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"

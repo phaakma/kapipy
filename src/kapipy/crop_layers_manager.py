@@ -37,6 +37,12 @@ class CropFeature:
 
     @property
     def geojson(self):
+        """
+        Returns the GeoJSON representation of the crop feature.
+
+        Returns:
+            dict: The GeoJSON object with properties and geometry.
+        """
         return {
             "properties": {
                 "id": self.id,
@@ -103,6 +109,9 @@ class CropFeature:
     def __repr__(self):
         return f"<CropFeature id={self.id} name={self.name} url={self.url}>"
 
+    def __str__(self):
+        return f"CropFeature: {self.name} (id={self.id})"
+
 @dataclass
 class CropFeaturesManager:
     """
@@ -134,7 +143,10 @@ class CropFeaturesManager:
 
     def get(self):
         """
-        Get a crop feature by id.
+        Get a crop feature by id from the API.
+
+        Returns:
+            CropFeature: The crop feature instance.
         """
         data = self._session.get(self.url)
         return from_dict(data_class=CropFeature, data=data)
@@ -175,10 +187,19 @@ class CropFeaturesManager:
         self._fetch_features()
 
     def __iter__(self):
+        """
+        Returns an iterator over all crop features.
+
+        Returns:
+            Iterator[CropFeature]: An iterator over crop features.
+        """
         return iter(self.all())
 
     def __repr__(self):
         return f"<CropFeaturesManager id={self.id} name={self.name} url={self.url}>"
+
+    def __str__(self):
+        return f"CropFeaturesManager for {self.name} (id={self.id})"
 
 @dataclass
 class CropLayer:
@@ -197,6 +218,9 @@ class CropLayer:
         self._features = None
 
     def _fetch_features(self):
+        """
+        Fetches crop features for this crop layer from the API and caches them.
+        """
         data = self._session.get(self.features)
 
         logger.debug(data)
@@ -268,7 +292,19 @@ class CropLayer:
         self._fetch_features()
 
     def __iter__(self):
+        """
+        Returns an iterator over all crop features for this crop layer.
+
+        Returns:
+            Iterator[CropFeaturesManager]: An iterator over crop feature managers.
+        """
         return iter(self.all())
+
+    def __repr__(self):
+        return f"<CropLayer id={self.id} name={self.name} url={self.url}>"
+
+    def __str__(self):
+        return f"CropLayer: {self.name} (id={self.id})"
 
 class CropLayersManager:
     """
@@ -282,6 +318,9 @@ class CropLayersManager:
         self._layers = None
 
     def _fetch_layers(self):
+        """
+        Fetches all crop layers from the API and caches them.
+        """
         data = self._session.get(self.base_url)
         for d in data:
             d["_session"] = self._session
@@ -344,7 +383,16 @@ class CropLayersManager:
         self._fetch_layers()
 
     def __iter__(self):
+        """
+        Returns an iterator over all crop layers.
+
+        Returns:
+            Iterator[CropLayer]: An iterator over crop layers.
+        """
         return iter(self.all())
 
     def __repr__(self):
         return f"<CropLayersManager url={self.base_url!r} count={len(self.all()) if self._layers else 0}>"
+
+    def __str__(self):
+        return f"CropLayersManager with {len(self.all()) if self._layers else 0} layers"

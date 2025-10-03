@@ -20,6 +20,11 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class VectorItem(BaseItem):
+    """
+    Represents a vector item in the GISK content system.
+
+    Inherits from BaseItem and provides methods for querying and retrieving changesets via WFS.
+    """
     data: VectorItemData
 
     def query(
@@ -266,9 +271,24 @@ class VectorItem(BaseItem):
         return WFSResponse(query_details.get("response", {}), self, out_sr)
 
 
-    def __str__(self) -> None:
+    def __str__(self) -> str:
         """
-        User friendly string of a base item.
+        Returns a user-friendly string representation of the vector item.
+
+        Returns:
+            str: A string describing the vector item.
         """
 
         return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
+
+    def __repr__(self) -> str:
+        """
+        Returns an unambiguous string representation of the VectorItem.
+
+        Returns:
+            str: Detailed string representation of the VectorItem.
+        """
+        return (
+            f"VectorItem(id={self.id!r}, type_={self.type_!r}, title={self.title!r}, "
+            f"kind={self.kind!r}, data={self.data!r})"
+        )
