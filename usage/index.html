@@ -904,9 +904,7 @@
 - pyshp  </p>
 <h3 id="jupyter-notebooks">Jupyter Notebooks<a class="headerlink" href="#jupyter-notebooks" title="Permanent link">&para;</a></h3>
 <p>If you are starting with a clean Python environment and want to use Jupyter Notebooks (e.g. inside Visual Studio Code), then manually install these packages:<br />
-- ipykernel<br />
-- ptyprocess<br />
-- comm  </p>
+- ipykernel  </p>
 <h2 id="connecting-to-the-various-open-data-portals">Connecting to the various open data portals<a class="headerlink" href="#connecting-to-the-various-open-data-portals" title="Permanent link">&para;</a></h2>
 <p>LINZ, Stats NZ and LRIS have built in names for convenience. Alternatively, pass in the base URL.  </p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">kapipy.gis</span><span class="w"> </span><span class="kn">import</span> <span class="n">GISK</span>
@@ -946,6 +944,10 @@
 
 <p>Get first 5 records.  </p>
 <div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">result_record_count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Use a CQL Filter query to filter by attribute information  </p>
+<div class="codehilite"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">itm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">cql_filter</span><span class="o">=</span><span class="s2">&quot;name=&#39;Matamata Station&#39;&quot;</span><span class="p">,</span> <span class="n">out_sr</span><span class="o">=</span><span class="mi">2193</span><span class="p">)</span>
 </code></pre></div>
 
 <p>Data is returned as a WFSResponse object. This has four attributes that can be used to access the data:<br />
