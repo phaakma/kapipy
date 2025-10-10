@@ -110,7 +110,7 @@ def geojson_to_featureset(
     # validate that any date fields can be parsed
     # If any value is not parseable, set the field type to string
     for field in fields:        
-        if field.type_.lower() == "date":
+        if field.type.lower() == "date":
             for feature in features:
                 val = feature.get("properties", {}).get(field.name)
                 if not is_valid_date(val):
@@ -118,14 +118,14 @@ def geojson_to_featureset(
                     logger.debug(
                         f"Data for date field '{field.name}' was unable to be parsed. Overriding field type to string."
                     )
-                    field.type_ = "string"
+                    field.type = "string"
 
                     break  # No need to check further for this field
 
     arcgis_fields = [
-        {**asdict(f), "type": map_field_type(f.type_)}
+        {**asdict(f), "type": map_field_type(f.type)}
         for f in fields
-        if f.type_.lower() != "geometry"  # exclude geometry from field list
+        if f.type.lower() != "geometry"  # exclude geometry from field list
     ]
 
     # Convert features
@@ -284,7 +284,7 @@ def geojson_to_sdf(
         # Collect all property keys and infer types as string (or improve as needed)
         if features:
             sample_props = features[0].get("properties", {})
-            fields = [FieldDef(name=k, type_="string") for k in sample_props.keys()]
+            fields = [FieldDef(name=k, type="string") for k in sample_props.keys()]
         else:
             fields = []
 

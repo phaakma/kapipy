@@ -120,7 +120,7 @@ class VectorItem(BaseItem):
         query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._session.api_key,
-            typeNames=f"{self.type_}-{self.id}",
+            typeNames=f"{self.type}-{self.id}",
             cql_filter=cql_filter,
             srsName=f"EPSG:{out_sr}" or self.data.crs.srid,
             out_fields=out_fields,
@@ -132,7 +132,7 @@ class VectorItem(BaseItem):
         self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
-            item_type=self.type_,
+            item_type=self.type,
             request_type="wfs-query",
             request_url=query_details.get("request_url", ""),
             request_method=query_details.get("request_method", ""),
@@ -245,7 +245,7 @@ class VectorItem(BaseItem):
         query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._session.api_key,
-            typeNames=f"{self.type_}-{self.id}-changeset",
+            typeNames=f"{self.type}-{self.id}-changeset",
             viewparams=viewparams,
             cql_filter=cql_filter,
             srsName=f"EPSG:{out_sr}" or f"{self.data.crs.id}",
@@ -258,7 +258,7 @@ class VectorItem(BaseItem):
         self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
-            item_type=self.type_,
+            item_type=self.type,
             request_type="wfs-changeset",
             request_url=query_details.get("request_url", ""),
             request_method=query_details.get("request_method", ""),
@@ -279,7 +279,7 @@ class VectorItem(BaseItem):
             str: A string describing the vector item.
         """
 
-        return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
+        return f"Item id: {self.id}, type: {self.type}, title: {self.title}"
 
     def __repr__(self) -> str:
         """
@@ -289,6 +289,6 @@ class VectorItem(BaseItem):
             str: Detailed string representation of the VectorItem.
         """
         return (
-            f"VectorItem(id={self.id!r}, type_={self.type_!r}, title={self.title!r}, "
+            f"VectorItem(id={self.id!r}, type={self.type!r}, title={self.title!r}, "
             f"kind={self.kind!r}, data={self.data!r})"
         )

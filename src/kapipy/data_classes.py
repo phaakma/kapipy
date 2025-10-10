@@ -41,7 +41,7 @@ class Category:
 class License:
     id: int
     title: str
-    type_: str
+    type: str
     jurisdiction: str
     version: str
     url: str
@@ -49,7 +49,7 @@ class License:
     url_fulltext: str
 
     def __repr__(self):
-        return f"License(id={self.id!r}, title={self.title!r}, type_={self.type_!r}, version={self.version!r})"
+        return f"License(id={self.id!r}, title={self.title!r}, type={self.type!r}, version={self.version!r})"
 
 @dataclass
 class Metadata:
@@ -99,10 +99,10 @@ class Group:
     name: str
     country: str
     org: str
-    type_: str
+    type: str
 
     def __repr__(self):
-        return f"Group(id={self.id!r}, name={self.name!r}, org={self.org!r}, type_={self.type_!r})"
+        return f"Group(id={self.id!r}, name={self.name!r}, org={self.org!r}, type={self.type!r})"
 
 @dataclass
 class DocumentVersion:
@@ -129,7 +129,7 @@ class DocumentCategory:
 class DocumentLicense:
     id: int
     title: str
-    type_: str
+    type: str
     jurisdiction: str
     version: str
     url: str
@@ -137,7 +137,7 @@ class DocumentLicense:
     url_fulltext: str
 
     def __repr__(self):
-        return f"DocumentLicense(id={self.id!r}, title={self.title!r}, type_={self.type_!r}, version={self.version!r})"
+        return f"DocumentLicense(id={self.id!r}, title={self.title!r}, type={self.type!r}, version={self.version!r})"
 
 @dataclass
 class DocumentPublisher:
@@ -159,7 +159,7 @@ class Document:
     id: int
     title: str
     url: str
-    type_: str
+    type: str
     thumbnail_url: Optional[str]
     first_published_at: Optional[str]
     published_at: Optional[str]
@@ -193,7 +193,7 @@ class Document:
     public_access: Optional[str]
 
     def __repr__(self):
-        return f"Document(id={self.id!r}, title={self.title!r}, type_={self.type_!r})"
+        return f"Document(id={self.id!r}, title={self.title!r}, type={self.type!r})"
 
 @dataclass
 class Attachment:
@@ -225,10 +225,10 @@ class CRS:
 @dataclass
 class FieldDef:
     name: str
-    type_: str
+    type: str
 
     def __repr__(self):
-        return f"FieldDef(name={self.name!r}, type_={self.type_!r})"
+        return f"FieldDef(name={self.name!r}, type={self.type!r})"
 
 @dataclass
 class ChangeSummarySchema:
@@ -356,7 +356,7 @@ class Repository:
     url: str
     clone_location_ssh: str
     clone_location_https: str
-    type_: str
+    type: str
     title: str
     first_published_at: str
     published_at: Optional[str]
@@ -365,7 +365,7 @@ class Repository:
     user_permissions: List[str]
 
     def __repr__(self):
-        return f"Repository(id={self.id!r}, full_name={self.full_name!r}, type_={self.type_!r})"
+        return f"Repository(id={self.id!r}, full_name={self.full_name!r}, type={self.type!r})"
 
 @dataclass
 class Geotag:
@@ -399,7 +399,7 @@ class BaseItem(ABC):
 
     id: int
     url: str
-    type_: str
+    type: str
     title: str
     description: str
     data: ItemData
@@ -451,7 +451,7 @@ class BaseItem(ABC):
         Returns:
             str: A string describing the item.
         """
-        return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
+        return f"Item id: {self.id}, type: {self.type}, title: {self.title}"
 
 
     @property
@@ -618,7 +618,7 @@ class BaseItem(ABC):
             self._session.api_url,
             self._session.api_key,
             self.id,
-            self.type_,
+            self.type,
             self.kind,
             export_format,
             crs=crs,
@@ -636,7 +636,7 @@ class BaseItem(ABC):
         self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
-            item_type=self.type_,
+            item_type=self.type,
             request_type="export",
             request_url=export_details.get("request_url", ""),
             request_method=export_details.get("request_method", ""),
@@ -680,7 +680,7 @@ class BaseItem(ABC):
             self._session.api_url,
             self._session.api_key,
             self.id,
-            self.type_,
+            self.type,
             self.kind,
             export_format,
             crs,
@@ -730,4 +730,4 @@ class BaseItem(ABC):
         return mimetype
 
     def __repr__(self):
-        return f"BaseItem(id={self.id!r}, type_={self.type_!r}, title={self.title!r}, kind={self.kind!r})"
+        return f"BaseItem(id={self.id!r}, type={self.type!r}, title={self.title!r}, kind={self.kind!r})"

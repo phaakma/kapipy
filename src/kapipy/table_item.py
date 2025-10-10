@@ -35,7 +35,7 @@ class TableItem(BaseItem):
         query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._session.api_key,
-            typeNames=f"{self.type_}-{self.id}",
+            typeNames=f"{self.type}-{self.id}",
             cql_filter=cql_filter,
             **kwargs,
         )
@@ -43,7 +43,7 @@ class TableItem(BaseItem):
         self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
-            item_type=self.type_,
+            item_type=self.type,
             request_type="wfs-query",
             request_url=query_details.get("request_url", ""),
             request_method=query_details.get("request_method", ""),
@@ -90,7 +90,7 @@ class TableItem(BaseItem):
         query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._session.api_key,
-            typeNames=f"{self.type_}-{self.id}-changeset",
+            typeNames=f"{self.type}-{self.id}-changeset",
             viewparams=viewparams,
             cql_filter=cql_filter,
             **kwargs,
@@ -99,7 +99,7 @@ class TableItem(BaseItem):
         self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
-            item_type=self.type_,
+            item_type=self.type,
             request_type="wfs-changeset",
             request_url=query_details.get("request_url", ""),
             request_method=query_details.get("request_method", ""),
@@ -113,7 +113,7 @@ class TableItem(BaseItem):
 
     def __repr__(self) -> str:
         return (
-            f"TableItem(id={self.id!r}, type_={self.type_!r}, title={self.title!r}, kind={self.kind!r})"
+            f"TableItem(id={self.id!r}, type={self.type!r}, title={self.title!r}, kind={self.kind!r})"
         )
 
     def __str__(self) -> str:
@@ -123,4 +123,4 @@ class TableItem(BaseItem):
         Returns:
             str: A string describing the table item.
         """
-        return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
+        return f"Item id: {self.id}, type: {self.type}, title: {self.title}"

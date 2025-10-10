@@ -30,11 +30,6 @@ from .custom_errors import (
 
 logger = logging.getLogger(__name__)
 
-# the API sometimes uses type as a property which is not ideal
-safe_keys = {"type_": "type"}
-field_config = Config(strict=False, convert_key=lambda k: safe_keys.get(k, k))
-
-
 class ContentManager:
     """
     Manages content for a GISK instance.
@@ -113,12 +108,12 @@ class ContentManager:
         # Based on the kind of item, return the appropriate item class.
         if itm_properties_json.get("kind") == "vector":
             item = from_dict(
-                data_class=VectorItem, data=itm_properties_json, config=field_config
+                data_class=VectorItem, data=itm_properties_json
             )
 
         elif itm_properties_json.get("kind") == "table":
             item = from_dict(
-                data_class=TableItem, data=itm_properties_json, config=field_config
+                data_class=TableItem, data=itm_properties_json
             )
 
         else:
@@ -221,7 +216,7 @@ class SearchResult:
     Attributes:
         id (int): The unique identifier of the item.
         url (str): The URL to access the item details.
-        type_ (str): The type of the item (e.g., 'vector', 'table').
+        type (str): The type of the item (e.g., 'vector', 'table').
         title (str): The title of the item.
         first_published_at (Optional[str]): The ISO8601 date the item was first published.
         thumbnail_url (Optional[str]): The URL of the item's thumbnail image.
@@ -234,7 +229,7 @@ class SearchResult:
 
     id: int
     url: str
-    type_: str
+    type: str
     title: str
     first_published_at: Optional[str] = None
     thumbnail_url: Optional[str] = None
@@ -252,7 +247,7 @@ class SearchResult:
             str: String representation of the SearchResult.
         """
         return (
-            f"SearchResult(id={self.id!r}, url={self.url!r}, type_={self.type_!r}, "
+            f"SearchResult(id={self.id!r}, url={self.url!r}, type={self.type!r}, "
             f"title={self.title!r})"
         )
 
@@ -263,4 +258,4 @@ class SearchResult:
         Returns:
             str: User-friendly string representation.
         """
-        return f"SearchResult: {self.title} (id={self.id}, type={self.type_})"
+        return f"SearchResult: {self.title} (id={self.id}, type={self.type})"
