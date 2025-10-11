@@ -118,12 +118,25 @@ class WFSResponse:
             )
         return self._gdf
 
-    def __str__(self) -> None:
+    def __str__(self) -> str:
         """
         Return a user-friendly string representation of the WFSResponse.
 
         Returns:
             str: A string describing the WFSResponse.
         """
+        item_id = getattr(self.item, "id", None)
+        return f"WFSResponse for item id: {item_id}, total feature count: {self.total_features}"
 
-        return f"WFSResponse for item id: {self.item.id}, total feature count: {self.total_features}"
+    def __repr__(self) -> str:
+        """
+        Return an unambiguous string representation of the WFSResponse.
+
+        Returns:
+            str: A detailed string representation of the WFSResponse.
+        """
+        item_id = getattr(self.item, "id", None)
+        return (
+            f"WFSResponse(item_id={item_id!r}, total_features={self.total_features}, "
+            f"out_sr={self.out_sr!r})"
+        )

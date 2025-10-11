@@ -1,4 +1,10 @@
 # gis.py
+"""
+GISK module for connecting to and interacting with Koordinates-based GIS portals.
+
+Provides the GISK client class, portal details, and utility constants for API access.
+"""
+
 import os
 from urllib.parse import urljoin
 import logging

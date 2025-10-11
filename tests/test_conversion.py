@@ -56,7 +56,7 @@ def test_geojson_to_featureset_point():
     @dataclass
     class FieldDef:
         name: str
-        type_: str
+        type: str
 
     geojson = {
         "type": "FeatureCollection",
@@ -68,7 +68,7 @@ def test_geojson_to_featureset_point():
             }
         ],
     }
-    fields = [FieldDef(name="id", type_="integer"), FieldDef(name="name", type_="string")]
+    fields = [FieldDef(name="id", type="integer"), FieldDef(name="name", type="string")]
     fs = geojson_to_featureset(geojson, "esriGeometryPoint", fields)
     assert hasattr(fs, "features")
     assert len(fs.features) == 1
@@ -81,7 +81,7 @@ def test_geojson_to_featureset_polygon():
     @dataclass
     class FieldDef:
         name: str
-        type_: str
+        type: str
 
     geojson = {
         "type": "FeatureCollection",
@@ -104,7 +104,7 @@ def test_geojson_to_featureset_polygon():
             }
         ],
     }
-    fields = [FieldDef(name="id", type_="integer"), FieldDef(name="name", type_="string")]
+    fields = [FieldDef(name="id", type="integer"), FieldDef(name="name", type="string")]
     fs = geojson_to_featureset(geojson, "esriGeometryPolygon", fields)
     assert hasattr(fs, "features")
     assert len(fs.features) == 1
@@ -149,8 +149,8 @@ def test_geojson_to_sdf():
     @dataclass
     class FieldDef:
         name: str
-        type_: str
-    fields = [FieldDef(name="id", type_="integer"), FieldDef(name="name", type_="string")]
+        type: str
+    fields = [FieldDef(name="id", type="integer"), FieldDef(name="name", type="string")]
     sdf = geojson_to_sdf(geojson, out_sr=4326, geometry_type="esriGeometryPoint")
     assert not sdf.empty
     assert "id" in sdf.columns
@@ -207,8 +207,8 @@ def test_get_data_type_sdf():
     @dataclass
     class FieldDef:
         name: str
-        type_: str
-    fields = [FieldDef(name="id", type_="integer"), FieldDef(name="name", type_="string")]
+        type: str
+    fields = [FieldDef(name="id", type="integer"), FieldDef(name="name", type="string")]
     fs = geojson_to_featureset(geojson, "esriGeometryPoint", fields)
     sdf = fs.sdf
     assert get_data_type(sdf) == "sdf"
@@ -234,8 +234,8 @@ def test_sdf_to_single_geometry():
     @dataclass
     class FieldDef:
         name: str
-        type_: str
-    fields = [FieldDef(name="id", type_="integer"), FieldDef(name="name", type_="string")]
+        type: str
+    fields = [FieldDef(name="id", type="integer"), FieldDef(name="name", type="string")]
     fs = geojson_to_featureset(geojson, "esriGeometryPoint", fields)
     sdf = fs.sdf
     geom = sdf_to_single_geometry(sdf)
@@ -286,8 +286,8 @@ def test_bbox_sdf_into_cql_filter():
     @dataclass
     class FieldDef:
         name: str
-        type_: str
-    fields = [FieldDef(name="id", type_="integer"), FieldDef(name="name", type_="string")]
+        type: str
+    fields = [FieldDef(name="id", type="integer"), FieldDef(name="name", type="string")]
     fs = geojson_to_featureset(geojson, "esriGeometryPoint", fields)
     sdf = fs.sdf
     cql = bbox_sdf_into_cql_filter(sdf, "geom", 4326)
@@ -310,8 +310,8 @@ def test_geom_sdf_into_cql_filter():
     @dataclass
     class FieldDef:
         name: str
-        type_: str
-    fields = [FieldDef(name="id", type_="integer"), FieldDef(name="name", type_="string")]
+        type: str
+    fields = [FieldDef(name="id", type="integer"), FieldDef(name="name", type="string")]
     fs = geojson_to_featureset(geojson, "esriGeometryPoint", fields)
     sdf = fs.sdf
     cql = geom_sdf_into_cql_filter(sdf, "geom", 4326)

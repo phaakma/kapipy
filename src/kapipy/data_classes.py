@@ -23,6 +23,8 @@ class Ancestor:
     key: str
     url: str
 
+    def __repr__(self):
+        return f"Ancestor(name={self.name!r}, slug={self.slug!r}, key={self.key!r}, url={self.url!r})"
 
 @dataclass
 class Category:
@@ -32,18 +34,22 @@ class Category:
     url: str
     ancestors: List[Ancestor]
 
+    def __repr__(self):
+        return f"Category(name={self.name!r}, slug={self.slug!r}, key={self.key!r}, url={self.url!r})"
 
 @dataclass
 class License:
     id: int
     title: str
-    type_: str
+    type: str
     jurisdiction: str
     version: str
     url: str
     url_html: str
     url_fulltext: str
 
+    def __repr__(self):
+        return f"License(id={self.id!r}, title={self.title!r}, type={self.type!r}, version={self.version!r})"
 
 @dataclass
 class Metadata:
@@ -52,18 +58,24 @@ class Metadata:
     iso: Optional[str]
     dc: Optional[str]
 
+    def __repr__(self):
+        return f"Metadata(resource={self.resource!r}, native={self.native!r}, iso={self.iso!r}, dc={self.dc!r})"
 
 @dataclass
 class Theme:
     logo: Optional[str]
     background_color: Optional[str]
 
+    def __repr__(self):
+        return f"Theme(logo={self.logo!r}, background_color={self.background_color!r})"
 
 @dataclass
 class Site:
     url: str
     name: str
 
+    def __repr__(self):
+        return f"Site(url={self.url!r}, name={self.name!r})"
 
 @dataclass
 class Publisher:
@@ -77,6 +89,8 @@ class Publisher:
     flags: Dict[str, Any]
     description: Optional[str]
 
+    def __repr__(self):
+        return f"Publisher(id={self.id!r}, name={self.name!r}, url={self.url!r})"
 
 @dataclass
 class Group:
@@ -85,8 +99,10 @@ class Group:
     name: str
     country: str
     org: str
-    type_: str
+    type: str
 
+    def __repr__(self):
+        return f"Group(id={self.id!r}, name={self.name!r}, org={self.org!r}, type={self.type!r})"
 
 @dataclass
 class DocumentVersion:
@@ -95,6 +111,8 @@ class DocumentVersion:
     created_at: str
     created_by: Dict[str, Any]
 
+    def __repr__(self):
+        return f"DocumentVersion(id={self.id!r}, url={self.url!r}, created_at={self.created_at!r})"
 
 @dataclass
 class DocumentCategory:
@@ -104,18 +122,22 @@ class DocumentCategory:
     url: str
     ancestors: List[Any]
 
+    def __repr__(self):
+        return f"DocumentCategory(name={self.name!r}, slug={self.slug!r}, key={self.key!r}, url={self.url!r})"
 
 @dataclass
 class DocumentLicense:
     id: int
     title: str
-    type_: str
+    type: str
     jurisdiction: str
     version: str
     url: str
     url_html: str
     url_fulltext: str
 
+    def __repr__(self):
+        return f"DocumentLicense(id={self.id!r}, title={self.title!r}, type={self.type!r}, version={self.version!r})"
 
 @dataclass
 class DocumentPublisher:
@@ -129,13 +151,15 @@ class DocumentPublisher:
     flags: Dict[str, Any]
     description: Optional[str]
 
+    def __repr__(self):
+        return f"DocumentPublisher(id={self.id!r}, name={self.name!r}, url={self.url!r})"
 
 @dataclass
 class Document:
     id: int
     title: str
     url: str
-    type_: str
+    type: str
     thumbnail_url: Optional[str]
     first_published_at: Optional[str]
     published_at: Optional[str]
@@ -168,6 +192,8 @@ class Document:
     version: Optional[DocumentVersion]
     public_access: Optional[str]
 
+    def __repr__(self):
+        return f"Document(id={self.id!r}, title={self.title!r}, type={self.type!r})"
 
 @dataclass
 class Attachment:
@@ -177,6 +203,8 @@ class Attachment:
     url_html: str
     document: Document
 
+    def __repr__(self):
+        return f"Attachment(id={self.id!r}, url={self.url!r})"
 
 @dataclass
 class CRS:
@@ -191,12 +219,16 @@ class CRS:
     component_vertical: Optional[Any]
     srid: int
 
+    def __repr__(self):
+        return f"CRS(id={self.id!r}, name={self.name!r}, srid={self.srid!r})"
 
 @dataclass
 class FieldDef:
     name: str
-    type_: str
+    type: str
 
+    def __repr__(self):
+        return f"FieldDef(name={self.name!r}, type={self.type!r})"
 
 @dataclass
 class ChangeSummarySchema:
@@ -207,7 +239,8 @@ class ChangeSummarySchema:
     geometry_type_changed: bool
     primary_keys_changed: bool
 
-
+    def __repr__(self):
+        return f"ChangeSummarySchema(added={self.added!r}, changed={self.changed!r}, removed={self.removed!r})"
 @dataclass
 class ChangeSummary:
     inserted: int
@@ -215,12 +248,16 @@ class ChangeSummary:
     deleted: int
     schema_changes: ChangeSummarySchema
 
+    def __repr__(self):
+        return f"ChangeSummary(inserted={self.inserted!r}, updated={self.updated!r}, deleted={self.deleted!r})"
 
 @dataclass
 class SourceSummary:
     formats: List[str]
     types: List[str]
 
+    def __repr__(self):
+        return f"SourceSummary(formats={self.formats!r}, types={self.types!r})"
 
 @dataclass
 class ImportLog:
@@ -228,12 +265,16 @@ class ImportLog:
     messages: int
     url: str
 
+    def __repr__(self):
+        return f"ImportLog(invalid_geometries={self.invalid_geometries!r}, url={self.url!r})"
 
 @dataclass
 class ExportFormat:
     name: str
     mimetype: str
 
+    def __repr__(self):
+        return f"ExportFormat(name={self.name!r}, mimetype={self.mimetype!r})"
 
 @dataclass
 class ItemData:
@@ -260,6 +301,8 @@ class ItemData:
     has_z: bool
     export_formats: List[ExportFormat]
 
+    def __repr__(self):
+        return f"ItemData(fields={self.fields!r}, feature_count={self.feature_count!r})"
 
 @dataclass
 class VectorItemData(ItemData):
@@ -268,12 +311,16 @@ class VectorItemData(ItemData):
     geometry_type: str
     extent: Dict[str, Any]
 
+    def __repr__(self):
+        return f"VectorItemData(crs={self.crs!r}, geometry_field={self.geometry_field!r}, geometry_type={self.geometry_type!r})"
 
 @dataclass
 class ServiceTemplateUrl:
     name: str
     service_url: str
 
+    def __repr__(self):
+        return f"ServiceTemplateUrl(name={self.name!r}, service_url={self.service_url!r})"
 
 @dataclass
 class Service:
@@ -292,11 +339,15 @@ class Service:
     user_capabilities: List[str]
     enabled: bool
 
+    def __repr__(self):
+        return f"Service(id={self.id!r}, key={self.key!r}, domain={self.domain!r}, enabled={self.enabled!r})"
 
 @dataclass
 class RepositorySettings:
     feedback_enabled: bool
 
+    def __repr__(self):
+        return f"RepositorySettings(feedback_enabled={self.feedback_enabled!r})"
 
 @dataclass
 class Repository:
@@ -305,7 +356,7 @@ class Repository:
     url: str
     clone_location_ssh: str
     clone_location_https: str
-    type_: str
+    type: str
     title: str
     first_published_at: str
     published_at: Optional[str]
@@ -313,6 +364,8 @@ class Repository:
     user_capabilities: List[str]
     user_permissions: List[str]
 
+    def __repr__(self):
+        return f"Repository(id={self.id!r}, full_name={self.full_name!r}, type={self.type!r})"
 
 @dataclass
 class Geotag:
@@ -321,6 +374,8 @@ class Geotag:
     name: str
     key: str
 
+    def __repr__(self):
+        return f"Geotag(country_code={self.country_code!r}, name={self.name!r}, key={self.key!r})"
 
 @dataclass
 class Version:
@@ -332,6 +387,8 @@ class Version:
     progress: float
     data_import: bool
 
+    def __repr__(self):
+        return f"Version(id={self.id!r}, status={self.status!r}, reference={self.reference!r})"
 
 @dataclass
 class BaseItem(ABC):
@@ -342,7 +399,7 @@ class BaseItem(ABC):
 
     id: int
     url: str
-    type_: str
+    type: str
     title: str
     description: str
     data: ItemData
@@ -357,6 +414,9 @@ class BaseItem(ABC):
     num_downloads: int
 
     def __post_init__(self):
+        """
+        Initializes internal attributes after dataclass initialization.
+        """
         self._session=None
         self._audit=None
         self._content=None
@@ -371,6 +431,14 @@ class BaseItem(ABC):
             audit: "AuditManager"=None,
             content: "ContentManager"=None
             ):
+        """
+        Attaches session, audit, and content manager resources to the item.
+
+        Parameters:
+            session (SessionManager, optional): The session manager to attach.
+            audit (AuditManager, optional): The audit manager to attach.
+            content (ContentManager, optional): The content manager to attach.
+        """
         self._session = session
         self._audit = audit
         self._content = content
@@ -378,10 +446,12 @@ class BaseItem(ABC):
     @abstractmethod
     def __str__(self) -> None:
         """
-        User friendly string of a base item.
-        """
+        Returns a user-friendly string representation of the item.
 
-        return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
+        Returns:
+            str: A string describing the item.
+        """
+        return f"Item id: {self.id}, type: {self.type}, title: {self.title}"
 
 
     @property
@@ -548,7 +618,7 @@ class BaseItem(ABC):
             self._session.api_url,
             self._session.api_key,
             self.id,
-            self.type_,
+            self.type,
             self.kind,
             export_format,
             crs=crs,
@@ -566,7 +636,7 @@ class BaseItem(ABC):
         self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
-            item_type=self.type_,
+            item_type=self.type,
             request_type="export",
             request_url=export_details.get("request_url", ""),
             request_method=export_details.get("request_method", ""),
@@ -610,7 +680,7 @@ class BaseItem(ABC):
             self._session.api_url,
             self._session.api_key,
             self.id,
-            self.type_,
+            self.type,
             self.kind,
             export_format,
             crs,
@@ -658,3 +728,6 @@ class BaseItem(ABC):
 
         logger.debug(f"Resolved export format: {mimetype} from {export_format}")
         return mimetype
+
+    def __repr__(self):
+        return f"BaseItem(id={self.id!r}, type={self.type!r}, title={self.title!r}, kind={self.kind!r})"

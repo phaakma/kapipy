@@ -13,6 +13,11 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class TableItem(BaseItem):
+    """
+    Represents a table item in the GISK content system.
+
+    Inherits from BaseItem and provides methods for querying and retrieving changesets via WFS.
+    """
 
     def query(self, cql_filter: str = None, **kwargs: Any) -> dict:
         """
@@ -30,7 +35,7 @@ class TableItem(BaseItem):
         query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._session.api_key,
-            typeNames=f"{self.type_}-{self.id}",
+            typeNames=f"{self.type}-{self.id}",
             cql_filter=cql_filter,
             **kwargs,
         )
@@ -38,7 +43,7 @@ class TableItem(BaseItem):
         self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
-            item_type=self.type_,
+            item_type=self.type,
             request_type="wfs-query",
             request_url=query_details.get("request_url", ""),
             request_method=query_details.get("request_method", ""),
@@ -85,7 +90,7 @@ class TableItem(BaseItem):
         query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._session.api_key,
-            typeNames=f"{self.type_}-{self.id}-changeset",
+            typeNames=f"{self.type}-{self.id}-changeset",
             viewparams=viewparams,
             cql_filter=cql_filter,
             **kwargs,
@@ -94,7 +99,7 @@ class TableItem(BaseItem):
         self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
-            item_type=self.type_,
+            item_type=self.type,
             request_type="wfs-changeset",
             request_url=query_details.get("request_url", ""),
             request_method=query_details.get("request_method", ""),
@@ -106,9 +111,16 @@ class TableItem(BaseItem):
 
         return WFSResponse(query_details.get("response", {}), self)
 
-    def __str__(self) -> None:
-        """
-        User friendly string of a base item.
-        """
+    def __repr__(self) -> str:
+        return (
+            f"TableItem(id={self.id!r}, type={self.type!r}, title={self.title!r}, kind={self.kind!r})"
+        )
 
-        return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
+    def __str__(self) -> str:
+        """
+        Returns a user-friendly string representation of the table item.
+
+        Returns:
+            str: A string describing the table item.
+        """
+        return f"Item id: {self.id}, type: {self.type}, title: {self.title}"

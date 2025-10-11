@@ -1,3 +1,10 @@
+"""
+Utility functions for interacting with Web Feature Service (WFS) endpoints.
+
+Includes robust download and paging logic, error handling, and retry mechanisms for fetching
+large datasets from WFS services such as those provided by Koordinates.
+"""
+
 import httpx
 import os
 from datetime import datetime

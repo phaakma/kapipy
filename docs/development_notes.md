@@ -129,7 +129,7 @@ uv publish --index pypi
 ## Documentation  
 Documentation uses MkDocs to generate and publish documentation website using Github Pages.  
 
-Locally, run ```mkdocs build```  then ```mkdocs gh-deploy --clean```  
+Locally, run ```uv mkdocs build```  then ```uv mkdocs gh-deploy --clean```  
 
 This could probably be set up as a Github action. If the gh-deploy was run from a Github workflow, need to figure out a way to use secrets.GITHUB_TOKEN. Or does it need authentication at all? Maybe it just works from there?    
 

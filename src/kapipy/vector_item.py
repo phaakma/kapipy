@@ -20,6 +20,11 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class VectorItem(BaseItem):
+    """
+    Represents a vector item in the GISK content system.
+
+    Inherits from BaseItem and provides methods for querying and retrieving changesets via WFS.
+    """
     data: VectorItemData
 
     def query(
@@ -115,7 +120,7 @@ class VectorItem(BaseItem):
         query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._session.api_key,
-            typeNames=f"{self.type_}-{self.id}",
+            typeNames=f"{self.type}-{self.id}",
             cql_filter=cql_filter,
             srsName=f"EPSG:{out_sr}" or self.data.crs.srid,
             out_fields=out_fields,
@@ -127,7 +132,7 @@ class VectorItem(BaseItem):
         self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
-            item_type=self.type_,
+            item_type=self.type,
             request_type="wfs-query",
             request_url=query_details.get("request_url", ""),
             request_method=query_details.get("request_method", ""),
@@ -240,7 +245,7 @@ class VectorItem(BaseItem):
         query_details = download_wfs_data(
             url=self._wfs_url,
             api_key=self._session.api_key,
-            typeNames=f"{self.type_}-{self.id}-changeset",
+            typeNames=f"{self.type}-{self.id}-changeset",
             viewparams=viewparams,
             cql_filter=cql_filter,
             srsName=f"EPSG:{out_sr}" or f"{self.data.crs.id}",
@@ -253,7 +258,7 @@ class VectorItem(BaseItem):
         self._audit.add_request_record(
             item_id=self.id,
             item_kind=self.kind,
-            item_type=self.type_,
+            item_type=self.type,
             request_type="wfs-changeset",
             request_url=query_details.get("request_url", ""),
             request_method=query_details.get("request_method", ""),
@@ -266,9 +271,24 @@ class VectorItem(BaseItem):
         return WFSResponse(query_details.get("response", {}), self, out_sr)
 
 
-    def __str__(self) -> None:
+    def __str__(self) -> str:
         """
-        User friendly string of a base item.
+        Returns a user-friendly string representation of the vector item.
+
+        Returns:
+            str: A string describing the vector item.
         """
 
-        return f"Item id: {self.id}, type_: {self.type_}, title: {self.title}"
+        return f"Item id: {self.id}, type: {self.type}, title: {self.title}"
+
+    def __repr__(self) -> str:
+        """
+        Returns an unambiguous string representation of the VectorItem.
+
+        Returns:
+            str: Detailed string representation of the VectorItem.
+        """
+        return (
+            f"VectorItem(id={self.id!r}, type={self.type!r}, title={self.title!r}, "
+            f"kind={self.kind!r}, data={self.data!r})"
+        )

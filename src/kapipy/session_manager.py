@@ -8,7 +8,23 @@ logger_httpx = logging.getLogger("httpx")
 logger_httpx.setLevel(logging.WARNING)
 
 class SessionManager:
+    """
+    Manages HTTP sessions and authentication for API requests to the Koordinates platform.
+
+    Provides methods for making authenticated GET and POST requests, automatically injecting
+    the API key into request headers and handling common HTTP errors.
+    """
+
     def __init__(self, api_key: str, api_url: str, service_url: str, wfs_url: str):
+        """
+        Initializes the SessionManager with API credentials and endpoint URLs.
+
+        Parameters:
+            api_key (str): The API key for authentication.
+            api_url (str): The base URL for the API.
+            service_url (str): The base URL for service endpoints.
+            wfs_url (str): The base URL for WFS endpoints.
+        """
         self.api_key = api_key
         self.headers = {"Authorization": f"key {self.api_key}"}
         self.api_url = api_url
@@ -74,3 +90,13 @@ class SessionManager:
         response.raise_for_status()
         return response.json()
 
+    def __repr__(self):
+        return (
+            f"SessionManager(api_url={self.api_url!r}, service_url={self.service_url!r}, "
+            f"wfs_url={self.wfs_url!r}, api_key={'***' if self.api_key else None})"
+        )
+
+    def __str__(self):
+        return (
+            f"SessionManager for API: {self.api_url}, Service: {self.service_url}, WFS: {self.wfs_url}"
+        )

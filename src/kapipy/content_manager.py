@@ -30,11 +30,6 @@ from .custom_errors import (
 
 logger = logging.getLogger(__name__)
 
-# the API sometimes uses type as a property which is not ideal
-safe_keys = {"type_": "type"}
-field_config = Config(strict=False, convert_key=lambda k: safe_keys.get(k, k))
-
-
 class ContentManager:
     """
     Manages content for a GISK instance.
@@ -113,12 +108,12 @@ class ContentManager:
         # Based on the kind of item, return the appropriate item class.
         if itm_properties_json.get("kind") == "vector":
             item = from_dict(
-                data_class=VectorItem, data=itm_properties_json, config=field_config
+                data_class=VectorItem, data=itm_properties_json
             )
 
         elif itm_properties_json.get("kind") == "table":
             item = from_dict(
-                data_class=TableItem, data=itm_properties_json, config=field_config
+                data_class=TableItem, data=itm_properties_json
             )
 
         else:
@@ -198,7 +193,10 @@ class ContentManager:
         Returns:
             str: String representation of the ContentManager.
         """
-        return f"ContentManager()"
+        return (
+            f"ContentManager(session={self._session!r}, audit={self._audit!r}, "
+            f"jobs={self.jobs!r}, download_folder={self.download_folder!r})"
+        )
 
     def __str__(self) -> str:
         """
@@ -207,14 +205,31 @@ class ContentManager:
         Returns:
             str: User-friendly string representation.
         """
-        return f"ContentManager"
+        return f"ContentManager with {len(self.jobs)} jobs"
 
 
 @dataclass
 class SearchResult:
+    """
+    Represents a search result item from the GISK content API.
+
+    Attributes:
+        id (int): The unique identifier of the item.
+        url (str): The URL to access the item details.
+        type (str): The type of the item (e.g., 'vector', 'table').
+        title (str): The title of the item.
+        first_published_at (Optional[str]): The ISO8601 date the item was first published.
+        thumbnail_url (Optional[str]): The URL of the item's thumbnail image.
+        published_at (Optional[str]): The ISO8601 date the item was published.
+        featured_at (Optional[str]): The ISO8601 date the item was featured.
+        services (Optional[str]): The services associated with the item.
+        user_capabilities (Optional[List[str]]): The user's capabilities for the item.
+        user_permissions (Optional[List[str]]): The user's permissions for the item.
+    """
+
     id: int
     url: str
-    type_: str
+    type: str
     title: str
     first_published_at: Optional[str] = None
     thumbnail_url: Optional[str] = None
@@ -223,3 +238,24 @@ class SearchResult:
     services: Optional[str] = None
     user_capabilities: Optional[List[str]] = None
     user_permissions: Optional[List[str]] = None
+
+    def __repr__(self) -> str:
+        """
+        Returns an unambiguous string representation of the SearchResult instance.
+
+        Returns:
+            str: String representation of the SearchResult.
+        """
+        return (
+            f"SearchResult(id={self.id!r}, url={self.url!r}, type={self.type!r}, "
+            f"title={self.title!r})"
+        )
+
+    def __str__(self) -> str:
+        """
+        Returns a user-friendly string representation of the SearchResult instance.
+
+        Returns:
+            str: User-friendly string representation.
+        """
+        return f"SearchResult: {self.title} (id={self.id}, type={self.type})"

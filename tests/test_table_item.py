@@ -4,16 +4,12 @@ from kapipy.data_classes import FieldDef, Service
 
 from dacite import from_dict, Config
 
-# the API sometimes uses type as a property which is not ideal
-safe_keys = {"type_": "type"}
-field_config = Config(strict=False, convert_key=lambda k: safe_keys.get(k, k))
-
 from sample_api_data import TABLE_JSON
 
 @pytest.fixture
 def sample_table_item_data():
     return from_dict(
-        data_class=TableItem, data=TABLE_JSON, config=field_config
+        data_class=TableItem, data=TABLE_JSON
     )
 
 
@@ -36,12 +32,12 @@ def test_initialization_missing_required():
     from dacite.core import MissingValueError
     with pytest.raises(MissingValueError):
         item = from_dict(
-                data_class=TableItem, data=data, config=field_config
+                data_class=TableItem, data=data
             )
 
 
 def test_properties_and_attributes(sample_table_item_data):    
     assert isinstance(sample_table_item_data.data.fields, list)
     assert isinstance(sample_table_item_data.id, int)
-    assert isinstance(sample_table_item_data.type_, str)
+    assert isinstance(sample_table_item_data.type, str)
     

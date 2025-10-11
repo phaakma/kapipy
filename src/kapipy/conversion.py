@@ -54,6 +54,16 @@ def map_geometry_type(geom_type: str) -> str:
 
 
 def is_valid_date(val):
+    """
+    Checks if the provided value is a valid date or can be parsed as a date.
+
+    Parameters:
+        val: The value to check (can be None, int, float, or str).
+
+    Returns:
+        bool: True if the value is None, an epoch number, or can be parsed as a date string; False otherwise.
+    """
+
     if val is None:
         return True  # Accept nulls
     try:
@@ -100,7 +110,7 @@ def geojson_to_featureset(
     # validate that any date fields can be parsed
     # If any value is not parseable, set the field type to string
     for field in fields:        
-        if field.type_.lower() == "date":
+        if field.type.lower() == "date":
             for feature in features:
                 val = feature.get("properties", {}).get(field.name)
                 if not is_valid_date(val):
@@ -108,14 +118,14 @@ def geojson_to_featureset(
                     logger.debug(
                         f"Data for date field '{field.name}' was unable to be parsed. Overriding field type to string."
                     )
-                    field.type_ = "string"
+                    field.type = "string"
 
                     break  # No need to check further for this field
 
     arcgis_fields = [
-        {**asdict(f), "type": map_field_type(f.type_)}
+        {**asdict(f), "type": map_field_type(f.type)}
         for f in fields
-        if f.type_.lower() != "geometry"  # exclude geometry from field list
+        if f.type.lower() != "geometry"  # exclude geometry from field list
     ]
 
     # Convert features
@@ -274,7 +284,7 @@ def geojson_to_sdf(
         # Collect all property keys and infer types as string (or improve as needed)
         if features:
             sample_props = features[0].get("properties", {})
-            fields = [FieldDef(name=k, type_="string") for k in sample_props.keys()]
+            fields = [FieldDef(name=k, type="string") for k in sample_props.keys()]
         else:
             fields = []
 
@@ -357,6 +367,18 @@ def json_to_df(
 def sdf_to_single_polygon_geojson(
     sdf: "pd.DataFrame"
 ) -> dict[str, Any] | None:
+    """
+    Converts a spatially enabled dataframe (SDF) to a single polygon GeoJSON geometry.
+
+    Parameters:
+        sdf (pd.DataFrame): The spatially enabled dataframe.
+
+    Returns:
+        dict or None: The GeoJSON geometry dictionary, or None if conversion fails.
+
+    Raises:
+        ValueError: If the SDF is empty or contains no geometry.
+    """
 
     if sdf.empty:
         raise ValueError("sdf must contain at least one geometry.")
@@ -369,6 +391,16 @@ def sdf_to_single_polygon_geojson(
     return esri_json_to_geojson(geom.JSON, geom.geometry_type)
 
 def arcgis_polygon_to_geojson(geom):
+    """
+    Converts an ArcGIS polygon geometry to a GeoJSON geometry.
+
+    Parameters:
+        geom: The ArcGIS polygon geometry object.
+
+    Returns:
+        dict: The GeoJSON geometry dictionary.
+    """
+
     geom = geom.project_as(4326)
     geo_json = geom.JSON  # this is Esri JSON
     return esri_json_to_geojson(geom.JSON, geom.geometry_type)
@@ -376,6 +408,19 @@ def arcgis_polygon_to_geojson(geom):
 def gdf_to_single_polygon_geojson(
     gdf: "gpd.GeoDataFrame",
 ) -> dict[str, Any] | None:
+    """
+    Converts a GeoDataFrame containing only polygons to a single polygon GeoJSON geometry.
+
+    Parameters:
+        gdf (gpd.GeoDataFrame): The GeoDataFrame containing only Polygon geometries.
+
+    Returns:
+        dict or None: The GeoJSON geometry dictionary, or None if conversion fails.
+
+    Raises:
+        ValueError: If the GeoDataFrame is empty or contains non-polygon geometries.
+        ImportError: If geopandas is not installed.
+    """
 
     if gdf.empty:
         raise ValueError("gdf must contain at least one geometry.")
@@ -401,6 +446,20 @@ def gdf_to_single_polygon_geojson(
 def gdf_to_single_extent_geojson(
     gdf: "gpd.GeoDataFrame",
 ) -> dict[str, Any] | None:
+    """
+    Converts a GeoDataFrame to a GeoJSON geometry representing the bounding box extent.
+
+    Parameters:
+        gdf (gpd.GeoDataFrame): The GeoDataFrame to process.
+
+    Returns:
+        dict or None: The GeoJSON geometry dictionary for the bounding box, or None if conversion fails.
+
+    Raises:
+        ValueError: If the GeoDataFrame is empty or has invalid extent.
+        ImportError: If geopandas is not installed.
+    """
+
     if gdf.empty:
         raise ValueError("GeoDataFrame must contain at least one geometry.")
 
@@ -497,7 +556,13 @@ def get_default_output_format() -> str:
 
 def sdf_to_single_geometry(sdf: "pd.DataFrame") -> Any:
     """
-    Convert a spatially enabled dataframe to a single geometry.
+    Unions all geometries in a spatially enabled dataframe into a single geometry.
+
+    Parameters:
+        sdf (pd.DataFrame): The spatially enabled dataframe.
+
+    Returns:
+        Any: The resulting single geometry object.
     """
 
     import pandas as pd
@@ -567,8 +632,21 @@ def bbox_gdf_into_cql_filter(
     gdf: "gpd.GeoDataFrame", geometry_field: str, srid: int, cql_filter: str = None
 ):
     """
-    Construct cql_filter and bbox parameters from GeoDataFrame.
+    Constructs a CQL filter string with a bounding box from a GeoDataFrame.
+
+    Parameters:
+        gdf (gpd.GeoDataFrame): The GeoDataFrame containing only Polygon or MultiPolygon geometries.
+        geometry_field (str): The name of the geometry field in the target database or service.
+        srid (int): The spatial reference identifier (SRID) to use for the bounding box.
+        cql_filter (str, optional): An existing CQL filter string to combine with the bbox.
+
+    Returns:
+        str: The constructed CQL filter string.
+
+    Raises:
+        ValueError: If the GeoDataFrame contains non-polygon geometries.
     """
+
     if not all(gdf.geometry.type.isin(["Polygon", "MultiPolygon"])):
         raise ValueError("gdf must contain only Polygon or MultiPolygon geometries.")
     if gdf.crs is None:
@@ -592,16 +670,27 @@ def geom_gdf_into_cql_filter(
     cql_filter: str = None,
 ):
     """
-    Construct cql_filter and geometry filter parameters.
+    Constructs a CQL filter string with a geometry filter from a GeoDataFrame.
+
+    Parameters:
+        gdf (gpd.GeoDataFrame): The GeoDataFrame containing only Polygon geometries.
+        geometry_field (str): The name of the geometry field in the target database or service.
+        srid (int): The spatial reference identifier (SRID) to use for the geometry.
+        spatial_rel (str, optional): The spatial relationship (e.g., 'INTERSECTS', 'WITHIN'). Defaults to 'INTERSECTS'.
+        cql_filter (str, optional): An existing CQL filter string to combine with the geometry filter.
+
+    Returns:
+        str: The constructed CQL filter string.
+
+    Raises:
+        ValueError: If the spatial relationship is invalid or the GeoDataFrame contains non-polygon geometries.
     """
+
     if spatial_rel is None:
         spatial_rel = "INTERSECTS"
     spatial_rel = spatial_rel.upper()
     if spatial_rel not in VALID_SPATIAL_RELATIONSHIPS:
         raise ValueError(f"Invalid spatial_rel parameter supplied: {spatial_rel}")
-
-    if not all(gdf.geometry.type == "Polygon"):
-        raise ValueError("GeoDataFrame must contain only Polygon geometries.")
 
     # convert crs to EPSG:4326 if not already
     if gdf.crs is None:
@@ -613,6 +702,11 @@ def geom_gdf_into_cql_filter(
     single_geometry = gdf.union_all()
     if single_geometry.is_empty:
         raise ValueError("Resulting geometry is empty after union.")
+
+    number_of_vertices = count_vertices(single_geometry)
+    logger.debug(f"Vertex count of filter_geometry: {number_of_vertices}")
+    if number_of_vertices > 999:
+        raise ValueError(f"The filter_geometry has too many vertices for the API to process ({number_of_vertices}). Please reduce below 1000 or use bbox_geometry and filter the result locally afterwards.")
 
     # wkt coordinate x,y pairs need to be reversed
     # Pattern to match coordinate pairs
@@ -633,7 +727,16 @@ def bbox_sdf_into_cql_filter(
     sdf: "pd.DataFrame", geometry_field: str, srid: int, cql_filter: str = None
 ):
     """
-    Construct cql_filter and bbox parameters from SDF.
+    Constructs a CQL filter string with a bounding box from a Spatially Enabled DataFrame (SDF).
+
+    Parameters:
+        sdf (pd.DataFrame): The spatially enabled dataframe.
+        geometry_field (str): The name of the geometry field in the target database or service.
+        srid (int): The spatial reference identifier (SRID) to use for the bounding box.
+        cql_filter (str, optional): An existing CQL filter string to combine with the bbox.
+
+    Returns:
+        str: The constructed CQL filter string.
     """
 
     if sdf.spatial.sr.wkid != srid:
@@ -656,7 +759,20 @@ def geom_sdf_into_cql_filter(
     cql_filter: str = None,
 ):
     """
-    Construct cql_filter and geometry filter parameters from SDF.
+    Constructs a CQL filter string with a geometry filter from a Spatially Enabled DataFrame (SDF).
+
+    Parameters:
+        sdf (pd.DataFrame): The spatially enabled dataframe.
+        geometry_field (str): The name of the geometry field in the target database or service.
+        srid (int): The spatial reference identifier (SRID) to use for the geometry.
+        spatial_rel (str, optional): The spatial relationship (e.g., 'INTERSECTS', 'WITHIN'). Defaults to 'INTERSECTS'.
+        cql_filter (str, optional): An existing CQL filter string to combine with the geometry filter.
+
+    Returns:
+        str: The constructed CQL filter string.
+
+    Raises:
+        ValueError: If the spatial relationship is invalid.
     """
 
     if spatial_rel is None:
@@ -669,6 +785,11 @@ def geom_sdf_into_cql_filter(
         sdf.spatial.project({"wkid": srid})
 
     geom = sdf_to_single_geometry(sdf)
+
+    number_of_vertices = count_vertices(geom)
+    logger.debug(f"Vertex count of filter_geometry: {number_of_vertices}")
+    if number_of_vertices > 999:
+        raise ValueError(f"The filter_geometry has too many vertices for the API to process ({number_of_vertices}). Please reduce below 1000 or use bbox_geometry and filter the result locally afterwards.")
 
     # wkt coordinate x,y pairs need to be reversed
     # Pattern to match coordinate pairs
@@ -684,3 +805,24 @@ def geom_sdf_into_cql_filter(
         cql_filter = f"{spatial_filter} AND {cql_filter}"
 
     return cql_filter
+
+
+def count_vertices(geom) -> int:
+    """
+    Count the total number of coordinate vertices in any geometry.
+    """
+
+    logger.debug(f"Count geom, geom type is: {type(geom)}")
+
+    if has_arcgis:
+        from arcgis.geometry import Geometry 
+        if isinstance(geom, Geometry):
+            return geom.point_count 
+    if has_geopandas:
+        from shapely import count_coordinates
+        from shapely.geometry.base import BaseGeometry
+        if isinstance(geom, BaseGeometry):
+            return count_coordinates(geom)
+
+    raise TypeError('Unable to count vertices of unknown geometry')
+
