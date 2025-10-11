@@ -130,6 +130,7 @@ class JobResult:
         self._timeout = timeout if timeout is not None else 1800
         self._last_response = payload
         self._session = session
+        self.download_result = None
 
 
     @property
@@ -321,7 +322,7 @@ class JobResult:
         self.download_checksum = checksum
         self.downloaded = True
 
-        return DownloadResult(
+        self.download_result = DownloadResult(
             folder=folder,
             filename=file_name,
             file_path=file_path,
@@ -332,6 +333,8 @@ class JobResult:
             completed_at=completed_at,
             checksum=checksum,
         )
+
+        return self.download_result
 
     def __repr__(self):
         return (
