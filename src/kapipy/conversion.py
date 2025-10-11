@@ -692,9 +692,6 @@ def geom_gdf_into_cql_filter(
     if spatial_rel not in VALID_SPATIAL_RELATIONSHIPS:
         raise ValueError(f"Invalid spatial_rel parameter supplied: {spatial_rel}")
 
-    if not all(gdf.geometry.type == "Polygon"):
-        raise ValueError("GeoDataFrame must contain only Polygon geometries.")
-
     # convert crs to EPSG:4326 if not already
     if gdf.crs is None:
         gdf.set_crs(epsg=srid, inplace=True)
@@ -705,6 +702,11 @@ def geom_gdf_into_cql_filter(
     single_geometry = gdf.union_all()
     if single_geometry.is_empty:
         raise ValueError("Resulting geometry is empty after union.")
+
+    number_of_vertices = count_vertices(single_geometry)
+    logger.debug(f"Vertex count of filter_geometry: {number_of_vertices}")
+    if number_of_vertices > 999:
+        raise ValueError(f"The filter_geometry has too many vertices for the API to process ({number_of_vertices}). Please reduce below 1000 or use bbox_geometry and filter the result locally afterwards.")
 
     # wkt coordinate x,y pairs need to be reversed
     # Pattern to match coordinate pairs
@@ -784,6 +786,11 @@ def geom_sdf_into_cql_filter(
 
     geom = sdf_to_single_geometry(sdf)
 
+    number_of_vertices = count_vertices(geom)
+    logger.debug(f"Vertex count of filter_geometry: {number_of_vertices}")
+    if number_of_vertices > 999:
+        raise ValueError(f"The filter_geometry has too many vertices for the API to process ({number_of_vertices}). Please reduce below 1000 or use bbox_geometry and filter the result locally afterwards.")
+
     # wkt coordinate x,y pairs need to be reversed
     # Pattern to match coordinate pairs
     pattern = r"(-?\d+\.\d+)\s+(-?\d+\.\d+)"
@@ -798,3 +805,24 @@ def geom_sdf_into_cql_filter(
         cql_filter = f"{spatial_filter} AND {cql_filter}"
 
     return cql_filter
+
+
+def count_vertices(geom) -> int:
+    """
+    Count the total number of coordinate vertices in any geometry.
+    """
+
+    logger.debug(f"Count geom, geom type is: {type(geom)}")
+
+    if has_arcgis:
+        from arcgis.geometry import Geometry 
+        if isinstance(geom, Geometry):
+            return geom.point_count 
+    if has_geopandas:
+        from shapely import count_coordinates
+        from shapely.geometry.base import BaseGeometry
+        if isinstance(geom, BaseGeometry):
+            return count_coordinates(geom)
+
+    raise TypeError('Unable to count vertices of unknown geometry')
+
