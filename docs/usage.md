@@ -19,6 +19,8 @@ If you are starting with a clean Python environment and want to use Jupyter Note
 
 ## Connecting to the various open data portals  
 
+Import the GISK class and then create a connection.  
+
 LINZ, Stats NZ and LRIS have built in names for convenience. Alternatively, pass in the base URL.  
 
 ```python
@@ -31,8 +33,6 @@ lris = GISK(name='lris', api_key="your-lris-api-key")
 
 Passing in a base url:  
 ```python
-from kapipy.gis import GIS
-
 linz = GISK(url="https://data.linz.govt.nz/", api_key="your-linz-api-key")
 ```
 
