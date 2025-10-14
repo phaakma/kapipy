@@ -47,16 +47,6 @@ def configure_logging(audit_folder):
     logger = logging.getLogger(__name__)
     return logger
 
-
-def log_machine_stats():
-    cpu_percent = psutil.cpu_percent(interval=1)  # avg over 1 second
-    mem = psutil.virtual_memory()
-    logging.info(
-        f" | CPU {cpu_percent}% | RAM: {mem.percent}% used "
-        f"({mem.used / (1024**3):.2f} GB of {mem.total / (1024**3):.2f} GB)"
-    )
-
-
 def convert_title_to_fc(text):
     # Replace any non-alphanumeric characters with underscore
     # This seems to be the Koordinates method for setting the feature class names
@@ -178,7 +168,6 @@ def target_db_exists(target_db):
 def process_exports(layers: dict, gisk, folder: str, crop_sdf):
 
     for layer in layers:
-        log_machine_stats()
         # If the target doesn't exist, no point in processing this layer any further.
         target_db = layer.get("target_db")
         if not target_db_exists(target_db):
@@ -201,14 +190,12 @@ def process_exports(layers: dict, gisk, folder: str, crop_sdf):
 
     for job in gisk.content.jobs:
         logger.info(f'Unzipping temp file geodatabases')
-        log_machine_stats()
         unzip_fgb(file_path=job.download_file_path, folder=folder)
         os.remove(job.download_file_path)
 
     # copy everything to final target database  
     for layer in layers:
         logger.info(f'Copying data to target database')
-        log_machine_stats()
         temp_fgb = os.path.join(folder, layer.get("temp_fgb"))               
         target_db = layer.get("target_db")
         source_fc = layer.get("source_fc")
