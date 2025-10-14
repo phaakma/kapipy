@@ -135,7 +135,11 @@ def geojson_to_featureset(
         attributes = feature.get("properties", {})
 
         # ArcGIS expects the geometry dict to include spatial reference
-        arcgis_geometry = Geometry({"spatialReference": {"wkid": out_sr}, **geometry})
+        if geometry is not None:
+            arcgis_geometry = Geometry({"spatialReference": {"wkid": out_sr}, **geometry})
+        else:
+            logger.warning(f"Feature with no geometry: {attributes}")
+            arcgis_geometry = None            
 
         arcgis_feature = Feature(geometry=arcgis_geometry, attributes=attributes)
         arcgis_features.append(arcgis_feature)
@@ -813,6 +817,8 @@ def count_vertices(geom) -> int:
     """
 
     logger.debug(f"Count geom, geom type is: {type(geom)}")
+
+    from .gis import has_geopandas, has_arcgis
 
     if has_arcgis:
         from arcgis.geometry import Geometry 

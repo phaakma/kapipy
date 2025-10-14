@@ -1,3 +1,7 @@
+keyring:
+  section: linz 
+  username: kapipy_example
+
 audit_folder: D:/data/kapipy_downloads/data/tcdc
 
 # Anything in the default section will be added to each layer

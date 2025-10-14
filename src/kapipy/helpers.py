@@ -92,7 +92,9 @@ def apply_changes(changes_sdf, target_fc, id_field):
                 if record_id in updates_dict:                    
                     row = updates_dict[record_id]
                     for field in target_fields:
-                        val = row[source_fields.index(field)]
+                        val = row[source_fields.index(field)] if field in source_fields else None 
+                        if val is None:
+                            continue
                         if field in date_fields:
                             dt = datetime.strptime(val, "%Y-%m-%dT%H:%M:%SZ")
                             r[target_fields.index(field)] = dt
