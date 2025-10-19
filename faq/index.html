@@ -671,7 +671,7 @@ Remember to manually grant the necessary scopes to the api key to perform the va
 <h2 id="can-i-download-the-entire-nz-primary-parcels-layer-using-the-query-method">Can I download the entire NZ Primary Parcels layer using the query method?<a class="headerlink" href="#can-i-download-the-entire-nz-primary-parcels-layer-using-the-query-method" title="Permanent link">&para;</a></h2>
 <p>Yes. But maybe don't? 
 For context, the NZ Primary Parcels layer is approx 2.7M polygons (The NZ Parcels layer is even bigger at over five million records!). The query method uses the WFS endpoint, and would have to make over 250 requests to download the data. That seems to be just asking for a network or connection error of some sort to cut you off halfway through.<br />
-Instead, use the <strong>export</strong> method to generate and download large datasets as a single zip file, and then use the <strong>changeset</strong> method to retrieve small changesets and apply those.  </p>
+Instead, consider using the <strong>export</strong> method to generate and download large datasets as a single zip file, and then use the <strong>changeset</strong> method to retrieve small changesets and apply those.  </p>
 
 
 
