@@ -197,42 +197,27 @@ def process_changesets(layers: dict, gisk, audit_folder: str):
             target_fc = os.path.join(target_db, layer.get("target_fc"))
             out_sr = layer.get("out_sr", 2193)
 
-            changes_sdf = get_changeset(itm, crop_feature_sdf, out_sr=out_sr, gisk=gisk)
+            changeset_data = itm.query(
+                from_time = "AUDIT_MANAGER",
+                out_sr=out_sr,
+                bbox_geometry=crop_feature_sdf
+            )
+            number_of_changes = len(changeset_data.sdf)
+            logger.info(f"{number_of_changes=}")
+
+            changes_sdf = changeset_data.sdf
+
+            if number_of_changes > 0 and crop_feature_sdf is not None:
+                # The select method is used to return just the features that intersect the crop feature
+                crop_feature_sdf.spatial.project(spatial_reference=out_sr)
+                changes_sdf = changeset_data.sdf.spatial.select(crop_feature_sdf)
+
             if changes_sdf is None:
                 raise Exception(f"A problem occurred fetching changes.")
             apply_changes(changes_sdf, target_fc, id_field=id_field)
 
         except Exception as e:
             logger.error(str(e), exc_info=True)
-
-
-def get_changeset(itm, crop_sdf, out_sr, gisk):
-    last_download_record = gisk.audit.get_latest_request_for_item(
-        itm.id, request_type=None
-    )
-
-    if not last_download_record or last_download_record.get("request_time") is None:
-        logger.warning(
-            f"No previous request exists in audit database. Please run a full export first to seed the data."
-        )
-        return None
-    else:
-        last_request_time = last_download_record.get("request_time")
-        logger.info(f"{last_request_time=}")
-
-    changeset_data = itm.changeset(
-        from_time=last_request_time, out_sr=out_sr, bbox_geometry=crop_sdf
-    )
-
-    number_of_changes = len(changeset_data.sdf)
-    logger.info(f"Returning changes: {number_of_changes}")
-
-    if number_of_changes > 0 and crop_sdf is not None:
-        # The select method is used to return just the features that intersect the crop feature
-        crop_sdf.spatial.project(spatial_reference=out_sr)
-        return changeset_data.sdf.spatial.select(crop_sdf)
-    return changeset_data.sdf
-
 
 def configure_layers(config):
     defaults = config["defaults"]

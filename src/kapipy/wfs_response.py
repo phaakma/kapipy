@@ -24,7 +24,7 @@ class WFSResponse:
         total_features (int): The number of features in the GeoJSON.
     """
 
-    def __init__(self, geojson: dict, item: "BaseItem" = None, out_sr=None):
+    def __init__(self, geojson: dict, item: "BaseItem" = None, out_sr=None, is_changeset: bool = False):
         """
         Initialize a WFSResponse instance.
 
@@ -41,6 +41,7 @@ class WFSResponse:
         self._gdf = None
         self._sdf = None
         self.total_features = len(geojson["features"])
+        self.is_changeset = is_changeset
 
     @property
     def json(self) -> dict:
