@@ -2,14 +2,14 @@ keyring:
   section: linz 
   username: kapipy_example
 
-audit_folder: D:/data/kapipy_downloads/data/tcdc
+audit_folder: C:/temp/data/tcdc
 
 # Anything in the default section will be added to each layer
 # but will be overridden if also specified by any layer.
 defaults:  
   crop_layer_id: 3036
   crop_feature_id: 10870
-  target_db: D:/data/LINZ/linz_tcdc.gdb
+  target_db: C:/temp/data/LINZ/linz_tcdc.gdb
 
 layers:
   - id: 50772

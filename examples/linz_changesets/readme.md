@@ -15,13 +15,13 @@ It is assumed that the config file is in the same directory as the changesets.py
 An example configuration yaml file for the changesets.py looks like the following.
 
 ```yaml
-audit_folder: d:/audit/tcdc
+audit_folder: c:/temp/audit/tcdc
 
 defaults:  
   crop_layer_id: 3036
   crop_feature_id: 10870
   out_sr: 2193
-  target_db: D:/data/LINZ/linz_tcdc.gdb
+  target_db: C:/temp/data/LINZ/linz_tcdc.gdb
 
 layers:
   - id: 50772
