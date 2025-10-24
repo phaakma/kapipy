@@ -32,10 +32,10 @@ def test_download_linz_wfs_data_live(id: str = rail_station_layer_id):
     srsName = "EPSG:2193"
     typeNames = f"layer-{rail_station_layer_id}"
     query_result = download_wfs_data(
-        url=url, typeNames=typeNames, api_key=api_key, srsName=srsName
+        url=url, typeNames=typeNames, api_key=api_key, srsName=srsName, cache_mode="MEMORY"
     ) 
     assert isinstance(query_result, dict), "Result should be a dictionary"
-    response = query_result.get("response")
+    response = query_result.get("response").get("geojson")
     features = response.get("features")
     assert isinstance(features, list)
     logger.info(f"Number of features downloaded: {len(response)}")
