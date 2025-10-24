@@ -263,11 +263,6 @@ def geojson_to_sdf(
         ValueError: If the geojson input is invalid.
     """
 
-    # if the geojson is None, return an empty SEDF
-    if geojson is None:
-        logger.warning("Received None as geojson input, returning empty SEDF.")
-        return pd.DataFrame()
-
     if not has_arcgis:
         raise ImportError("arcgis is not installed.")
 
@@ -275,6 +270,11 @@ def geojson_to_sdf(
     from arcgis.features import GeoAccessor, GeoSeriesAccessor
     from arcgis.geometry import SpatialReference
     from .data_classes import FieldDef
+
+    # if the geojson is None, return an empty SEDF
+    if geojson is None:
+        logger.warning("Received None as geojson input, returning empty SEDF.")
+        return GeoAccessor(pd.DataFrame())
 
     # If fields is None, infer fields from geojson properties
     if fields is None:
@@ -387,12 +387,75 @@ def sdf_to_single_polygon_geojson(
     if sdf.empty:
         raise ValueError("sdf must contain at least one geometry.")
 
-    if sdf.spatial.sr.wkid != 4326:
-        sdf.spatial.project({"wkid": 4326})
+    if sdf.spatial.sr.wkid != 4326:  
+        sdf = project_sdf(sdf, target_wkid=4326)      
 
     geom = sdf_to_single_geometry(sdf)
     geo_json = geom.JSON  # this is Esri JSON
     return esri_json_to_geojson(geom.JSON, geom.geometry_type)
+
+
+def project_sdf(sdf, target_wkid=4326):
+    """
+    Reprojects a Spatially Enabled DataFrame (SDF).
+    Uses arcpy if available, otherwise uses pyproj and shapely.
+
+    Parameters
+    ----------
+    sdf : arcgis.features.GeoAccessor-enabled DataFrame
+        The Spatially Enabled DataFrame to project.
+    target_wkid : int, default=4326
+        The EPSG/WKID code to project to (e.g., 4326 for WGS84).
+
+    Returns
+    -------
+    sdf_projected : Spatially Enabled DataFrame
+        A new SDF with geometries reprojected to the target CRS.
+    """
+
+    if has_arcpy:            
+        return sdf.spatial.project({"wkid": target_wkid})
+
+    from shapely.ops import transform
+    from pyproj import Transformer, CRS
+
+    try:
+        from arcgis.geometry import SpatialReference, Geometry
+    except ImportError:
+        raise ImportError("This function requires ArcGIS API for Python installed.")
+
+    # Get source and target spatial references
+    source_wkid = sdf.spatial.sr.latestWkid
+    if source_wkid == target_wkid:
+        return sdf  # nothing to do
+
+    transformer = Transformer.from_crs(f"EPSG:{source_wkid}", f"EPSG:{target_wkid}", always_xy=True)
+
+    # Transform each geometry
+    def _reproject_geometry(geom):
+        if geom is None:
+            logger.debug("Geometry is None, skipping reprojection.")
+            return None
+        try:
+            shapely_geom = geom.as_shapely
+            new_geom = transform(transformer.transform, shapely_geom)
+            return Geometry.from_shapely(
+                shapely_geometry=new_geom,
+                spatial_reference={"wkid": target_wkid}
+                )
+        except Exception:
+            logger.error("Failed to reproject geometry.", exc_info=True)
+            return None
+
+    sdf = sdf.copy()
+    sdf["SHAPE"] = sdf["SHAPE"].apply(_reproject_geometry)
+
+    # Update spatial reference metadata
+    sdf.spatial.set_geometry("SHAPE")
+    sdf.spatial.sr = SpatialReference(target_wkid)
+
+    return sdf
+
 
 def arcgis_polygon_to_geojson(geom):
     """
@@ -744,7 +807,7 @@ def bbox_sdf_into_cql_filter(
     """
 
     if sdf.spatial.sr.wkid != srid:
-        sdf.spatial.project({"wkid": srid})
+        sdf = project_sdf(sdf, target_wkid=4326)
     minX, minY, maxX, maxY = sdf.spatial.full_extent
     bbox = f"bbox({geometry_field},{minY},{minX},{maxY},{maxX})"
     if cql_filter is None or cql_filter == "":
@@ -786,7 +849,7 @@ def geom_sdf_into_cql_filter(
         raise ValueError(f"Invalid spatial_rel parameter supplied: {spatial_rel}")
 
     if sdf.spatial.sr.wkid != srid:
-        sdf.spatial.project({"wkid": srid})
+        sdf = project_sdf(sdf, target_wkid=4326)
 
     geom = sdf_to_single_geometry(sdf)
 
