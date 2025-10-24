@@ -9,9 +9,12 @@ from tenacity import (
     retry,
     stop_after_attempt,
     wait_exponential,
+    wait_random,
     RetryError,
     retry_if_not_exception_type,
+    retry_if_exception_type,
 )
+
 from .custom_errors import BadRequest, HTTPError, ServerError
 
 logger = logging.getLogger(__name__)
@@ -24,6 +27,8 @@ DEFAULT_WFS_OUTPUT_FORMAT = "json"
 DEFAULT_SRSNAME = "EPSG:2193"
 MAX_PAGE_FETCHES = 1000
 DEFAULT_FEATURES_PER_PAGE = 10000
+
+_http_client = httpx.Client(timeout=httpx.Timeout(connect=15, read=90, write=30, pool=10))
 
 def _get_kapipy_temp_file(suffix=".geojson", prefix="wfs_") -> str:
     """
@@ -46,14 +51,15 @@ def _get_kapipy_temp_file(suffix=".geojson", prefix="wfs_") -> str:
 
 # --- Internal helper to fetch a single page ---
 @retry(
-    retry=retry_if_not_exception_type((HTTPError, BadRequest)),
+     retry=(retry_if_exception_type(httpx.RequestError) |
+         retry_if_exception_type(httpx.ReadTimeout)),
     stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=2, max=10),
+    wait=wait_exponential(multiplier=1, min=2, max=10) + wait_random(0, 3),
     reraise=True,
 )
 def _fetch_single_page_data(url: str, headers: dict, params: dict, timeout=30) -> dict:
     try:
-        response = httpx.post(url, headers=headers, data=params, timeout=timeout)
+        response = _http_client.post(url, headers=headers, data=params, timeout=timeout)
         response.raise_for_status()
         return response.json()
     except httpx.HTTPStatusError as e:
@@ -219,7 +225,7 @@ def download_wfs_data(
     out_fields: str | list[str] = None,
     result_record_count: int = None,
     page_count: int = DEFAULT_FEATURES_PER_PAGE,
-    cache_mode: Literal["DISK", "MEMORY"] = "DISK",
+    cache_mode: Literal["DISK", "MEMORY"] = "MEMORY",
     temp_file_path: str | None = None,
     **other_wfs_params: Any,
 ) -> dict:
