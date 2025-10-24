@@ -28,7 +28,10 @@ DEFAULT_SRSNAME = "EPSG:2193"
 MAX_PAGE_FETCHES = 1000
 DEFAULT_FEATURES_PER_PAGE = 10000
 
-_http_client = httpx.Client(timeout=httpx.Timeout(connect=15, read=90, write=30, pool=10))
+_http_client = httpx.Client(
+    timeout=httpx.Timeout(connect=15, read=90, write=30, pool=10)
+)
+
 
 def _get_kapipy_temp_file(suffix=".geojson", prefix="wfs_") -> str:
     """
@@ -49,10 +52,13 @@ def _get_kapipy_temp_file(suffix=".geojson", prefix="wfs_") -> str:
 
     return temp_file_path
 
+
 # --- Internal helper to fetch a single page ---
 @retry(
-     retry=(retry_if_exception_type(httpx.RequestError) |
-         retry_if_exception_type(httpx.ReadTimeout)),
+    retry=(
+        retry_if_exception_type(httpx.RequestError)
+        | retry_if_exception_type(httpx.ReadTimeout)
+    ),
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=10) + wait_random(0, 3),
     reraise=True,
@@ -65,7 +71,9 @@ def _fetch_single_page_data(url: str, headers: dict, params: dict, timeout=30) -
     except httpx.HTTPStatusError as e:
         status = e.response.status_code if e.response else None
         if status and 400 <= status < 500:
-            raise BadRequest(f"Bad request ({status}): {getattr(e.response, 'text', '')}")
+            raise BadRequest(
+                f"Bad request ({status}): {getattr(e.response, 'text', '')}"
+            )
         raise
     except httpx.RequestError as e:
         logger.warning(f"Request failed for URL {url}: {e}")
@@ -153,13 +161,16 @@ def _download_to_disk(
 
             if len(features) < page_count:
                 break
-            if result_record_count is not None and total_features >= result_record_count:
+            if (
+                result_record_count is not None
+                and total_features >= result_record_count
+            ):
                 break
 
             start_index += page_count
             pages_fetched += 1
 
-        f.write(f"\n], \"totalFeatures\": {total_features}}}")
+        f.write(f'\n], "totalFeatures": {total_features}}}')
         f.flush()
 
     return total_features
@@ -247,19 +258,33 @@ def download_wfs_data(
     if result_record_count is not None and result_record_count < page_count:
         page_count = result_record_count
 
-    wfs_params = _build_wfs_params(typeNames, srsName, cql_filter, bbox, out_fields, **other_wfs_params)
+    wfs_params = _build_wfs_params(
+        typeNames, srsName, cql_filter, bbox, out_fields, **other_wfs_params
+    )
     request_datetime = datetime.utcnow()
 
     if cache_mode == "DISK":
         if not temp_file_path:
             # Create a unique, writable temp file automatically
             temp_file_path = _get_kapipy_temp_file(suffix=".geojson")
-            logger.info(f"No temp_file_path specified; using system temp file: '{temp_file_path}'")
-        total_features = _download_to_disk(url, headers, wfs_params, temp_file_path, page_count, result_record_count)
-        response = {"file_path": os.path.abspath(temp_file_path), "totalFeatures": total_features}
+            logger.info(
+                f"No temp_file_path specified; using system temp file: '{temp_file_path}'"
+            )
+        total_features = _download_to_disk(
+            url, headers, wfs_params, temp_file_path, page_count, result_record_count
+        )
+        response = {
+            "file_path": os.path.abspath(temp_file_path),
+            "totalFeatures": total_features,
+        }
     elif cache_mode == "MEMORY":
-        geojson = _download_to_memory(url, headers, wfs_params, page_count, result_record_count)
-        response = {"geojson": geojson, "totalFeatures": geojson.get("totalFeatures", None)}
+        geojson = _download_to_memory(
+            url, headers, wfs_params, page_count, result_record_count
+        )
+        response = {
+            "geojson": geojson,
+            "totalFeatures": geojson.get("totalFeatures", None),
+        }
     else:
         raise ValueError("Invalid cache_mode. Use 'DISK' or 'MEMORY'.")
 
