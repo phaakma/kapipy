@@ -394,6 +394,32 @@ def sdf_to_single_polygon_geojson(
     geo_json = geom.JSON  # this is Esri JSON
     return esri_json_to_geojson(geom.JSON, geom.geometry_type)
 
+def project_arcgis_geometry(geom, source_wkid, target_wkid: int):
+
+    if geom is None:
+        logger.debug("Geometry is None, skipping reprojection.")
+        return None
+
+    if has_arcpy:            
+        return geom.project_as({"wkid": target_wkid})
+
+    try:
+        from arcgis.geometry import Geometry
+    except ImportError:
+        raise ImportError("This function requires ArcGIS API for Python installed.")
+
+    from shapely.ops import transform
+    from pyproj import Transformer, CRS
+
+    transformer = Transformer.from_crs(f"EPSG:{source_wkid}", f"EPSG:{target_wkid}", always_xy=True)
+
+    shapely_geom = geom.as_shapely
+    new_geom = transform(transformer.transform, shapely_geom)
+    return Geometry.from_shapely(
+        shapely_geometry=new_geom,
+        spatial_reference={"wkid": target_wkid}
+        )
+
 
 def project_sdf(sdf, target_wkid=4326):
     """
@@ -416,9 +442,6 @@ def project_sdf(sdf, target_wkid=4326):
     if has_arcpy:            
         return sdf.spatial.project({"wkid": target_wkid})
 
-    from shapely.ops import transform
-    from pyproj import Transformer, CRS
-
     try:
         from arcgis.geometry import SpatialReference, Geometry
     except ImportError:
@@ -427,28 +450,10 @@ def project_sdf(sdf, target_wkid=4326):
     # Get source and target spatial references
     source_wkid = sdf.spatial.sr.latestWkid
     if source_wkid == target_wkid:
-        return sdf  # nothing to do
-
-    transformer = Transformer.from_crs(f"EPSG:{source_wkid}", f"EPSG:{target_wkid}", always_xy=True)
-
-    # Transform each geometry
-    def _reproject_geometry(geom):
-        if geom is None:
-            logger.debug("Geometry is None, skipping reprojection.")
-            return None
-        try:
-            shapely_geom = geom.as_shapely
-            new_geom = transform(transformer.transform, shapely_geom)
-            return Geometry.from_shapely(
-                shapely_geometry=new_geom,
-                spatial_reference={"wkid": target_wkid}
-                )
-        except Exception:
-            logger.error("Failed to reproject geometry.", exc_info=True)
-            return None
+        return sdf
 
     sdf = sdf.copy()
-    sdf["SHAPE"] = sdf["SHAPE"].apply(_reproject_geometry)
+    sdf["SHAPE"] = sdf["SHAPE"].apply(project_arcgis_geometry, source_wkid=source_wkid, target_wkid=target_wkid)
 
     # Update spatial reference metadata
     sdf.spatial.set_geometry("SHAPE")
@@ -468,7 +473,8 @@ def arcgis_polygon_to_geojson(geom):
         dict: The GeoJSON geometry dictionary.
     """
 
-    geom = geom.project_as(4326)
+    geom = project_arcgis_geometry(geom, geom.spatial_reference['wkid'], 4326)
+
     geo_json = geom.JSON  # this is Esri JSON
     return esri_json_to_geojson(geom.JSON, geom.geometry_type)
 
