@@ -184,11 +184,12 @@ class VectorItem(BaseItem):
             request_time=query_details.get("request_time", ""),
             request_headers=query_details.get("request_headers", ""),
             request_params=query_details.get("request_params", ""),
-            response=query_details.get("response", ""),
+            total_features=query_details.get("totalFeatures", ""),
         )
 
         return WFSResponse(
-            geojson=query_details.get("response", {}),
+            geojson=query_details.get("response", {}).get("geojson", None),
+            data_file_path=query_details.get("response", {}).get("file_path", None),
             item=self,
             out_sr=out_sr,
             is_changeset=is_changeset_request,

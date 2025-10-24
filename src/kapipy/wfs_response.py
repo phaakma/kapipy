@@ -1,3 +1,6 @@
+import logging
+import json
+
 from .conversion import (
     geojson_to_gdf,
     geojson_to_sdf,
@@ -6,6 +9,7 @@ from .conversion import (
 
 from .gis import has_geopandas, has_arcgis
 
+logger = logging.getLogger(__name__)
 
 class WFSResponse:
     """
@@ -24,7 +28,7 @@ class WFSResponse:
         total_features (int): The number of features in the GeoJSON.
     """
 
-    def __init__(self, geojson: dict, item: "BaseItem" = None, out_sr=None, is_changeset: bool = False):
+    def __init__(self, geojson: dict | None, data_file_path: str | None, item: "BaseItem" = None, out_sr=None, is_changeset: bool = False):
         """
         Initialize a WFSResponse instance.
 
@@ -35,12 +39,16 @@ class WFSResponse:
         """
 
         self._json = geojson
+        self._data_file_path = data_file_path
         self.item = item
         self.out_sr = out_sr
         self._df = None
         self._gdf = None
         self._sdf = None
-        self.total_features = len(geojson["features"])
+        if geojson:
+            self.total_features = len(geojson["features"])
+        else:
+            self.total_features = None
         self.is_changeset = is_changeset
 
     @property
@@ -51,6 +59,9 @@ class WFSResponse:
         Returns:
             dict: The raw GeoJSON data.
         """
+        if self._json is None and self._data_file_path:
+            with open(self._data_file_path, "r", encoding="utf-8") as f:
+                self._json = json.load(f)
         return self._json
 
     @property
@@ -114,8 +125,20 @@ class WFSResponse:
             raise ValueError(f"Geopandas is not installed")
 
         if self._gdf is None:
+            if self.json is not None:
+                j = self.json
+            elif self._json is None and self._data_file_path:
+                # this is a temporary implementation to read from file if json is not loaded
+                # ideally, we pass a file path only when json is not available
+                # and the helper function loads directly from disk
+                # but at least this way the j variable goes out of scope after this block
+                # and is garbage collected
+                with open(self._data_file_path, "r", encoding="utf-8") as f:
+                    j = json.load(f)
+            else:
+                raise ValueError("No GeoJSON data available for conversion to GeoDataFrame")
             self._gdf = geojson_to_gdf(
-                self.json, out_sr=self.out_sr, fields=self.item.data.fields
+                j, out_sr=self.out_sr, fields=self.item.data.fields
             )
         return self._gdf
 

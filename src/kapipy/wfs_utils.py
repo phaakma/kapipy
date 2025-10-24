@@ -1,143 +1,95 @@
-"""
-Utility functions for interacting with Web Feature Service (WFS) endpoints.
-
-Includes robust download and paging logic, error handling, and retry mechanisms for fetching
-large datasets from WFS services such as those provided by Koordinates.
-"""
-
 import httpx
 import os
+import tempfile
+import json
+import logging
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 from tenacity import (
     retry,
     stop_after_attempt,
     wait_exponential,
+    wait_random,
     RetryError,
     retry_if_not_exception_type,
+    retry_if_exception_type,
 )
-import logging
+
 from .custom_errors import BadRequest, HTTPError, ServerError
 
 logger = logging.getLogger(__name__)
 
 # --- Configuration ---
-
-
 DEFAULT_WFS_SERVICE = "WFS"
 DEFAULT_WFS_VERSION = "2.0.0"
 DEFAULT_WFS_REQUEST = "GetFeature"
 DEFAULT_WFS_OUTPUT_FORMAT = "json"
 DEFAULT_SRSNAME = "EPSG:2193"
-MAX_PAGE_FETCHES = 1000  # Maximum number of pages to fetch, to prevent infinite loops
+MAX_PAGE_FETCHES = 1000
 DEFAULT_FEATURES_PER_PAGE = 10000
 
+_http_client = httpx.Client(
+    timeout=httpx.Timeout(connect=15, read=90, write=30, pool=10)
+)
 
+
+def _get_kapipy_temp_file(suffix=".geojson", prefix="wfs_") -> str:
+    """
+    Returns a path to a unique temp file inside a 'kapipy' subdirectory
+    of the system temp directory. The file is not opened, only created securely.
+    """
+    temp_root = tempfile.gettempdir()
+    kapipy_dir = os.path.join(temp_root, "kapipy")
+
+    # Ensure directory exists (safe to call even if it already exists)
+    os.makedirs(kapipy_dir, exist_ok=True)
+
+    # Create a unique temporary file path
+    fd, temp_file_path = tempfile.mkstemp(
+        dir=kapipy_dir, prefix=prefix, suffix=suffix, text=True
+    )
+    os.close(fd)  # We only need the path; we'll reopen later
+
+    return temp_file_path
+
+
+# --- Internal helper to fetch a single page ---
 @retry(
-    retry=retry_if_not_exception_type((HTTPError, BadRequest)),
+    retry=(
+        retry_if_exception_type(httpx.RequestError)
+        | retry_if_exception_type(httpx.ReadTimeout)
+    ),
     stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=2, max=10),
+    wait=wait_exponential(multiplier=1, min=2, max=10) + wait_random(0, 3),
     reraise=True,
 )
 def _fetch_single_page_data(url: str, headers: dict, params: dict, timeout=30) -> dict:
-    """
-    Fetches a single page of WFS data with retry logic for transient issues.
-
-    Parameters:
-        url (str): The WFS service endpoint URL.
-        headers (dict): HTTP headers for the request (including API key).
-        params (dict): Query parameters for the WFS request.
-        timeout (int, optional): Timeout for the request in seconds. Default is 30.
-
-    Returns:
-        dict: The JSON response from the WFS service for the page.
-
-    Raises:
-        BadRequest: If a 400 Bad Request is returned from the WFS service.
-        HTTPError: For other HTTP errors that should not be retried.
-        httpx.RequestError: For other request issues that tenacity will handle.
-    """
     try:
-        logger.debug(f"Requesting WFS data. URL: {url}, Params: {params}")
-        response = httpx.post(url, headers=headers, data=params, timeout=timeout)
+        response = _http_client.post(url, headers=headers, data=params, timeout=timeout)
         response.raise_for_status()
-        json_data = response.json()
-        logger.debug(
-            f"Successfully fetched page. Status: {response.status_code}, Features: {len(json_data.get('features', []))}"
-        )
-        return json_data
+        return response.json()
     except httpx.HTTPStatusError as e:
-        status = e.response.status_code if e.response is not None else None
-        logger.warning(
-            f"HTTP ## error for URL {url}: {status} - {getattr(e.response, 'text', '')}"
-        )
-        if status is not None and 400 <= status < 500:
+        status = e.response.status_code if e.response else None
+        if status and 400 <= status < 500:
             raise BadRequest(
-                f"Bad request ({status}) for URL {url}: {getattr(e.response, 'text', '')}"
-            ) from e
-        raise  # Let tenacity retry for other HTTP errors
+                f"Bad request ({status}): {getattr(e.response, 'text', '')}"
+            )
+        raise
     except httpx.RequestError as e:
         logger.warning(f"Request failed for URL {url}: {e}")
-        raise  # Reraise for tenacity to handle
+        raise
 
 
-def download_wfs_data(
-    url: str,
+# --- Helper for building WFS params ---
+def _build_wfs_params(
     typeNames: str,
-    api_key: str,
-    srsName: str = DEFAULT_SRSNAME,
-    cql_filter: str = None,
-    bbox: str = None,
-    out_fields: str | list[str] = None,
-    result_record_count: int = None,
-    page_count: int = DEFAULT_FEATURES_PER_PAGE,
-    **other_wfs_params: Any,
-) -> dict:
-    """
-    Downloads features from a WFS service, handling pagination and retries.
-
-    Parameters:
-        url (str): The base URL of the WFS service (e.g., "https://data.linz.govt.nz/services/wfs").
-        typeNames (str): The typeNames for the desired layer (e.g., "layer-12345").
-        api_key (str): API key.
-        srsName (str, optional): Spatial Reference System name (e.g., "EPSG:2193"). Defaults to "EPSG:2193".
-        cql_filter (str, optional): CQL filter to apply to the WFS request. Defaults to None.
-        bbox (str, optional): Bounding box string to filter the request by extent. Defaults to None.
-        out_fields (str, list of strings, optional): Attribute fields to include in the response. NOT IMPLEMENTED YET...
-        result_record_count (int, optional): Maximum number of features to fetch.
-        page_count (int, optional): Number of features per page request. Defaults to 2000.
-        **other_wfs_params: Additional WFS parameters.
-
-    Returns:
-        dict: A GeoJSON FeatureCollection-like dictionary containing all fetched features.
-
-    Raises:
-        HTTPError: If the API key or typeNames is missing, or if data fetching fails after all retries.
-        BadRequest: If a 400 Bad Request is returned from the WFS service.
-    """
-
-    if not api_key:
-        raise HTTPError("API key must be provided.")
-    if not typeNames:
-        raise HTTPError("Typenames (i.e. layer id) must be provided.")
-
-    headers = {
-        "Authorization": f"key {api_key}",
-        "Content-Type": "application/x-www-form-urlencoded",
-    }
-
-    all_features = []
-    start_index = 0
-    if result_record_count is not None and result_record_count < page_count:
-        page_count = result_record_count
-    crs_info = None
-    total_features_service_reported = None
-
-    result = None
-
-    logger.debug(f"Starting WFS data download for typeNames: '{typeNames}'")
-
-    wfs_request_params = {
+    srsName: str,
+    cql_filter: str | None,
+    bbox: str | None,
+    out_fields: str | list[str] | None,
+    **other_wfs_params,
+):
+    params = {
         "service": DEFAULT_WFS_SERVICE,
         "version": DEFAULT_WFS_VERSION,
         "request": DEFAULT_WFS_REQUEST,
@@ -148,106 +100,204 @@ def download_wfs_data(
     }
 
     if cql_filter is not None:
-        logger.debug(f"{cql_filter=}")
-        wfs_request_params["cql_filter"] = cql_filter
+        params["cql_filter"] = cql_filter
     if bbox is not None:
-        logger.debug(f"{bbox=}")
-        wfs_request_params["bbox"] = bbox
+        params["bbox"] = bbox
     if out_fields is not None:
         if isinstance(out_fields, list):
             out_fields = ",".join(out_fields)
-        out_fields = f"({out_fields})"
-        logger.debug(f"{out_fields=}")
-        wfs_request_params["PropertyName"] = out_fields
+        params["PropertyName"] = f"({out_fields})"
 
-    request_datetime = datetime.utcnow()
+    return params
 
+
+# --- DISK mode implementation ---
+def _download_to_disk(
+    url: str,
+    headers: dict,
+    wfs_params: dict,
+    temp_file_path: str,
+    page_count: int,
+    result_record_count: int | None,
+) -> int:
+    """Stream features to disk as a valid GeoJSON FeatureCollection."""
+    os.makedirs(os.path.dirname(temp_file_path), exist_ok=True)
+
+    total_features = 0
     pages_fetched = 0
-    while pages_fetched < MAX_PAGE_FETCHES:
-        logger.debug(f"Pages fetched: {pages_fetched} of max: {MAX_PAGE_FETCHES}")
-        pages_fetched += 1
-        wfs_request_params["startIndex"] = start_index
-        wfs_request_params["count"] = page_count
+    start_index = 0
+    first_feature_written = False
 
-        logger.debug(f"{start_index=}, {page_count=}")
+    with open(temp_file_path, "w", encoding="utf-8") as f:
+        f.write('{"type": "FeatureCollection", "features": [\n')
+        f.flush()
+
+        while pages_fetched < MAX_PAGE_FETCHES:
+            wfs_params["startIndex"] = start_index
+            wfs_params["count"] = page_count
+
+            try:
+                page_data = _fetch_single_page_data(url, headers, wfs_params)
+            except (BadRequest, HTTPError, RetryError) as e:
+                logger.error(f"Error fetching page {pages_fetched}: {e}")
+                raise
+            if not page_data or not isinstance(page_data, dict):
+                break
+
+            features = page_data.get("features", [])
+            if not features:
+                break
+
+            for feature in features:
+                if first_feature_written:
+                    f.write(",\n")
+                else:
+                    first_feature_written = True
+                json.dump(feature, f)
+                total_features += 1
+
+            f.flush()
+            logger.debug(f"Written {total_features} features so far...")
+
+            if len(features) < page_count:
+                break
+            if (
+                result_record_count is not None
+                and total_features >= result_record_count
+            ):
+                break
+
+            start_index += page_count
+            pages_fetched += 1
+
+        f.write(f'\n], "totalFeatures": {total_features}}}')
+        f.flush()
+
+    return total_features
+
+
+# --- MEMORY mode implementation ---
+def _download_to_memory(
+    url: str,
+    headers: dict,
+    wfs_params: dict,
+    page_count: int,
+    result_record_count: int | None,
+) -> dict:
+    """Load all features into memory (original behaviour)."""
+    all_features = []
+    start_index = 0
+    pages_fetched = 0
+    result = None
+
+    while pages_fetched < MAX_PAGE_FETCHES:
+        wfs_params["startIndex"] = start_index
+        wfs_params["count"] = page_count
 
         try:
-            page_data = _fetch_single_page_data(url, headers, wfs_request_params)
-        except BadRequest as e:
-            logger.error(f"### Bad request error: {e}")
+            page_data = _fetch_single_page_data(url, headers, wfs_params)
+        except (BadRequest, HTTPError, RetryError) as e:
+            logger.error(f"Error fetching page {pages_fetched}: {e}")
             raise
-        except RetryError as e:
-            last_exception = e.last_attempt.exception() if e.last_attempt else e
-            logger.error(
-                f"All retries failed for '{typeNames}' at startIndex {start_index}. Last error: {last_exception}"
-            )
-            raise HTTPError(
-                f"Failed to download WFS data for '{typeNames}' after multiple retries. Last error: {last_exception}"
-            ) from last_exception
-        except HTTPError:
-            raise
-        except Exception as e:
-            logger.error(
-                f"Unexpected error for '{typeNames}' at startIndex {start_index}: {e}"
-            )
-            raise HTTPError(
-                f"Failed to download WFS data for '{typeNames}' due to unexpected error: {e}"
-            ) from e
 
         if not page_data or not isinstance(page_data, dict):
-            logger.warning(
-                f"Received empty or invalid data for '{typeNames}' at startIndex {start_index}. Assuming end of data."
-            )
             break
 
-        result = page_data if result is None else result
-        features_on_page = page_data.get("features", [])
-        if not features_on_page:
-            logger.debug(
-                f"No more features found for '{typeNames}' at startIndex {start_index}. Download likely complete."
-            )
+        if result is None:
+            result = page_data
+
+        features = page_data.get("features", [])
+        if not features:
             break
-        all_features.extend(features_on_page)
-        logger.debug(
-            f"Fetched {len(features_on_page)} features for '{typeNames}'. Total fetched so far: {len(all_features)}."
-        )
-        if len(features_on_page) < page_count:
-            logger.debug(
-                f"Last page fetched for '{typeNames}' (received {len(features_on_page)} features, requested up to {page_count})."
-            )
+
+        all_features.extend(features)
+        if len(features) < page_count:
             break
         if result_record_count is not None and len(all_features) >= result_record_count:
-            logger.debug(
-                f"Reached maximum count of {result_record_count} features for '{typeNames}'. Stopping download."
-            )
             break
 
         start_index += page_count
-        if (
-            result_record_count is not None
-            and result_record_count - len(all_features) < page_count
-        ):
-            page_count = result_record_count - len(all_features)
+        pages_fetched += 1
 
     result["features"] = all_features
     result["totalFeatures"] = len(all_features)
     result.pop("numberReturned", None)
+    return result
 
-    logger.debug(
-        f"Finished WFS data download for '{typeNames}'. Total features retrieved: {len(all_features)}."
+
+# --- Public main method ---
+def download_wfs_data(
+    url: str,
+    typeNames: str,
+    api_key: str,
+    srsName: str = DEFAULT_SRSNAME,
+    cql_filter: str = None,
+    bbox: str = None,
+    out_fields: str | list[str] = None,
+    result_record_count: int = None,
+    page_count: int = DEFAULT_FEATURES_PER_PAGE,
+    cache_mode: Literal["DISK", "MEMORY"] = "MEMORY",
+    temp_file_path: str | None = None,
+    **other_wfs_params: Any,
+) -> dict:
+    """
+    Downloads features from a WFS service.
+    - In DISK mode: streams to a GeoJSON file (safe, low memory).
+    - In MEMORY mode: stores all features in memory (fast but risky for large data).
+    """
+    if not api_key:
+        raise HTTPError("API key must be provided.")
+    if not typeNames:
+        raise HTTPError("Typenames must be provided.")
+
+    headers = {
+        "Authorization": f"key {api_key}",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+
+    if result_record_count is not None and result_record_count < page_count:
+        page_count = result_record_count
+
+    wfs_params = _build_wfs_params(
+        typeNames, srsName, cql_filter, bbox, out_fields, **other_wfs_params
     )
+    request_datetime = datetime.utcnow()
 
-    headers.pop('Authorization', None)
-    wfs_request_params.pop('startIndex', None)
-    wfs_request_params.pop('count', None)
+    if cache_mode == "DISK":
+        if not temp_file_path:
+            # Create a unique, writable temp file automatically
+            temp_file_path = _get_kapipy_temp_file(suffix=".geojson")
+            logger.info(
+                f"No temp_file_path specified; using system temp file: '{temp_file_path}'"
+            )
+        total_features = _download_to_disk(
+            url, headers, wfs_params, temp_file_path, page_count, result_record_count
+        )
+        response = {
+            "file_path": os.path.abspath(temp_file_path),
+            "totalFeatures": total_features,
+        }
+    elif cache_mode == "MEMORY":
+        geojson = _download_to_memory(
+            url, headers, wfs_params, page_count, result_record_count
+        )
+        response = {
+            "geojson": geojson,
+            "totalFeatures": geojson.get("totalFeatures", None),
+        }
+    else:
+        raise ValueError("Invalid cache_mode. Use 'DISK' or 'MEMORY'.")
+
+    headers.pop("Authorization", None)
+    wfs_params.pop("startIndex", None)
+    wfs_params.pop("count", None)
 
     return {
         "request_url": url,
         "request_method": "POST",
         "request_time": request_datetime,
         "request_headers": headers,
-        "request_params": wfs_request_params,
-        "response": result
+        "request_params": wfs_params,
+        "cache_mode": cache_mode,
+        "response": response,
     }
-
-

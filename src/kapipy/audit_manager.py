@@ -115,7 +115,7 @@ class AuditManager:
         request_time: datetime,
         request_headers: dict,
         request_params: dict,
-        response: dict = None,
+        total_features: int = None,
     ) -> None:
         """
         Adds a request record to the audit database.
@@ -132,7 +132,7 @@ class AuditManager:
             request_time (datetime): The time the request was made.
             request_headers (dict): The headers sent with the request.
             request_params (dict): The parameters sent with the request.
-            response (dict, optional): The response received from the request.
+            total_features (int, optional): The total number of features received.
 
         Returns:
             None
@@ -151,9 +151,7 @@ class AuditManager:
             # Format as ISO string without timezone info
             request_time_str = request_time_utc.strftime("%Y-%m-%dT%H:%M:%S")
         else:
-            request_time_str = str(request_time)
-
-        total_features = response.get("totalFeatures") if response else None
+            request_time_str = str(request_time)        
 
         db_path = os.path.join(self.folder, self.db_name)
         conn = sqlite3.connect(db_path)
@@ -198,9 +196,6 @@ class AuditManager:
             conn.commit()
         finally:
             conn.close()
-
-        if response:
-            self.save_data(item_id, request_type, request_time, response)
 
     def get_latest_request_for_item(
         self, item_id: int, request_type: str = None
@@ -250,37 +245,6 @@ class AuditManager:
             return dict(zip(col_names, row))
         finally:
             conn.close()
-
-    def save_data(
-        self, item_id: int, request_type: str, request_time: datetime, data: dict
-    ) -> None:
-        """
-        Save the audit data to a local JSON file.
-
-        The file will be saved in a 'data' subfolder within the audit folder, with a filename
-        formatted as '{request_type}_{item_id}_{request_time}.json'.
-
-        Parameters:
-            item_id (int): The ID of the item related to the data.
-            request_type (str): The type of request (e.g., 'GET', 'POST').
-            request_time (str): The time the request was made, used in the filename.
-            data (dict): The data to be saved as JSON.
-
-        Returns:
-            None
-
-        Raises:
-            OSError: If the file or directory cannot be created or written.
-            TypeError: If the data cannot be serialized to JSON.
-        """
-        data_folder = os.path.join(self.folder, "data")
-        os.makedirs(data_folder, exist_ok=True)
-        request_time_str = request_time.strftime("%Y%m%d_%H%M%S")
-        filepath = os.path.join(
-            data_folder, f"{request_type}_{item_id}_{request_time_str}.json"
-        )
-        with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=None, separators=(",", ":"))
 
     def __repr__(self) -> str:
         """
