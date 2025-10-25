@@ -1,5 +1,5 @@
 # kapipy
-A python client for accessing and querying datasets from geospatial open data portals such as LINZ, Stats NZ and LRIS.
+A python client for accessing and querying datasets from Koordinates sites such as LINZ, Stats NZ and LRIS.
 
 ## Overview  
 kapipy is a Python package that provides a python interface to the Koordinates geospatial content management system. It allows users to connect to a data portal, retrieve metadata, and query vector layers and tables. 
