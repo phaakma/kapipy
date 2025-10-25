@@ -2,7 +2,9 @@ import os
 import sqlite3
 import json
 from datetime import datetime, timezone
+import logging
 
+logger = logging.getLogger(__name__)
 
 class AuditManager:
     """
@@ -66,6 +68,9 @@ class AuditManager:
         Returns:
             None
         """
+
+        logger.debug("Creating audit database and tables if not exist.")
+
         db_path = os.path.join(self.folder, self.db_name)
         os.makedirs(self.folder, exist_ok=True)
         conn = sqlite3.connect(db_path)
@@ -142,6 +147,8 @@ class AuditManager:
         if self.enabled is False:
             return False
 
+        logger.debug(f"Adding audit record. {item_id=}, {request_type=}, {total_features=}")   
+
         if isinstance(request_time, datetime):
             # Convert to UTC if not already
             if request_time.tzinfo is None:
@@ -211,6 +218,8 @@ class AuditManager:
         Returns:
             dict: The most recent audit record as a dictionary, or empty dictionary.
         """
+
+        logger.debug(f"Retrieving latest audit record. {item_id=}, {request_type=}")
 
         db_path = os.path.join(self.folder, self.db_name)
         conn = sqlite3.connect(db_path)
