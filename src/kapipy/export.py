@@ -78,8 +78,7 @@ def validate_export_params(
         data["crs"] = crs
     if data_type == "layer" and filter_geometry:
         data["extent"] = filter_geometry
-
-    logger.debug(f"Validate:\n{json.dumps(data, indent=2)}")
+        logger.debug(f'Validating data extent: {data["extent"]}')
 
     headers = {"Authorization": f"key {api_key}"}
     is_valid = False
