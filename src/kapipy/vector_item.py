@@ -184,7 +184,7 @@ class VectorItem(BaseItem):
             request_time=query_details.get("request_time", ""),
             request_headers=query_details.get("request_headers", ""),
             request_params=query_details.get("request_params", ""),
-            total_features=query_details.get("totalFeatures", ""),
+            total_features=query_details.get("response", {}).get("totalFeatures", None),
         )
 
         return WFSResponse(

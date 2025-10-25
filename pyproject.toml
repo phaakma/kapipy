@@ -1,6 +1,6 @@
 [project]
 name = "kapipy"
-version = "0.4.1"
+version = "0.4.2"
 description = "A python client for accessing and querying geospatial open data portals."
 keywords = [ "koordinates", "LINZ", "geospatial", "open data", "API", "GIS", "Stats NZ", "LRIS",]
 readme = "README.md"

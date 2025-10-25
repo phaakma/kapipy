@@ -440,7 +440,8 @@ def project_sdf(sdf, target_wkid=4326):
     """
 
     if has_arcpy:            
-        return sdf.spatial.project({"wkid": target_wkid})
+        sdf.spatial.project({"wkid": target_wkid})
+        return sdf
 
     try:
         from arcgis.geometry import SpatialReference, Geometry
@@ -448,7 +449,8 @@ def project_sdf(sdf, target_wkid=4326):
         raise ImportError("This function requires ArcGIS API for Python installed.")
 
     # Get source and target spatial references
-    source_wkid = sdf.spatial.sr.latestWkid
+    source_wkid = getattr(sdf.spatial.sr, "latestWkid", None) or getattr(sdf.spatial.sr, "wkid", None)
+
     if source_wkid == target_wkid:
         return sdf
 
@@ -820,6 +822,8 @@ def bbox_sdf_into_cql_filter(
         cql_filter = bbox
     elif cql_filter > "":
         cql_filter = f"{bbox} AND {cql_filter}"
+
+    logger.debug(f"Constructed bbox CQL filter from sdf: {cql_filter}")
 
     return cql_filter
 

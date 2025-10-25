@@ -1,4 +1,4 @@
-keyring:
+authentication:
   section: linz 
   username: kapipy_example
 
@@ -8,29 +8,17 @@ audit_folder: C:/temp/data/tcdc
 # but will be overridden if also specified by any layer.
 defaults:  
   crop_layer_id: 3036
-  crop_feature_id: 10870
-  target_db: C:/temp/data/LINZ/linz_tcdc.gdb
+  crop_feature_id: 10870 #Thames-Coromandel District Council
+  target_db: C:/temp/data/tcdc/linz_tcdc.gdb
+  out_sr: 2193
 
 layers:
-  - id: 50772
-    target_fc: NZ_Primary_Parcels
-
-  - id: 113764
-    target_fc: NZ_Suburbs_and_Localities
-
-  - id: 105689
-    target_fc: NZ_Addresses
-
   - id: 50787
     target_fc: NZ_Geodetic_Marks
 
-  - id: 50365
-    target_fc: NZ_Tree_Points_Topo_150k
+  - id: 50772
+    target_fc: NZ_Primary_Parcels
 
-  - id: 51681
-    target_fc: NZ_Place_Names_NZGB
-    out_sr: 4326 #for some reason LINZ doesn't want to export this as 2193
-
-  - id: 50286 
-    target_fc: NZ_Historic_Site_Points_Topo_150k  
+  - id: 50329
+    target_fc: NZ_Road_Centrelines_Topo_50k
 
