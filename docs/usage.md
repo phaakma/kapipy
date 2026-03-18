@@ -53,7 +53,7 @@ print(itm)
 ```
 
 ## WFS queries  
-Items with WFS endpoints can be queried using the **query** and, if the item supports changesets, **changeset** methods of the item .
+Items with WFS endpoints can be queried using the **query** method.
 
 For spatial items, it is recommended to specify a desired spatial reference via the **out_sr** parameter.  
 
@@ -81,7 +81,7 @@ Data is returned as a WFSResponse object. This has four attributes that can be u
 - **.gdf**: if geopandas is installed, this will return a GeoDataFrame of the data.  
 - **.sdf**: if arcgis is installed, this will return a Spatially Enabled DataFrame of the data.  
 
-The attribute types of the dataframes are set according to the item's field list.  
+The attribute types of the dataframes are automatically set according to the item's field list.  
 
 ```python
 print(data.item.data.fields)
@@ -100,16 +100,22 @@ data.df.head()
 
 ### Changeset    
 
-Also returned as a WFSResponse object with the same logic as the **query** method.  
+Provide a **from_time** argument to the **query** method to obtain changeset data.  
 The datetime parameters should be provided in ISO 8601 format.  
 
 The **from_time** parameter is the time from which the changeset data will be generated.  
 The **to_time** parameter is optional, and is the time up to which the changeset data will be generated. If this parameter is not provided then it defaults to now.  
 
 ```python
-data = itm.changeset(from_time="2024-01-01T00:00:00Z", out_sr=2193)
+data = itm.query(from_time="2024-01-01T00:00:00Z", out_sr=2193)
 print((f"Total records returned {itm.title}: {data.gdf.shape[0]}"))
-```
+```  
+
+If you are using the Audit Manager, then setting the **from_time** attribute to the keyword "AUDIT_MANAGER" will cause it to fetch the most recent datetime for this layer from the audit database and use that. If no record exists in the audit database for this layer then it will just do a normal query and fetch all data.  
+
+```python
+data = itm.query(from_time="AUDIT_MANAGER", out_sr=2193)
+```  
 
 ### Query with a spatial filter  
 The **filter_geometry** argument can be passed in as a gdf or sdf.  
@@ -120,7 +126,7 @@ If there is more than one record in the dataframe, the records will be unioned i
 
 The following example will only return features that intersect the **filter_geometry** object.  
 ```python
-data = itm.changeset(
+data = itm.query(
     from_time="2024-01-01T00:00:00Z", 
     out_sr=2193,
     filter_geometry=matamata_gdf
@@ -137,7 +143,7 @@ If there is more than one record in the dataframe, the extent of all geometries 
 
 The following example will only return features that intersect the bounding box extent of the **bbox_geometry** object.  
 ```python
-data = itm.changeset(
+data = itm.query(
     from_time="2024-01-01T00:00:00Z", 
     out_sr=2193,
     bbox_geometry=matamata_gdf

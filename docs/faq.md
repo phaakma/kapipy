@@ -16,4 +16,4 @@ Probably? Maybe? Not sure. Try it and provide feedback if it doesn't! The focus 
 ## Can I download the entire NZ Primary Parcels layer using the query method?  
 Yes. But maybe don't? 
 For context, the NZ Primary Parcels layer is approx 2.7M polygons (The NZ Parcels layer is even bigger at over five million records!). The query method uses the WFS endpoint, and would have to make over 250 requests to download the data. That seems to be just asking for a network or connection error of some sort to cut you off halfway through.  
-Instead, use the **export** method to generate and download large datasets as a single zip file, and then use the **changeset** method to retrieve small changesets and apply those.  
+Instead, consider using the **export** method first to generate and download large datasets as a single zip file, and then use the **query** method to retrieve small changesets and apply those.  
